@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "689464516081",
+    "project_id": "marketly-data",
+    "storage_bucket": "marketly-data.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689464516081:android:67a2044e39ee55920b3850",
+        "android_client_info": {
+          "package_name": "com.example.marketly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb7rPo8hlxL2Kq_SgSV08iEGIjZACZjxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
