@@ -5,6 +5,14 @@ class MarketTheme {
 
   static ThemeData light = ThemeData(
     brightness: Brightness.light,
+    textSelectionTheme: TextSelectionThemeData(
+      selectionHandleColor: const Color.fromARGB(
+        255,
+        0,
+        0,
+        0,
+      ), // Your desired color
+    ),
     colorScheme: ColorScheme.light(
       primary: const Color.fromARGB(255, 255, 255, 255), //BG
       onPrimary: const Color.fromARGB(255, 150, 150, 150), //Border
@@ -26,6 +34,14 @@ class MarketTheme {
 
   static ThemeData dark = ThemeData(
     brightness: Brightness.dark,
+    textSelectionTheme: TextSelectionThemeData(
+      selectionHandleColor: const Color.fromARGB(
+        255,
+        255,
+        255,
+        255,
+      ), // Your desired color
+    ),
     colorScheme: ColorScheme.dark(
       primary: const Color.fromARGB(255, 0, 0, 0), //BG
       onPrimary: const Color.fromARGB(255, 150, 150, 150), //Border

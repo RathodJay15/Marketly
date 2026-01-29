@@ -64,6 +64,7 @@ class _loginScreenState extends State<LoginScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       hintText: 'Email',
+
                       hintStyle: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
