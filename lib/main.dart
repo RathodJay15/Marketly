@@ -1,7 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/controllers/auth_controller.dart';
+import 'package:marketly/data/services/auth/auth_service.dart';
 import 'package:marketly/firebase_options.dart';
-import 'presentation/auth/login_screen.dart';
+import 'package:marketly/presentation/auth/authWrapper.dart';
+import 'package:marketly/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
@@ -15,12 +19,20 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
-      theme: MarketTheme.light,
-      darkTheme: MarketTheme.dark,
-      home: LoginScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) =>
+              AuthProvider(AuthController(AuthService()))..loadCurrentUser(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system,
+        theme: MarketTheme.light,
+        darkTheme: MarketTheme.dark,
+        home: AuthWrapper(),
+      ),
     );
   }
 }

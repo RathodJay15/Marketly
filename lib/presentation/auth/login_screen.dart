@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/presentation/auth/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,7 +31,7 @@ class _loginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Icon(
-                    Icons.lock,
+                    Icons.person_search,
                     size: 80.0,
                     color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
@@ -151,14 +152,19 @@ class _loginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Not a member?",
+                        "Don't have an Account!",
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigate to sign up page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterScreen(),
+                            ),
+                          );
                         },
                         child: Text(
                           "Register now",

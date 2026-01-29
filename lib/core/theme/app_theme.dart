@@ -21,7 +21,7 @@ class MarketTheme {
         225,
         225,
         225,
-      ), //TextField BG
+      ), //TextField BG / Card BG
       onPrimaryContainer: const Color.fromARGB(255, 0, 0, 255), //Button 1
       onSecondary: const Color.fromARGB(255, 0, 255, 0), //Button 2
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
@@ -50,7 +50,7 @@ class MarketTheme {
         66,
         66,
         66,
-      ), //TextField BG
+      ), //TextField BG / Card BG
       onPrimaryContainer: const Color.fromARGB(255, 0, 0, 255), //Button 1
       onSecondary: const Color.fromARGB(255, 0, 255, 0), //Button2
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
