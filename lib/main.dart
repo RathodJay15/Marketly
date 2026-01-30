@@ -1,10 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/auth_gate.dart';
+// import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/firebase_options.dart';
-import 'package:marketly/presentation/auth/login_screen.dart';
-import 'package:marketly/presentation/user/home_screen.dart';
-import 'package:marketly/core/data_instance/auth_locator.dart';
+// import 'package:marketly/presentation/admin/dash_board_screen.dart';
+// import 'package:marketly/presentation/auth/login_screen.dart';
+// import 'package:marketly/presentation/user/home_screen.dart';
+// import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/user_provider.dart';
@@ -27,20 +30,7 @@ class MainApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         theme: MarketTheme.light,
         darkTheme: MarketTheme.dark,
-        home: StreamBuilder<User?>(
-          stream: authService.authStateChanges,
-          builder: (context, snapshot) {
-            // if (snapshot.connectionState == ConnectionState.waiting) {
-            //   return const SplashScreen();
-            // }
-
-            if (snapshot.hasData) {
-              return const HomeScreen();
-            }
-
-            return const LoginScreen();
-          },
-        ),
+        home: const AuthGate(),
       ),
     );
   }
