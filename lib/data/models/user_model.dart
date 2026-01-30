@@ -4,6 +4,7 @@ class UserModel {
   final String? email;
   final String? address;
   final String? phone;
+  final String? profilePic;
   final String? role; // 'admin' or 'user'
 
   UserModel({
@@ -13,6 +14,7 @@ class UserModel {
     required this.role,
     required this.phone,
     required this.address,
+    required this.profilePic,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
@@ -22,6 +24,7 @@ class UserModel {
       email: map['email'] ?? '',
       address: map['address'] ?? '',
       phone: map['phone'] ?? '',
+      profilePic: map['profilePic'] ?? '',
       role: map['role'] ?? 'user',
     );
   }
@@ -33,6 +36,7 @@ class UserModel {
       'address': address,
       'phone': phone,
       'role': role,
+      'profilePic': profilePic,
     };
   }
 }

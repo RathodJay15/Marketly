@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/presentation/auth/login_screen.dart';
+import 'package:marketly/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,8 +18,19 @@ class _registerScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
+
+  final _authService = authService;
+
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool isLoading = false;
+  String? _unameError;
+  String? _emailError;
+  String? _passError;
+  String? _confError;
+  String? _phoneError;
+  String? _addressError;
+  String? _errorMsg;
 
   void _showPass() {
     setState(() {
@@ -28,6 +42,98 @@ class _registerScreenState extends State<RegisterScreen> {
     setState(() {
       _obscureConfirm = !_obscureConfirm;
     });
+  }
+
+  Future<void> _register() async {
+    setState(() {
+      isLoading = true;
+      _errorMsg = null;
+      _unameError = null;
+      _emailError = null;
+      _passError = null;
+      _addressError = null;
+      _confError = null;
+      _phoneError = null;
+    });
+
+    if (_usernameController.text.isEmpty) {
+      setState(() {
+        _unameError = 'Please enter username!';
+      });
+      return;
+    }
+    if (_emailController.text.isEmpty) {
+      setState(() {
+        _emailError = 'Please enter email!';
+      });
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      setState(() {
+        _passError = 'Please enter password!';
+      });
+      return;
+    }
+    if (_confirmController.text.isEmpty) {
+      setState(() {
+        _confError = 'Please confirm password!';
+      });
+      return;
+    }
+    if (_confirmController.text != _passwordController.text) {
+      setState(() {
+        _confError = 'Paasword dose not match!';
+      });
+      return;
+    }
+    if (_phoneController.text.isEmpty) {
+      setState(() {
+        _phoneError = 'Please enter phone number!';
+      });
+      return;
+    }
+    if (_addressController.text.isEmpty) {
+      setState(() {
+        _addressError = 'Please enter address!';
+      });
+      return;
+    }
+
+    try {
+      final user = await _authService.register(
+        name: _usernameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        phone: _phoneController.text.trim(),
+        address: _addressController.text.trim(),
+        profilePic: '',
+      );
+
+      if (user != null) {
+        context.read<UserProvider>().setUser(user);
+        Navigator.pop(context);
+        // authStateChanges → HomeScreen
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMsg = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,7 +203,22 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  _unameError != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _unameError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 20.0),
 
                   // Email Text Field
                   TextField(
@@ -126,7 +247,22 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  _emailError != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _emailError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 20.0),
 
                   // Password Text Field
                   TextField(
@@ -165,7 +301,22 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  _passError != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _passError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 20.0),
 
                   //Confirm Password Text Field
                   TextField(
@@ -204,7 +355,22 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  _confError != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _confError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 20.0),
 
                   // Phone Text Field
                   TextField(
@@ -233,19 +399,35 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  _phoneError != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _phoneError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 20.0),
 
                   // Address Text Field
                   TextField(
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
-                    textInputAction: TextInputAction.next,
+                    textInputAction: TextInputAction.done,
                     minLines: 1,
                     maxLines: 3,
                     controller: _addressController,
+                    onSubmitted: (value) => _register(),
                     decoration: InputDecoration(
-                      hintText: 'Addresss',
+                      hintText: 'Address',
                       hintStyle: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
@@ -263,13 +445,26 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40.0),
+                  _addressError != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _addressError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 40.0),
 
-                  // Sign In Button
+                  // Sign up Button
                   ElevatedButton(
-                    onPressed: () {
-                      // Handle login logic here
-                    },
+                    onPressed: () => _register(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(
                         context,
@@ -288,7 +483,20 @@ class _registerScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
+                  if (_errorMsg != null)
+                    Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Align(
+                        child: Text(
+                          _errorMsg!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
 
                   // Register link
                   Row(

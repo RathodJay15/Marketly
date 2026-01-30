@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:marketly/controllers/auth_controller.dart';
-import 'package:marketly/data/services/auth/auth_service.dart';
 import 'package:marketly/firebase_options.dart';
-import 'package:marketly/presentation/auth/authWrapper.dart';
-import 'package:marketly/providers/auth_provider.dart';
+import 'package:marketly/presentation/auth/login_screen.dart';
+import 'package:marketly/presentation/user/home_screen.dart';
+import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
+import 'providers/user_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,18 +21,26 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<AuthProvider>(
-          create: (_) =>
-              AuthProvider(AuthController(AuthService()))..loadCurrentUser(),
-        ),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         theme: MarketTheme.light,
         darkTheme: MarketTheme.dark,
-        home: AuthWrapper(),
+        home: StreamBuilder<User?>(
+          stream: authService.authStateChanges,
+          builder: (context, snapshot) {
+            // if (snapshot.connectionState == ConnectionState.waiting) {
+            //   return const SplashScreen();
+            // }
+
+            if (snapshot.hasData) {
+              return const HomeScreen();
+            }
+
+            return const LoginScreen();
+          },
+        ),
       ),
     );
   }

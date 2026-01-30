@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/presentation/auth/register_screen.dart';
+import 'package:marketly/core/data_instance/auth_locator.dart';
+import 'package:marketly/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,12 +12,70 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _loginScreenState extends State<LoginScreen> {
+  final _authService = authService;
+
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  String? _emailError;
+  String? _passError;
+  String? _errorMsg;
+  bool isLoading = false;
   bool hiddenPass = true;
 
   void _showPass() {
     setState(() {
       hiddenPass = !hiddenPass;
     });
+  }
+
+  Future<void> _login() async {
+    setState(() {
+      isLoading = true;
+      _emailError = null;
+      _passError = null;
+      _errorMsg = null;
+    });
+    if (_emailController.text.isEmpty) {
+      setState(() {
+        _emailError = 'Please enter email!';
+      });
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      setState(() {
+        _passError = 'Please enter password!';
+      });
+      return;
+    }
+
+    try {
+      final user = await _authService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (user != null) {
+        context.read<UserProvider>().setUser(user);
+        // navigation handled by authStateChanges
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMsg = e.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,9 +124,9 @@ class _loginScreenState extends State<LoginScreen> {
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                     textInputAction: TextInputAction.next,
+                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: 'Email',
-
                       hintStyle: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
@@ -83,11 +144,28 @@ class _loginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  _emailError != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _emailError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 20.0),
 
                   // Password Text Field
                   TextField(
-                    obscureText: hiddenPass, // Hides password
+                    obscureText: hiddenPass,
+                    controller: _passwordController,
+                    onSubmitted: (value) => _login(),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
@@ -120,13 +198,30 @@ class _loginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40.0),
+                  _passError != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                            top: 6,
+                            bottom: 18,
+                            left: 6,
+                          ),
+                          child: Align(
+                            alignment:
+                                Alignment.centerLeft, // aligns text to the left
+                            child: Text(
+                              _passError!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(height: 40.0),
 
                   // Sign In Button
                   ElevatedButton(
-                    onPressed: () {
-                      // Handle login logic here
-                    },
+                    onPressed: () => _login(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(
                         context,
@@ -145,7 +240,20 @@ class _loginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
+                  if (_errorMsg != null)
+                    Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Align(
+                        child: Text(
+                          _errorMsg!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
 
                   // Register link
                   Row(

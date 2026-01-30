@@ -15,6 +15,8 @@ class AuthService {
       if (!doc.exists || doc.data() == null) return null;
 
       return UserModel.fromMap(doc.data()!, uid);
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Error fetching user data');
     } catch (e) {
       throw Exception('Failed to load user profile');
     }
@@ -36,7 +38,13 @@ class AuthService {
 
       return await getUserProfile(user.uid);
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Login failed');
+      if (e.code == 'wrong-password' ||
+          e.code == 'user-not-found' ||
+          e.code == 'invalid-credential') {
+        throw Exception('Invalid email or password');
+      } else {
+        throw Exception('from auth_service:${e.message}');
+      }
     } catch (e) {
       throw Exception('Somthing went wrong during login!!');
     }
@@ -49,6 +57,7 @@ class AuthService {
     required String password,
     required String phone,
     required String address,
+    required String profilePic,
   }) async {
     try {
       final cred = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -66,6 +75,7 @@ class AuthService {
         phone: phone,
         address: address,
         role: 'user',
+        profilePic: profilePic,
       );
 
       await _firestore.collection('users').doc(user.uid).set(userModel.toMap());
