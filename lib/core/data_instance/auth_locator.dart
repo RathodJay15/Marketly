@@ -1,3 +1,3 @@
-import 'package:marketly/data/services/auth/auth_service.dart';
+import 'package:marketly/data/services/auth_service.dart';
 
 final AuthService authService = AuthService();

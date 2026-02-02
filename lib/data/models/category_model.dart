@@ -1,19 +1,28 @@
+// models/category_model.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CategoryModel {
-  final String? id;
-  final String? name;
-  final String? image;
+  final String slug;
+  final String title;
+  final bool isActive;
+  final int order;
 
-  CategoryModel({required this.id, required this.name, required this.image});
+  CategoryModel({
+    required this.slug,
+    required this.title,
+    required this.isActive,
+    required this.order,
+  });
 
-  factory CategoryModel.fromMap(Map<String, dynamic> map, String id) {
+  factory CategoryModel.fromFirestore(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = doc.data();
     return CategoryModel(
-      id: id,
-      name: map['name'] ?? '',
-      image: map['image'] ?? '',
+      slug: data['slug'],
+      title: data['title'],
+      isActive: data['isActive'],
+      order: data['order'],
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {'name': name, 'image': image};
   }
 }

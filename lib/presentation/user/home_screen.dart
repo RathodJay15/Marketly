@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:marketly/data/services/auth/auth_service.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
+// import 'package:marketly/data/migration/migrate_products.dart';
+// import 'package:marketly/data/migration/migrate_category.dart';
+import 'package:marketly/data/services/auth_service.dart';
+import 'package:marketly/presentation/widgets/category_chip.dart';
+import 'package:marketly/providers/category_provider.dart';
+import 'package:marketly/providers/product_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:material_icons/';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,15 +23,39 @@ class _homeScreenState extends State<HomeScreen>
   @override
   bool get wantKeepAlive => true; //  keeps state alive in IndexedStack
 
+  final TextEditingController _textSearchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+  bool _isSearching = false;
+
   int _currenetIndex = 0;
 
   @override
   void initState() {
     super.initState();
-
-    // API call goes here (pachi)
-    // context.read<HomeController>().fetchHomeData();
+    // migrateCategories();
+    // migrateProducts();
+    Future.microtask(() {
+      context.read<CategoryProvider>().loadCategories();
+      context.read<ProductProvider>().fetchAllProducts();
+    });
   }
+
+  // Migration Code-----------------------------------------------------
+  // void migrateCategories() async {
+  //   await CategoryMigrationService().migrateCategoriesToFirebase();
+  //   ScaffoldMessenger.of(
+  //     context,
+  //   ).showSnackBar(SnackBar(content: Text('Migration completed')));
+  // }
+
+  // void migrateProducts() async {
+  //   await ProductMigrationService().migrateProducts();
+  //   ScaffoldMessenger.of(
+  //     context,
+  //   ).showSnackBar(SnackBar(content: Text('Migration completed')));
+  // }
+  //--------------------------------------------------------------------
 
   void onNavigation(index) {
     setState(() {
@@ -32,8 +64,34 @@ class _homeScreenState extends State<HomeScreen>
   }
 
   Future<void> onLogout() async {
-    await AuthService().logout(); // Firebase session
-    context.read<UserProvider>().clearUser(); // App state
+    await AuthService().logout(); // Ends Firebase session
+    context.read<UserProvider>().clearUser(); // Clears App state
+  }
+
+  void _startSearch() {
+    setState(() => _isSearching = true);
+    _searchFocusNode.requestFocus();
+  }
+
+  void _onSearchPressed(value) async {
+    FocusScope.of(context).unfocus();
+  }
+
+  void _closeOrClearSearch() {
+    if (_textSearchController.text.isNotEmpty) {
+      _textSearchController.clear();
+    } else {
+      _searchFocusNode.unfocus();
+      setState(() => _isSearching = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _textSearchController.dispose();
+    _searchFocusNode.dispose();
   }
 
   @override
@@ -41,6 +99,7 @@ class _homeScreenState extends State<HomeScreen>
     super.build(context); // required for keepAlive
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(child: _buildBody()),
       bottomNavigationBar: _navBar(_currenetIndex),
@@ -54,15 +113,35 @@ class _homeScreenState extends State<HomeScreen>
         // await context.read<HomeController>().fetchHomeData();
       },
       child: ListView(
-        padding: const EdgeInsets.all(20),
         children: [
-          _buildProfileCard(),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: _buildProfileCard(),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildSearchSection(),
+          ),
           const SizedBox(height: 16),
-          _buildSearchSection(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: CategoryChips(),
+          ),
           const SizedBox(height: 16),
-          _buildSectionTitle("Featured Products"),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildTitleSection(AppConstants.ourProducts),
+          ),
           const SizedBox(height: 12),
-          _buildProductList(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildProductList(),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildTitleSection(AppConstants.cartProducts),
+          ),
         ],
       ),
     );
@@ -77,14 +156,14 @@ class _homeScreenState extends State<HomeScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hello, Welcome 👋",
+              AppConstants.welcomeMsg,
               style: TextStyle(
                 fontSize: 15,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
             Text(
-              "Username",
+              context.read<UserProvider>().user!.name ?? 'username',
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
                 fontSize: 20,
@@ -114,21 +193,49 @@ class _homeScreenState extends State<HomeScreen>
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
+            controller: _textSearchController,
+            focusNode: _searchFocusNode,
+            onTap: _startSearch,
+            onSubmitted: (value) => _onSearchPressed(value),
+
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(
-              hintText: 'Search Products',
+              hintText: AppConstants.searchProducts,
               hintStyle: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
               fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
               filled: true,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
               prefixIcon: Icon(
                 Icons.search,
                 color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_isSearching)
+                    IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                      onPressed: _closeOrClearSearch,
+                    ),
+                  TextButton(
+                    onPressed: () =>
+                        _onSearchPressed(_textSearchController.text),
+                    child: Text(
+                      'Search',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -150,69 +257,148 @@ class _homeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildTitleSection(String title) {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
+        fontSize: 20,
+        fontWeight: FontWeight.w900,
         color: Theme.of(context).colorScheme.onInverseSurface,
       ),
     );
   }
 
   Widget _buildProductList() {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 8,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-          ),
-          child: Row(
-            children: [
-              Container(
-                height: 60,
-                width: 60,
+    return SizedBox(
+      height: 300,
+      child: Consumer<ProductProvider>(
+        builder: (context, productProvider, _) {
+          if (productProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (productProvider.products.isEmpty) {
+            return const Center(child: Text('No products found'));
+          }
+
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: productProvider.products.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final product = productProvider.products[index];
+
+              return Container(
+                width: 190,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    width: 1,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.image),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: [
-                    Text(
-                      "Product Name",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onInverseSurface,
+                    InkWell(
+                      splashColor: Theme.of(
+                        context,
+                      ).colorScheme.onInverseSurface.withAlpha(20),
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () {
+                        ////navigation
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// IMAGE
+                            Expanded(
+                              child: Center(
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      height: 150,
+                                      width: 150,
+                                      decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(90),
+                                          bottomRight: Radius.circular(90),
+                                          topRight: Radius.circular(10),
+                                          bottomLeft: Radius.circular(10),
+                                        ),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary
+                                            .withValues(alpha: .30),
+                                      ),
+                                    ),
+                                    CachedNetworkImage(
+                                      imageUrl: product.thumbnail,
+                                      height: 120,
+                                      fit: BoxFit.contain,
+                                      placeholder: (_, __) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (_, __, ___) => Container(
+                                        color: Colors.grey.shade200,
+                                        child: const Icon(
+                                          Icons.image_not_supported,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            /// TITLE
+                            Text(
+                              product.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onInverseSurface,
+                              ),
+                            ),
+
+                            /// CATEGORY
+                            Text(
+                              product.category,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+
+                            /// PRICE
+                            Text(
+                              '\$ ${product.price.toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onInverseSurface,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text("₹999", style: TextStyle(color: Colors.black54)),
                   ],
                 ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.favorite_border,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -242,7 +428,7 @@ class _homeScreenState extends State<HomeScreen>
               onTap: (index) {
                 onNavigation(index);
               },
-              backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+              backgroundColor: Colors.transparent,
               selectedItemColor: Theme.of(context).colorScheme.primary,
               unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
               selectedLabelStyle: TextStyle(fontWeight: FontWeight.w900),
@@ -254,28 +440,28 @@ class _homeScreenState extends State<HomeScreen>
                     padding: EdgeInsets.only(top: 2, bottom: 2),
                     child: Icon(Icons.home, size: 20),
                   ),
-                  label: 'Home',
+                  label: AppConstants.home,
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
                     padding: EdgeInsets.only(top: 2, bottom: 2),
                     child: Icon(Icons.search, size: 20),
                   ),
-                  label: 'Search',
+                  label: AppConstants.search,
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
                     padding: EdgeInsets.only(top: 2, bottom: 2),
                     child: Icon(Icons.shopping_cart_outlined, size: 20),
                   ),
-                  label: 'Cart',
+                  label: AppConstants.cart,
                 ),
                 BottomNavigationBarItem(
                   icon: Padding(
                     padding: EdgeInsets.only(top: 2, bottom: 2),
                     child: Icon(Icons.person, size: 20),
                   ),
-                  label: 'Profile',
+                  label: AppConstants.profile,
                 ),
               ],
             ),

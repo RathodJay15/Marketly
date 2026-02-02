@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:marketly/data/services/auth/auth_service.dart';
+import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 

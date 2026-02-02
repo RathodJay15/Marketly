@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class MarketTheme {
   MarketTheme._();
-
   static ThemeData light = ThemeData(
     brightness: Brightness.light,
     textSelectionTheme: TextSelectionThemeData(
@@ -28,7 +27,11 @@ class MarketTheme {
       onSurfaceVariant: const Color.fromARGB(255, 255, 225, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 0, 0, 0), //
     ),
-
+    splashColor: const Color.fromARGB(255, 225, 225, 225),
+    scrollbarTheme: ScrollbarThemeData(
+      thumbColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
+      trackColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
+    ),
     useMaterial3: true,
   );
 
@@ -56,6 +59,16 @@ class MarketTheme {
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
       onSurfaceVariant: const Color.fromARGB(255, 255, 225, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //
+    ),
+    splashColor: const Color.fromARGB(255, 66, 66, 66),
+
+    scrollbarTheme: ScrollbarThemeData(
+      thumbColor: WidgetStateProperty.all(
+        const Color.fromARGB(255, 255, 255, 255),
+      ),
+      trackColor: WidgetStateProperty.all(
+        const Color.fromARGB(255, 255, 255, 255),
+      ),
     ),
     useMaterial3: true,
   );

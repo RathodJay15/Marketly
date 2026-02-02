@@ -1,46 +1,78 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ProductModel {
-  final String? id;
-  final String? name;
-  final double? price;
-  final String? description;
-  final String? categoryId;
-  final List<String>? images;
+  final String title;
+  final String description;
+  final String category;
+  final double price;
+  final double discountPercentage;
+  final double rating;
   final int? stock;
-  final double? rating;
+  final List<String>? tags;
+  final String brand;
+  final double weight;
+  final Map<String, double> dimensions;
+  final List<String> images;
+  final String thumbnail;
 
   ProductModel({
-    required this.id,
-    required this.name,
-    required this.price,
+    required this.title,
     required this.description,
-    required this.categoryId,
-    required this.images,
-    required this.stock,
+    required this.category,
+    required this.price,
+    required this.discountPercentage,
     required this.rating,
+    this.stock,
+    this.tags,
+    required this.brand,
+    required this.weight,
+    required this.dimensions,
+    required this.images,
+    required this.thumbnail,
   });
 
-  factory ProductModel.fromMap(Map<String, dynamic> map, String id) {
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final dimensionsJson = json['dimensions'] as Map<String, dynamic>?;
+
     return ProductModel(
-      id: id,
-      name: map['name'] ?? '',
-      price: (map['price'] ?? 0.0 as num).toDouble(),
-      description: map['description'] ?? '',
-      categoryId: map['categoryId'] ?? '',
-      images: List<String>.from(map['images'] ?? ''),
-      stock: map['stock'] ?? 0,
-      rating: (map['rating'] ?? 0.0 as num).toDouble(),
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      category: json['category'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      discountPercentage:
+          (json['discountPercentage'] as num?)?.toDouble() ?? 0.0,
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
+      stock: json['stock'] as int?,
+      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
+      brand: json['brand'] as String? ?? '',
+      weight: (json['weight'] as num?)?.toDouble() ?? 0.0,
+      dimensions: {
+        'width': (dimensionsJson?['width'] as num?)?.toDouble() ?? 0.0,
+        'height': (dimensionsJson?['height'] as num?)?.toDouble() ?? 0.0,
+        'depth': (dimensionsJson?['depth'] as num?)?.toDouble() ?? 0.0,
+      },
+      images:
+          (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      thumbnail: json['thumbnail'] as String? ?? '',
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'name': name,
-      'price': price,
+      'title': title,
       'description': description,
-      'categoryId': categoryId,
-      'images': images,
-      'stock': stock,
+      'category': category,
+      'price': price,
+      'discountPercentage': discountPercentage,
       'rating': rating,
+      if (stock != null) 'stock': stock,
+      if (tags != null) 'tags': tags,
+      'brand': brand,
+      'weight': weight,
+      'dimensions': dimensions,
+      'images': images,
+      'thumbnail': thumbnail,
+      'createdAt': FieldValue.serverTimestamp(),
     };
   }
 }
