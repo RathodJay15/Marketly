@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
-import 'package:marketly/data/migration/migrate_category.dart';
 import 'package:marketly/presentation/admin/dash_board_screen.dart';
 import 'package:marketly/presentation/auth/login_screen.dart';
 import 'package:marketly/presentation/user/home_screen.dart';

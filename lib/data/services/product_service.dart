@@ -6,11 +6,20 @@ class ProductService {
   final String _collection = 'products';
 
   // Fetch all products
-  Future<List<ProductModel>> getAllProducts() async {
-    final snapshot = await _firestore.collection(_collection).get();
+  Future<List<ProductModel>> getAllProducts({int? limit}) async {
+    Query query = _firestore.collection(_collection);
+
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+
+    final snapshot = await query.get();
 
     return snapshot.docs
-        .map((doc) => ProductModel.fromJson(doc.data()))
+        .map(
+          (doc) =>
+              ProductModel.fromJson(doc.data() as Map<String, dynamic>, doc.id),
+        )
         .toList();
   }
 
@@ -22,7 +31,7 @@ class ProductService {
         .get();
 
     return snapshot.docs
-        .map((doc) => ProductModel.fromJson(doc.data()))
+        .map((doc) => ProductModel.fromJson(doc.data(), doc.id))
         .toList();
   }
 
@@ -52,7 +61,7 @@ class ProductService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map((doc) => ProductModel.fromJson(doc.data()))
+              .map((doc) => ProductModel.fromJson(doc.data(), doc.id))
               .toList(),
         );
   }
@@ -65,7 +74,7 @@ class ProductService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map((doc) => ProductModel.fromJson(doc.data()))
+              .map((doc) => ProductModel.fromJson(doc.data(), doc.id))
               .toList(),
         );
   }

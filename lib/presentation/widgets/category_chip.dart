@@ -17,7 +17,6 @@ class CategoryChips extends StatelessWidget {
         return SizedBox(
           height: 40,
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
             itemCount: provider.categories.length,
             separatorBuilder: (_, __) => const SizedBox(width: 8),
@@ -42,7 +41,6 @@ class CategoryChips extends StatelessWidget {
                 surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
-
                   side: BorderSide(
                     width: 1,
                     color: Theme.of(context).colorScheme.onPrimary,

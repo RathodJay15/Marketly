@@ -7,4 +7,5 @@ class AppConstants {
   static const String cartProducts = "Cart Products";
   static const String profile = "Profile";
   static const String ourProducts = "Our Products";
+  static const String seeAll = "See all";
 }

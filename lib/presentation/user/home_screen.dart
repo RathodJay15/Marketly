@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/models/product_model.dart';
 // import 'package:marketly/data/migration/migrate_products.dart';
 // import 'package:marketly/data/migration/migrate_category.dart';
 import 'package:marketly/data/services/auth_service.dart';
+import 'package:marketly/presentation/user/cart_screen.dart';
+import 'package:marketly/presentation/user/profile_screen.dart';
+import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
+import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:material_icons/';
 
 class HomeScreen extends StatefulWidget {
@@ -37,7 +41,9 @@ class _homeScreenState extends State<HomeScreen>
     // migrateProducts();
     Future.microtask(() {
       context.read<CategoryProvider>().loadCategories();
-      context.read<ProductProvider>().fetchAllProducts();
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductProvider>().fetchHomeProducts(limit: 10);
     });
   }
 
@@ -69,12 +75,12 @@ class _homeScreenState extends State<HomeScreen>
   }
 
   void _startSearch() {
+    onNavigation(1);
     setState(() => _isSearching = true);
-    _searchFocusNode.requestFocus();
   }
 
   void _onSearchPressed(value) async {
-    FocusScope.of(context).unfocus();
+    onNavigation(1);
   }
 
   void _closeOrClearSearch() {
@@ -101,7 +107,17 @@ class _homeScreenState extends State<HomeScreen>
     return Scaffold(
       extendBody: true,
       backgroundColor: Theme.of(context).colorScheme.primary,
-      body: SafeArea(child: _buildBody()),
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currenetIndex,
+          children: [
+            _buildBody(),
+            SearchProductsScreen(),
+            CartScreen(),
+            ProfileScreen(),
+          ],
+        ),
+      ),
       bottomNavigationBar: _navBar(_currenetIndex),
     );
   }
@@ -127,21 +143,25 @@ class _homeScreenState extends State<HomeScreen>
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: CategoryChips(),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildTitleSection(AppConstants.ourProducts, 1),
+          ),
+          // const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildProductCardList(),
+          ),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildTitleSection(AppConstants.ourProducts),
+            child: _buildTitleSection(AppConstants.cartProducts, 2),
           ),
-          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildProductList(),
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+            child: _buildCartList(),
           ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildTitleSection(AppConstants.cartProducts),
-          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -185,90 +205,85 @@ class _homeScreenState extends State<HomeScreen>
   }
 
   Widget _buildSearchSection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Expanded(
-          child: TextField(
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onInverseSurface,
+    return TextField(
+      style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
+      controller: _textSearchController,
+      focusNode: _searchFocusNode,
+      onTap: _startSearch,
+      onSubmitted: (value) => _onSearchPressed(value),
+      // enabled: false,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        hintText: AppConstants.searchProducts,
+        hintStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onInverseSurface,
+        ),
+        fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        filled: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        prefixIcon: Icon(
+          Icons.search,
+          color: Theme.of(context).colorScheme.onInverseSurface,
+        ),
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isSearching)
+              IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+                onPressed: _closeOrClearSearch,
+              ),
+            TextButton(
+              onPressed: () => _onSearchPressed(_textSearchController.text),
+              child: Text(
+                'Search',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+              ),
             ),
-            controller: _textSearchController,
-            focusNode: _searchFocusNode,
-            onTap: _startSearch,
-            onSubmitted: (value) => _onSearchPressed(value),
+          ],
+        ),
+      ),
+    );
+  }
 
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              hintText: AppConstants.searchProducts,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-              fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_isSearching)
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                      ),
-                      onPressed: _closeOrClearSearch,
-                    ),
-                  TextButton(
-                    onPressed: () =>
-                        _onSearchPressed(_textSearchController.text),
-                    child: Text(
-                      'Search',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Widget _buildTitleSection(String title, int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w900,
+            color: Theme.of(context).colorScheme.onInverseSurface,
           ),
         ),
-        Container(
-          padding: EdgeInsets.all(8),
-          margin: EdgeInsets.only(left: 10),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            Icons.filter_alt_outlined,
-            color: Theme.of(context).colorScheme.primary,
-            size: 40,
+        TextButton(
+          onPressed: () => onNavigation(index),
+          child: Text(
+            AppConstants.seeAll,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontSize: 18,
+              decoration: TextDecoration.underline,
+              decorationColor: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTitleSection(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w900,
-        color: Theme.of(context).colorScheme.onInverseSurface,
-      ),
-    );
-  }
-
-  Widget _buildProductList() {
+  Widget _buildProductCardList() {
     return SizedBox(
       height: 300,
       child: Consumer<ProductProvider>(
@@ -277,123 +292,73 @@ class _homeScreenState extends State<HomeScreen>
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (productProvider.products.isEmpty) {
+          if (productProvider.tenProducts.isEmpty) {
             return const Center(child: Text('No products found'));
           }
 
+          final products = productProvider.tenProducts;
+
           return ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: productProvider.products.length,
+            itemCount: products.length + 1, // +1 for See All
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final product = productProvider.products[index];
+              /// LAST CARD → SEE ALL
+              if (index == products.length) {
+                return SizedBox(
+                  width: 100,
+                  child: SeeAllCard(onTap: () => onNavigation(1)),
+                );
+              }
 
-              return Container(
-                width: 190,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Stack(
-                  children: [
-                    InkWell(
-                      splashColor: Theme.of(
-                        context,
-                      ).colorScheme.onInverseSurface.withAlpha(20),
-                      borderRadius: BorderRadius.circular(10),
-                      onTap: () {
-                        ////navigation
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            /// IMAGE
-                            Expanded(
-                              child: Center(
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    Container(
-                                      height: 150,
-                                      width: 150,
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(90),
-                                          bottomRight: Radius.circular(90),
-                                          topRight: Radius.circular(10),
-                                          bottomLeft: Radius.circular(10),
-                                        ),
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                            .withValues(alpha: .30),
-                                      ),
-                                    ),
-                                    CachedNetworkImage(
-                                      imageUrl: product.thumbnail,
-                                      height: 120,
-                                      fit: BoxFit.contain,
-                                      placeholder: (_, __) =>
-                                          const CircularProgressIndicator(),
-                                      errorWidget: (_, __, ___) => Container(
-                                        color: Colors.grey.shade200,
-                                        child: const Icon(
-                                          Icons.image_not_supported,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+              /// NORMAL PRODUCT CARD
+              final product = products[index];
 
-                            const SizedBox(height: 8),
+              return ProductCard(
+                product: product,
+                onTap: () => onNavigation(1),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
 
-                            /// TITLE
-                            Text(
-                              product.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onInverseSurface,
-                              ),
-                            ),
+  Widget _buildCartList() {
+    return SizedBox(
+      height: 160,
+      child: Consumer<ProductProvider>(
+        builder: (context, productProvider, _) {
+          if (productProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                            /// CATEGORY
-                            Text(
-                              product.category,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                              ),
-                            ),
+          if (productProvider.tenProducts.isEmpty) {
+            return const Center(child: Text('No products found'));
+          }
 
-                            /// PRICE
-                            Text(
-                              '\$ ${product.price.toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onInverseSurface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+          final products = productProvider.tenProducts;
+
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: products.length + 1, // +1 for See All
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              /// LAST CARD → SEE ALL
+              if (index == products.length) {
+                return SizedBox(
+                  width: 100,
+                  child: SeeAllCard(onTap: () => onNavigation(2)),
+                );
+              }
+
+              /// NORMAL PRODUCT CARD
+              final product = products[index];
+
+              return CartProductCard(
+                product: product,
+                onTap: () => onNavigation(2),
               );
             },
           );

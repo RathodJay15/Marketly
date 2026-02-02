@@ -5,9 +5,15 @@ import 'package:marketly/data/services/product_service.dart';
 class ProductProvider extends ChangeNotifier {
   final ProductService _productService = ProductService();
 
+  List<ProductModel> _homeProducts = [];
+  List<ProductModel> _allProducts = [];
+
+  List<ProductModel> get homeProducts => _homeProducts;
+  List<ProductModel> get allProducts => _allProducts;
+
   // State
-  List<ProductModel> _products = [];
-  List<ProductModel> get products => _products;
+  List<ProductModel> get products => _allProducts;
+  List<ProductModel> get tenProducts => _homeProducts;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -15,12 +21,25 @@ class ProductProvider extends ChangeNotifier {
   String? _error;
   String? get error => _error;
 
-  // Fetch all products
+  // Fetch home products
+  Future<void> fetchHomeProducts({int? limit}) async {
+    _setLoading(true);
+    try {
+      _homeProducts = await _productService.getAllProducts(limit: limit);
+      print('🔥 PRODUCTS COUNT: ${_homeProducts.length}');
+      _error = null;
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Fetch All products
   Future<void> fetchAllProducts() async {
     _setLoading(true);
     try {
-      _products = await _productService.getAllProducts();
-      print('🔥 PRODUCTS COUNT: ${_products.length}');
+      _allProducts = await _productService.getAllProducts();
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -30,10 +49,10 @@ class ProductProvider extends ChangeNotifier {
   }
 
   // Fetch products by category
-  Future<void> fetchProductsByCategory(String category) async {
+  Future<void> fetchProductsByCategory(String categorySlug) async {
     _setLoading(true);
     try {
-      _products = await _productService.getProductsByCategory(category);
+      _allProducts = await _productService.getProductsByCategory(categorySlug);
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -68,7 +87,7 @@ class ProductProvider extends ChangeNotifier {
   Future<void> deleteProduct(String productId) async {
     try {
       await _productService.deleteProduct(productId);
-      _products.removeWhere((p) => p == productId);
+      _allProducts.removeWhere((p) => p == productId);
       notifyListeners();
     } catch (e) {
       _error = e.toString();

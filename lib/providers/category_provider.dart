@@ -5,6 +5,8 @@ import 'package:marketly/data/services/category_service.dart';
 class CategoryProvider with ChangeNotifier {
   final CategoryService _service = CategoryService();
 
+  String? selectedCategory;
+
   List<CategoryModel> _categories = [];
   CategoryModel? _selectedCategory;
 
@@ -12,7 +14,7 @@ class CategoryProvider with ChangeNotifier {
 
   List<CategoryModel> get categories => _categories;
 
-  CategoryModel? get selectedCategory => _selectedCategory;
+  // CategoryModel? get selectedCategory => _selectedCategory;
 
   String? get selectedCategorySlug => _selectedCategory?.slug;
 
@@ -24,6 +26,11 @@ class CategoryProvider with ChangeNotifier {
   }
 
   // ---------------- UI calling ----------------
+
+  void setCategory(String? category) {
+    selectedCategory = category;
+    notifyListeners();
+  }
 
   void selectCategory(CategoryModel category) {
     if (_selectedCategory?.slug == category.slug) {
