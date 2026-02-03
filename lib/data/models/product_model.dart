@@ -32,22 +32,26 @@ class ProductModel {
     required this.images,
     required this.thumbnail,
   });
+  String get searchableText {
+    final tagText = (tags ?? []).join(' ');
+    return '$title $tagText'.toLowerCase();
+  }
 
   factory ProductModel.fromJson(Map<String, dynamic> json, String id) {
     final dimensionsJson = json['dimensions'] as Map<String, dynamic>?;
 
     return ProductModel(
       id: id,
-      title: json['title'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      category: json['category'] as String? ?? '',
+      title: json['title'] as String? ?? 'NAN',
+      description: json['description'] as String? ?? 'NAN',
+      category: json['category'] as String? ?? 'NAN',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       discountPercentage:
           (json['discountPercentage'] as num?)?.toDouble() ?? 0.0,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       stock: json['stock'] as int?,
       tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
-      brand: json['brand'] as String? ?? '',
+      brand: json['brand'] as String? ?? 'NAN',
       weight: (json['weight'] as num?)?.toDouble() ?? 0.0,
       dimensions: {
         'width': (dimensionsJson?['width'] as num?)?.toDouble() ?? 0.0,
@@ -56,7 +60,7 @@ class ProductModel {
       },
       images:
           (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      thumbnail: json['thumbnail'] as String? ?? '',
+      thumbnail: json['thumbnail'] as String? ?? 'NAN',
     );
   }
 

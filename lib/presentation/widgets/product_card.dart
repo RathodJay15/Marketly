@@ -21,11 +21,7 @@ class ProductCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          InkWell(
-            splashColor: Theme.of(
-              context,
-            ).colorScheme.onInverseSurface.withAlpha(20),
-            borderRadius: BorderRadius.circular(10),
+          GestureDetector(
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.all(15),
@@ -58,8 +54,6 @@ class ProductCard extends StatelessWidget {
                           height: 120,
                           width: 120,
                           fit: BoxFit.fill,
-                          placeholder: (_, __) =>
-                              const CircularProgressIndicator(),
                           errorWidget: (_, __, ___) => Container(
                             color: Theme.of(context).colorScheme.onPrimary,
                             child: const Icon(Icons.image_not_supported),
@@ -133,11 +127,7 @@ class CartProductCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          InkWell(
-            splashColor: Theme.of(
-              context,
-            ).colorScheme.onInverseSurface.withAlpha(20),
-            borderRadius: BorderRadius.circular(10),
+          GestureDetector(
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -170,8 +160,6 @@ class CartProductCard extends StatelessWidget {
                           height: 60,
                           width: 60,
                           fit: BoxFit.contain,
-                          placeholder: (_, __) =>
-                              const CircularProgressIndicator(),
                           errorWidget: (_, __, ___) => Container(
                             color: Theme.of(context).colorScheme.onPrimary,
                             child: const Icon(Icons.image_not_supported),

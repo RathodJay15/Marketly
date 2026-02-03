@@ -66,7 +66,7 @@ class ProductService {
         );
   }
 
-  /// 🔹 Stream products by category (real-time)
+  // Stream products by category (real-time)
   Stream<List<ProductModel>> streamProductsByCategory(String category) {
     return _firestore
         .collection(_collection)

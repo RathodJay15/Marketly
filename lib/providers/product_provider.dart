@@ -7,9 +7,11 @@ class ProductProvider extends ChangeNotifier {
 
   List<ProductModel> _homeProducts = [];
   List<ProductModel> _allProducts = [];
+  List<ProductModel> _searchResults = [];
 
   List<ProductModel> get homeProducts => _homeProducts;
   List<ProductModel> get allProducts => _allProducts;
+  List<ProductModel> get searchResults => _searchResults;
 
   // State
   List<ProductModel> get products => _allProducts;
@@ -23,6 +25,7 @@ class ProductProvider extends ChangeNotifier {
 
   String? _error;
   String? get error => _error;
+  bool get isSearching => _searchResults.isNotEmpty;
 
   // Fetch home products
   Future<void> fetchHomeProducts({int? limit}) async {
@@ -70,6 +73,35 @@ class ProductProvider extends ChangeNotifier {
       _isSearchLoading = false;
       notifyListeners();
     }
+  }
+
+  // Search Products
+  void searchProducts(String query) {
+    final words = query
+        .toLowerCase()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+
+    if (words.isEmpty) {
+      _searchResults = [];
+      notifyListeners();
+      return;
+    }
+
+    _searchResults = _allProducts.where((product) {
+      final titleWords = product.title.toLowerCase().split(RegExp(r'\s+'));
+
+      // Every searched word must exist in title words
+      return words.every((word) => titleWords.contains(word));
+    }).toList();
+
+    notifyListeners();
+  }
+
+  void clearSearchResult() {
+    _searchResults = [];
+    notifyListeners();
   }
 
   // Add product

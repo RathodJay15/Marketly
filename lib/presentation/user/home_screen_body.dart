@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
+import 'package:marketly/presentation/widgets/product_details.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
@@ -17,8 +18,6 @@ class HomeScreenBody extends StatefulWidget {
 class _homeScreenBodyState extends State<HomeScreenBody> {
   final TextEditingController _textSearchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-
-  bool _isSearching = false;
 
   @override
   void initState() {
@@ -38,24 +37,6 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
     ).setScreenIndex(index);
   }
 
-  void _startSearch() {
-    onNavigation(1);
-    setState(() => _isSearching = true);
-  }
-
-  void _onSearchPressed(value) async {
-    onNavigation(1);
-  }
-
-  void _closeOrClearSearch() {
-    if (_textSearchController.text.isNotEmpty) {
-      _textSearchController.clear();
-    } else {
-      _searchFocusNode.unfocus();
-      setState(() => _isSearching = false);
-    }
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -65,47 +46,38 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        // pull to refresh API
-        // await context.read<HomeController>().fetchHomeData();
-      },
-      child: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: _buildProfileCard(),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildSearchSection(),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildCategoryChips(),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildTitleSection(AppConstants.ourProducts, 1),
-          ),
-          // const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildProductCardList(),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: _buildTitleSection(AppConstants.cartProducts, 2),
-          ),
-          Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
-            child: _buildCartList(),
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
+    return ListView(
+      children: [
+        Padding(padding: const EdgeInsets.all(20), child: _buildProfileCard()),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildSearchSection(),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildCategoryChips(),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildTitleSection(AppConstants.ourProducts, 1),
+        ),
+        // const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildProductCardList(),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildTitleSection(AppConstants.cartProducts, 2),
+        ),
+        Padding(
+          padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+          child: _buildCartList(),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 
@@ -147,50 +119,40 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Widget _buildSearchSection() {
-    return TextField(
-      style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
-      controller: _textSearchController,
-      focusNode: _searchFocusNode,
-      onTap: _startSearch,
-      onSubmitted: (value) => _onSearchPressed(value),
-      // enabled: false,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-        hintText: AppConstants.searchProducts,
-        hintStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onInverseSurface,
-        ),
-        fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
-        filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        prefixIcon: Icon(
-          Icons.search,
-          color: Theme.of(context).colorScheme.onInverseSurface,
-        ),
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_isSearching)
-              IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-                onPressed: _closeOrClearSearch,
-              ),
-            TextButton(
-              onPressed: () => _onSearchPressed(_textSearchController.text),
-              child: Text(
-                'Search',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
+    return GestureDetector(
+      onTap: () => context.read<NavigationProvider>().goToSearch(focus: true),
+      child: TextField(
+        style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
+        enabled: false,
+        decoration: InputDecoration(
+          hintText: AppConstants.searchProducts,
+          hintStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+          fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
+          filled: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+          suffixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 15),
+                child: Text(
+                  AppConstants.search,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -298,7 +260,13 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
               return ProductCard(
                 product: product,
-                onTap: () => onNavigation(1),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        ProductDetailsScreen(product: products[index]),
+                  ),
+                ),
               );
             },
           );
