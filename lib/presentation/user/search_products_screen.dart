@@ -21,23 +21,26 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
 
   bool _isSearching = false;
 
+  String? _lastCategorySlug;
+
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final categoryProvider = context.read<CategoryProvider>();
-      final productProvider = context.read<ProductProvider>();
+    final categoryProvider = context.read<CategoryProvider>();
+    final productProvider = context.read<ProductProvider>();
 
-      final slug = categoryProvider.selectedCategorySlug;
+    final slug = categoryProvider.selectedCategorySlug;
+
+    if (slug != _lastCategorySlug) {
+      _lastCategorySlug = slug;
 
       if (slug != null) {
         productProvider.fetchProductsByCategory(slug);
       } else {
         productProvider.fetchAllProducts();
       }
-    });
+    }
   }
 
   void _startSearch() {
@@ -84,46 +87,53 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
         // pull to refresh API
         // await context.read<HomeController>().fetchHomeData();
       },
-      child: Consumer<ProductProvider>(
-        builder: (context, productProvider, _) {
-          final products = productProvider.products;
-
-          return Stack(
+      child: Stack(
+        children: [
+          ListView(
+            controller: _scrollController,
             children: [
-              ListView(
-                controller: _scrollController,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: _buildSearchSection(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: CategoryChips(),
-                  ),
-                  const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: _buildSearchSection(),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildCategoryChips(),
+              ),
+              const SizedBox(height: 20),
 
-                  _buildProductCardGride(products),
-                ],
+              Consumer<CategoryProvider>(
+                builder: (context, categoryProvider, child) {
+                  final productProvider = context.read<ProductProvider>();
+                  final slug = categoryProvider.selectedCategorySlug;
+
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (slug != null) {
+                      productProvider.fetchProductsByCategory(slug);
+                    } else {
+                      productProvider.fetchAllProducts();
+                    }
+                  });
+                  return _buildProductCardGride();
+                },
               ),
-              Positioned(
-                right: 20,
-                bottom: 20,
-                child: FloatingActionButton(
-                  backgroundColor: Theme.of(
-                    context,
-                  ).colorScheme.onInverseSurface,
-                  foregroundColor: Theme.of(context).colorScheme.primary,
-                  splashColor: Theme.of(context).colorScheme.onPrimary,
-                  onPressed: () {
-                    scrollToTop();
-                  },
-                  child: Icon(Icons.move_up),
-                ),
-              ),
+              SizedBox(height: 10),
             ],
-          );
-        },
+          ),
+          Positioned(
+            right: 20,
+            bottom: 20,
+            child: FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+              foregroundColor: Theme.of(context).colorScheme.primary,
+              splashColor: Theme.of(context).colorScheme.onPrimary,
+              onPressed: () {
+                scrollToTop();
+              },
+              child: Icon(Icons.move_up),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -200,29 +210,77 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
     );
   }
 
-  Widget _buildProductCardGride(products) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 215,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.62,
-      ),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        return ProductCard(
-          product: products[index],
-          onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (_) =>
-            //         ProductDetailScreen(product: products[index]),
-            //   ),
-            // );
+  Widget _buildCategoryChips() {
+    return Consumer<CategoryProvider>(
+      builder: (context, categoryProvider, _) {
+        if (categoryProvider.categories.isEmpty) {
+          return const SizedBox();
+        }
+
+        return SizedBox(
+          height: 40,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: categoryProvider.categories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final category = categoryProvider.categories[index];
+
+              return CategoryChips(
+                category: category,
+                isSelected: categoryProvider.isSelected(category),
+                onTap: () {
+                  categoryProvider.selectCategory(category);
+
+                  final slug = categoryProvider.selectedCategorySlug;
+
+                  if (slug != null) {
+                    context.read<ProductProvider>().fetchProductsByCategory(
+                      slug,
+                    );
+                  } else {
+                    context.read<ProductProvider>().fetchAllProducts();
+                  }
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductCardGride() {
+    return Consumer<ProductProvider>(
+      builder: (context, productProvider, _) {
+        if (productProvider.tenProducts.isEmpty) {
+          return const Center(child: Text('No products found'));
+        }
+        final products = productProvider.products;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 215,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.62,
+          ),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            return ProductCard(
+              product: products[index],
+              onTap: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (_) =>
+                //         ProductDetailScreen(product: products[index]),
+                //   ),
+                // );
+              },
+            );
           },
         );
       },

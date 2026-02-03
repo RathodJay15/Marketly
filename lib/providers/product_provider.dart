@@ -15,49 +15,60 @@ class ProductProvider extends ChangeNotifier {
   List<ProductModel> get products => _allProducts;
   List<ProductModel> get tenProducts => _homeProducts;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool _isHomeLoading = false;
+  bool _isSearchLoading = false;
+
+  bool get isHomeLoading => _isHomeLoading;
+  bool get isSearchLoading => _isSearchLoading;
 
   String? _error;
   String? get error => _error;
 
   // Fetch home products
   Future<void> fetchHomeProducts({int? limit}) async {
-    _setLoading(true);
+    _isHomeLoading = true;
+    notifyListeners();
+
     try {
       _homeProducts = await _productService.getAllProducts(limit: limit);
-      print('🔥 PRODUCTS COUNT: ${_homeProducts.length}');
       _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
-      _setLoading(false);
+      _isHomeLoading = false;
+      notifyListeners();
     }
   }
 
   // Fetch All products
   Future<void> fetchAllProducts() async {
-    _setLoading(true);
+    _isSearchLoading = true;
+    notifyListeners();
+
     try {
       _allProducts = await _productService.getAllProducts();
       _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
-      _setLoading(false);
+      _isSearchLoading = false;
+      notifyListeners();
     }
   }
 
   // Fetch products by category
   Future<void> fetchProductsByCategory(String categorySlug) async {
-    _setLoading(true);
+    _isSearchLoading = true;
+    notifyListeners();
+
     try {
       _allProducts = await _productService.getProductsByCategory(categorySlug);
       _error = null;
     } catch (e) {
       _error = e.toString();
     } finally {
-      _setLoading(false);
+      _isSearchLoading = false;
+      notifyListeners();
     }
   }
 
@@ -98,12 +109,6 @@ class ProductProvider extends ChangeNotifier {
   // Clear error
   void clearError() {
     _error = null;
-    notifyListeners();
-  }
-
-  // Internal loading handler
-  void _setLoading(bool value) {
-    _isLoading = value;
     notifyListeners();
   }
 }

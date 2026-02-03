@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/auth_gate.dart';
 import 'package:marketly/firebase_options.dart';
 import 'package:marketly/providers/category_provider.dart';
+import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
@@ -24,6 +25,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => NavigationProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
