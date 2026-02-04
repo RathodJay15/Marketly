@@ -17,8 +17,10 @@ class ProductService {
 
     return snapshot.docs
         .map(
-          (doc) =>
-              ProductModel.fromJson(doc.data() as Map<String, dynamic>, doc.id),
+          (doc) => ProductModel.fromFirestore(
+            doc.data() as Map<String, dynamic>,
+            doc.id,
+          ),
         )
         .toList();
   }
@@ -31,7 +33,7 @@ class ProductService {
         .get();
 
     return snapshot.docs
-        .map((doc) => ProductModel.fromJson(doc.data(), doc.id))
+        .map((doc) => ProductModel.fromFirestore(doc.data(), doc.id))
         .toList();
   }
 
@@ -61,7 +63,7 @@ class ProductService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map((doc) => ProductModel.fromJson(doc.data(), doc.id))
+              .map((doc) => ProductModel.fromFirestore(doc.data(), doc.id))
               .toList(),
         );
   }
@@ -74,7 +76,7 @@ class ProductService {
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
-              .map((doc) => ProductModel.fromJson(doc.data(), doc.id))
+              .map((doc) => ProductModel.fromFirestore(doc.data(), doc.id))
               .toList(),
         );
   }

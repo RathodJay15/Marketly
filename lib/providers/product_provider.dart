@@ -7,14 +7,14 @@ class ProductProvider extends ChangeNotifier {
 
   List<ProductModel> _homeProducts = [];
   List<ProductModel> _allProducts = [];
-  List<ProductModel> _searchResults = [];
+  List<ProductModel> _visibleProducts = [];
+
+  List<ProductModel> get visibleProducts => _visibleProducts;
 
   List<ProductModel> get homeProducts => _homeProducts;
   List<ProductModel> get allProducts => _allProducts;
-  List<ProductModel> get searchResults => _searchResults;
 
   // State
-  List<ProductModel> get products => _allProducts;
   List<ProductModel> get tenProducts => _homeProducts;
 
   bool _isHomeLoading = false;
@@ -25,7 +25,7 @@ class ProductProvider extends ChangeNotifier {
 
   String? _error;
   String? get error => _error;
-  bool get isSearching => _searchResults.isNotEmpty;
+  bool get isSearching => _visibleProducts.length != _allProducts.length;
 
   // Fetch home products
   Future<void> fetchHomeProducts({int? limit}) async {
@@ -50,6 +50,9 @@ class ProductProvider extends ChangeNotifier {
 
     try {
       _allProducts = await _productService.getAllProducts();
+
+      _visibleProducts = _allProducts;
+
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -65,7 +68,10 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _allProducts = await _productService.getProductsByCategory(categorySlug);
+      _visibleProducts = _allProducts
+          .where((p) => p.category == categorySlug)
+          .toList();
+
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -84,15 +90,14 @@ class ProductProvider extends ChangeNotifier {
         .toList();
 
     if (words.isEmpty) {
-      _searchResults = [];
+      _visibleProducts = _allProducts;
       notifyListeners();
       return;
     }
 
-    _searchResults = _allProducts.where((product) {
+    _visibleProducts = _allProducts.where((product) {
       final titleWords = product.title.toLowerCase().split(RegExp(r'\s+'));
 
-      // Every searched word must exist in title words
       return words.every((word) => titleWords.contains(word));
     }).toList();
 
@@ -100,7 +105,7 @@ class ProductProvider extends ChangeNotifier {
   }
 
   void clearSearchResult() {
-    _searchResults = [];
+    _visibleProducts = _allProducts;
     notifyListeners();
   }
 

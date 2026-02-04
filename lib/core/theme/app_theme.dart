@@ -26,6 +26,7 @@ class MarketTheme {
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
       onSurfaceVariant: const Color.fromARGB(255, 255, 200, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 0, 0, 0), //
+      onTertiary: const Color.fromARGB(255, 225, 225, 225),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
     scrollbarTheme: ScrollbarThemeData(
@@ -59,6 +60,7 @@ class MarketTheme {
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
       onSurfaceVariant: const Color.fromARGB(255, 255, 200, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //
+      onTertiary: const Color.fromARGB(255, 225, 225, 225),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
 

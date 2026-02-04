@@ -78,7 +78,10 @@ class AuthService {
         profilePic: profilePic,
       );
 
-      await _firestore.collection('users').doc(user.uid).set(userModel.toMap());
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(userModel.toFirestore());
 
       return userModel;
     } on FirebaseAuthException catch (e) {

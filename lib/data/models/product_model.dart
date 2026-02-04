@@ -37,30 +37,39 @@ class ProductModel {
     return '$title $tagText'.toLowerCase();
   }
 
-  factory ProductModel.fromJson(Map<String, dynamic> json, String id) {
-    final dimensionsJson = json['dimensions'] as Map<String, dynamic>?;
+  String formattedDimensions() {
+    return dimensions.entries.map((e) => '${e.key}: ${e.value}').join('  •  ');
+  }
+
+  String formattedTags() {
+    return tags?.join(' • ') ?? 'No Tags';
+  }
+
+  factory ProductModel.fromFirestore(Map<String, dynamic> doc, String id) {
+    final dimensionsJson = doc['dimensions'] as Map<String, dynamic>?;
 
     return ProductModel(
       id: id,
-      title: json['title'] as String? ?? 'NAN',
-      description: json['description'] as String? ?? 'NAN',
-      category: json['category'] as String? ?? 'NAN',
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      title: doc['title'] as String? ?? 'NAN',
+      description: doc['description'] as String? ?? 'NAN',
+      category: doc['category'] as String? ?? 'NAN',
+      price: (doc['price'] as num?)?.toDouble() ?? 0.0,
       discountPercentage:
-          (json['discountPercentage'] as num?)?.toDouble() ?? 0.0,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      stock: json['stock'] as int?,
-      tags: (json['tags'] as List?)?.map((e) => e.toString()).toList(),
-      brand: json['brand'] as String? ?? 'NAN',
-      weight: (json['weight'] as num?)?.toDouble() ?? 0.0,
+          (doc['discountPercentage'] as num?)?.toDouble() ?? 0.0,
+      rating: (doc['rating'] as num?)?.toDouble() ?? 0.0,
+      stock: doc['stock'] as int?,
+      tags: (doc['tags'] as List?)?.map((e) => e.toString()).toList(),
+      brand: (doc['brand'] as String?)?.trim().isNotEmpty == true
+          ? doc['brand'].toString()
+          : 'NaN',
+      weight: (doc['weight'] as num?)?.toDouble() ?? 0.0,
       dimensions: {
         'width': (dimensionsJson?['width'] as num?)?.toDouble() ?? 0.0,
         'height': (dimensionsJson?['height'] as num?)?.toDouble() ?? 0.0,
         'depth': (dimensionsJson?['depth'] as num?)?.toDouble() ?? 0.0,
       },
-      images:
-          (json['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
-      thumbnail: json['thumbnail'] as String? ?? 'NAN',
+      images: (doc['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
+      thumbnail: doc['thumbnail'] as String? ?? 'NAN',
     );
   }
 

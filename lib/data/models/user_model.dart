@@ -1,11 +1,11 @@
 class UserModel {
-  final String? uid;
-  final String? name;
-  final String? email;
-  final String? address;
-  final String? phone;
-  final String? profilePic;
-  final String? role; // 'admin' or 'user'
+  final String uid;
+  final String name;
+  final String email;
+  final String address;
+  final String phone;
+  final String profilePic;
+  final String role; // 'admin' or 'user'
 
   UserModel({
     required this.uid,
@@ -20,16 +20,16 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
     return UserModel(
       uid: uid,
-      name: map['name'] ?? '',
-      email: map['email'] ?? '',
-      address: map['address'] ?? '',
-      phone: map['phone'] ?? '',
-      profilePic: map['profilePic'] ?? '',
-      role: map['role'] ?? 'user',
+      name: map['name'],
+      email: map['email'],
+      address: map['address'],
+      phone: map['phone'],
+      profilePic: map['profilePic'],
+      role: map['role'],
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
       'name': name,
       'email': email,

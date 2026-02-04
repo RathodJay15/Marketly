@@ -24,13 +24,13 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
   bool _isSearching = false;
 
   String? _lastCategorySlug;
+  bool _fetchScheduled = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _searchFocusNode.addListener(_onFocusChange);
-    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -38,27 +38,38 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
     super.didChangeDependencies();
 
     final categoryProvider = context.read<CategoryProvider>();
-    final productProvider = context.read<ProductProvider>();
-    final navProvider = context.watch<NavigationProvider>();
+    final navProvider = context.read<NavigationProvider>();
 
+    final slug = categoryProvider.selectedCategorySlug;
+
+    // Handle search focus safely
     if (navProvider.requestSearchFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
         _isSearching = true;
         _searchFocusNode.requestFocus();
         navProvider.clearSearchFocusRequest();
       });
     }
 
-    final slug = categoryProvider.selectedCategorySlug;
-
-    if (slug != _lastCategorySlug) {
+    // Detect category change ONLY
+    if (slug != _lastCategorySlug && !_fetchScheduled) {
       _lastCategorySlug = slug;
+      _fetchScheduled = true;
 
-      if (slug != null) {
-        productProvider.fetchProductsByCategory(slug);
-      } else {
-        productProvider.fetchAllProducts();
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
+        final productProvider = context.read<ProductProvider>();
+
+        if (slug != null) {
+          productProvider.fetchProductsByCategory(slug);
+        } else {
+          productProvider.fetchAllProducts();
+        }
+
+        _fetchScheduled = false;
+      });
     }
   }
 
@@ -104,17 +115,6 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
     );
   }
 
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-
-    final position = _scrollController.position;
-
-    if (position.pixels >= position.maxScrollExtent - 100) {
-      final productProvider = context.read<ProductProvider>();
-      productProvider.clearSearchResult();
-    }
-  }
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -127,59 +127,54 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        _onScroll();
-      },
-      child: Stack(
-        children: [
-          ListView(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: _buildSearchSection(),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildCategoryChips(),
-              ),
-              const SizedBox(height: 20),
-
-              Consumer<CategoryProvider>(
-                builder: (context, categoryProvider, child) {
-                  final productProvider = context.read<ProductProvider>();
-                  final slug = categoryProvider.selectedCategorySlug;
-
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (slug != null) {
-                      productProvider.fetchProductsByCategory(slug);
-                    } else {
-                      productProvider.fetchAllProducts();
-                    }
-                  });
-                  return _buildProductCardGride();
-                },
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-          Positioned(
-            right: 20,
-            bottom: 20,
-            child: FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-              foregroundColor: Theme.of(context).colorScheme.primary,
-              splashColor: Theme.of(context).colorScheme.onPrimary,
-              onPressed: () {
-                scrollToTop();
-              },
-              child: Icon(Icons.move_up),
+    return Stack(
+      children: [
+        ListView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: _buildSearchSection(),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildCategoryChips(),
+            ),
+            const SizedBox(height: 20),
+
+            Consumer<CategoryProvider>(
+              builder: (context, categoryProvider, child) {
+                final productProvider = context.read<ProductProvider>();
+                final slug = categoryProvider.selectedCategorySlug;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (slug != null) {
+                    productProvider.fetchProductsByCategory(slug);
+                  } else {
+                    productProvider.fetchAllProducts();
+                  }
+                });
+                return _buildProductCardGride();
+              },
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
+        Positioned(
+          right: 20,
+          bottom: 20,
+          child: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+            foregroundColor: Theme.of(context).colorScheme.primary,
+            splashColor: Theme.of(context).colorScheme.onPrimary,
+            onPressed: () {
+              scrollToTop();
+            },
+            child: Icon(Icons.move_up),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -272,7 +267,6 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
         if (categoryProvider.categories.isEmpty) {
           return const SizedBox();
         }
-
         return SizedBox(
           height: 40,
           child: ListView.separated(
@@ -307,16 +301,11 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
   }
 
   Widget _buildProductCardGride() {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Consumer<ProductProvider>(
       builder: (context, productProvider, _) {
-        if (productProvider.tenProducts.isEmpty) {
-          return const Center(child: Text('No products found'));
-        }
-        final isSearching = productProvider.isSearching;
-
-        final products = isSearching
-            ? productProvider.searchResults
-            : productProvider.products;
+        final products = productProvider.visibleProducts;
 
         if (products.isEmpty) {
           return const Center(child: Text('No products found'));
@@ -325,11 +314,13 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 20),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 215,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 0.62,
+            childAspectRatio: isLandscape
+                ? (215 / 310)
+                : (215 / 340), //width-height
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {

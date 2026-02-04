@@ -42,12 +42,6 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
             ? _landscapeLayout(product, images)
             : _portraitLayout(product, images),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-        foregroundColor: Theme.of(context).colorScheme.primary,
-        child: const Icon(Icons.add_shopping_cart_outlined),
-      ),
     );
   }
 
@@ -102,17 +96,14 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
             margin: const EdgeInsets.only(top: 10, bottom: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                bottomLeft: Radius.circular(30),
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
               border: Border.all(
                 width: 1,
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
             ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(10),
               child: _detailsContent(product),
             ),
           ),
@@ -129,14 +120,14 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             height: 55,
             width: 55,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onInverseSurface,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: IconButton(
               icon: Icon(
@@ -144,7 +135,25 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 color: Theme.of(context).colorScheme.primary,
                 size: 28,
               ),
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
               onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          Container(
+            height: 55,
+            width: 55,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: IconButton(
+              icon: Icon(
+                Icons.add_shopping_cart_outlined,
+                color: Theme.of(context).colorScheme.primary,
+                size: 28,
+              ),
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              onPressed: () {},
             ),
           ),
         ],
@@ -240,34 +249,40 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   // ----------------------------------------------------
-  // DETAILS CONTENT
+  // LANDSCAPE RIGHT SIDE DETAILS CONTENT
   // ----------------------------------------------------
 
   Widget _detailsContent(ProductModel product) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        /// TITLE + PRICE
+        Text(
+          product.title,
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Text(
-                product.title,
-                maxLines: 2,
+                '\$${product.price}',
                 style: TextStyle(
+                  fontSize: 30,
                   color: Theme.of(context).colorScheme.onInverseSurface,
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             Text(
-              '\$${product.price}',
+              '${product.discountPercentage}% off',
               style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onInverseSurface,
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 18,
               ),
             ),
           ],
@@ -292,54 +307,50 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
               _rating.toStringAsFixed(1),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${product.discountPercentage}% off',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 18,
-                  ),
-                ),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
 
         _sectionTitle("Description"),
-        Text(
-          product.description,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            height: 1.5,
-          ),
-        ),
+        _sectionDetail(product.description),
 
-        const SizedBox(height: 16),
-
-        _sectionTitle("Brand"),
-        Text(
-          product.brand,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            height: 1.5,
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        _sectionTitle("Category"),
-        Text(
-          product.category,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
-            height: 1.5,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sectionTitle("Category"),
+                _sectionTitle("Brand"),
+                _sectionTitle("Stock"),
+                _sectionTitle("Weight"),
+                _sectionTitle("Tags"),
+                _sectionTitle("Dimensions"),
+              ],
+            ),
+            SizedBox(width: 10),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sectionDetail(product.category),
+                _sectionDetail(product.brand),
+                _sectionDetail(product.stock.toString()),
+                _sectionDetail(product.weight.toString()),
+                _sectionDetail(product.formattedTags()),
+                SizedBox(
+                  width: 260,
+                  child: _sectionDetail(product.formattedDimensions()),
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );
@@ -353,6 +364,16 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
         fontSize: 18,
         fontWeight: FontWeight.w600,
         color: Theme.of(context).colorScheme.onInverseSurface,
+      ),
+    ),
+  );
+  Widget _sectionDetail(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 18,
+        color: Theme.of(context).colorScheme.onPrimary,
       ),
     ),
   );
@@ -375,18 +396,18 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
           ),
-          child: ListView(
-            controller: scrollController,
-            padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _dragHandle(),
-
-              /// TITLE + PRICE
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
+              Expanded(
+                child: ListView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    /// TITLE + PRICE
+                    Text(
                       product.title,
                       style: TextStyle(
                         fontSize: 26,
@@ -394,128 +415,102 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
                     ),
-                  ),
-                  Text(
-                    '\$${product.price}',
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 10),
-
-              /// RATING
-              Row(
-                children: [
-                  RatingBarIndicator(
-                    rating: _rating,
-                    itemBuilder: (_, __) => Icon(
-                      Icons.star_rounded,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    itemCount: 5,
-                    itemSize: 28,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    _rating.toStringAsFixed(1),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        '${product.discountPercentage}% off',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          fontSize: 18,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '\$${product.price}',
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
+                        Text(
+                          '${product.discountPercentage}% off',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
 
-              const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
-              _sectionTitle("Description"),
-              Text(
-                product.description,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  height: 1.5,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _sectionTitle("Category"),
-                      Text(
-                        product.category,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          height: 1.5,
+                    /// RATING
+                    Row(
+                      children: [
+                        RatingBarIndicator(
+                          rating: _rating,
+                          itemBuilder: (_, __) => Icon(
+                            Icons.star_rounded,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                          itemCount: 5,
+                          itemSize: 28,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 50),
-
-                  Column(
-                    children: [
-                      _sectionTitle("Brand"),
-                      Text(
-                        product.brand,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          height: 1.5,
+                        const SizedBox(width: 10),
+                        Text(
+                          _rating.toStringAsFixed(1),
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _sectionTitle("Dimensions"),
+                      ],
+                    ),
 
-              Text(
-                product.dimensions.toString(),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
-              _sectionTitle("Weight"),
-              Text(
-                product.weight.toString() + ' Kgs',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _sectionTitle("Tags"),
+                    _sectionTitle("Description"),
+                    _sectionDetail(product.description),
 
-              Text(
-                product.tags.toString(),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  height: 1.5,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionTitle("Category"),
+                            _sectionTitle("Brand"),
+                            _sectionTitle("Stock"),
+                            _sectionTitle("Weight"),
+                            _sectionTitle("Tags"),
+                            _sectionTitle("Dimensions"),
+                          ],
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _sectionDetail(product.category),
+                            _sectionDetail(product.brand),
+                            _sectionDetail(product.stock.toString()),
+                            _sectionDetail(product.weight.toString()),
+                            _sectionDetail(product.formattedTags()),
+                            SizedBox(
+                              width: 260,
+                              child: _sectionDetail(
+                                product.formattedDimensions(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -529,7 +524,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
     child: Container(
       height: 5,
       width: 40,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(top: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onInverseSurface,
         borderRadius: BorderRadius.circular(10),
@@ -544,6 +539,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
+        backgroundColor: Theme.of(context).colorScheme.onTertiary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: SizedBox(
           width: 500,

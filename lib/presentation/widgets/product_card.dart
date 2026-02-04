@@ -10,24 +10,24 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 190,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-          color: Theme.of(context).colorScheme.onPrimary,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 190,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 1,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Stack(
-        children: [
-          GestureDetector(
-            onTap: onTap,
-            child: Padding(
+        child: Stack(
+          children: [
+            Padding(
               padding: const EdgeInsets.all(15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   /// IMAGE
                   Center(
@@ -101,8 +101,8 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -116,20 +116,20 @@ class CartProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 105,
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-          color: Theme.of(context).colorScheme.onPrimary,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 105,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 1,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Stack(
-        children: [
-          GestureDetector(
-            onTap: onTap,
-            child: Padding(
+        child: Stack(
+          children: [
+            Padding(
               padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,8 +198,8 @@ class CartProductCard extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
