@@ -17,7 +17,7 @@ class UserModel {
     required this.profilePic,
   });
 
-  factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
+  factory UserModel.fromFirestore(Map<String, dynamic> map, String uid) {
     return UserModel(
       uid: uid,
       name: map['name'],

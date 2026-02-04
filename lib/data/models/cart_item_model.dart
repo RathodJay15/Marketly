@@ -1,5 +1,6 @@
 class CartItemModel {
-  final String id;
+  final String id; // Firestore document ID (cartItemId)
+  final String productId;
   final String title;
   final double price;
   final int quantity;
@@ -10,6 +11,7 @@ class CartItemModel {
 
   CartItemModel({
     required this.id,
+    required this.productId,
     required this.title,
     required this.price,
     required this.quantity,
@@ -19,26 +21,11 @@ class CartItemModel {
     required this.thumbnail,
   });
 
-  CartItemModel copyWith({
-    int? quantity,
-    double? total,
-    double? discountedTotal,
-  }) {
+  // 🔽 Firestore → Model
+  factory CartItemModel.fromFirestore(Map<String, dynamic> map, String id) {
     return CartItemModel(
       id: id,
-      title: title,
-      price: price,
-      quantity: quantity ?? this.quantity,
-      total: total ?? this.total,
-      discountPercentage: discountPercentage,
-      discountedTotal: discountedTotal ?? this.discountedTotal,
-      thumbnail: thumbnail,
-    );
-  }
-
-  factory CartItemModel.fromMap(Map<String, dynamic> map) {
-    return CartItemModel(
-      id: map['id'].toString(),
+      productId: map['productId'],
       title: map['title'],
       price: (map['price'] as num).toDouble(),
       quantity: map['quantity'],
@@ -49,9 +36,10 @@ class CartItemModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  // 🔼 Model → Firestore
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id,
+      'productId': productId,
       'title': title,
       'price': price,
       'quantity': quantity,
@@ -60,5 +48,23 @@ class CartItemModel {
       'discountedTotal': discountedTotal,
       'thumbnail': thumbnail,
     };
+  }
+
+  // 🧮 Helper to recalculate totals safely
+  CartItemModel copyWithQuantity(int newQuantity) {
+    final newTotal = price * newQuantity;
+    final newDiscountedTotal = newTotal - (newTotal * discountPercentage / 100);
+
+    return CartItemModel(
+      id: id,
+      productId: productId,
+      title: title,
+      price: price,
+      quantity: newQuantity,
+      total: newTotal,
+      discountPercentage: discountPercentage,
+      discountedTotal: newDiscountedTotal,
+      thumbnail: thumbnail,
+    );
   }
 }

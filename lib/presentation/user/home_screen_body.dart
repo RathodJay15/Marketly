@@ -97,7 +97,9 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
               ),
             ),
             Text(
-              context.read<UserProvider>().user!.name ?? 'username',
+              context.read<UserProvider>().user!.name.isEmpty
+                  ? 'Username'
+                  : context.read<UserProvider>().user!.name,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
                 fontSize: 20,

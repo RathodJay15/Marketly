@@ -14,7 +14,7 @@ class AuthService {
 
       if (!doc.exists || doc.data() == null) return null;
 
-      return UserModel.fromMap(doc.data()!, uid);
+      return UserModel.fromFirestore(doc.data()!, uid);
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Error fetching user data');
     } catch (e) {

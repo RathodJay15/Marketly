@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
+import 'package:marketly/providers/cart_provider.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductModel product;
@@ -54,7 +57,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
       children: [
         Column(
           children: [
-            _topBar(),
+            _topBar(product),
             const SizedBox(height: 16),
             _carousel(images, height: 350),
             const SizedBox(height: 12),
@@ -80,7 +83,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _topBar(),
+              _topBar(product),
               Expanded(child: _carousel(images)),
               const SizedBox(height: 12),
               _thumbnails(images),
@@ -116,7 +119,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   // TOP BAR
   // ----------------------------------------------------
 
-  Widget _topBar() {
+  Widget _topBar(ProductModel product) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -153,7 +156,39 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 size: 28,
               ),
               color: Theme.of(context).colorScheme.onSecondaryContainer,
-              onPressed: () {},
+              onPressed: () {
+                final cartProvider = context.read<CartProvider>();
+
+                final cartItem = CartItemModel(
+                  id: '',
+                  productId: product.id,
+                  title: product.title,
+                  price: product.price,
+                  quantity: 1,
+                  total: product.price,
+                  discountedTotal:
+                      product.price -
+                      (product.price * product.discountPercentage / 100),
+                  discountPercentage: product.discountPercentage,
+                  thumbnail: product.thumbnail,
+                );
+
+                cartProvider.addToCart(cartItem);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Product added to cart',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                  ),
+                );
+              },
             ),
           ),
         ],
