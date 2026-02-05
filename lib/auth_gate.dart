@@ -14,6 +14,7 @@ class AuthGate extends StatefulWidget {
 }
 
 class _authGateState extends State<AuthGate> {
+  bool _isCheckingAuth = true;
   @override
   void initState() {
     super.initState();
@@ -23,6 +24,7 @@ class _authGateState extends State<AuthGate> {
 
       if (firebaseUser == null) {
         userProvider.clearUser();
+        setState(() => _isCheckingAuth = false);
         return;
       }
 
@@ -31,12 +33,24 @@ class _authGateState extends State<AuthGate> {
       if (userModel != null) {
         userProvider.setUser(userModel);
       }
+      setState(() => _isCheckingAuth = false);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
+
+    if (_isCheckingAuth) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+      );
+    }
 
     if (user == null) {
       return const LoginScreen();

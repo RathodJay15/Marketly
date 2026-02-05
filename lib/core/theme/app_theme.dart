@@ -29,6 +29,13 @@ class MarketTheme {
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
+    inputDecorationTheme: const InputDecorationTheme(
+      errorStyle: TextStyle(
+        color: const Color.fromARGB(255, 255, 0, 0),
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
     scrollbarTheme: ScrollbarThemeData(
       thumbColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
       trackColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
@@ -63,7 +70,13 @@ class MarketTheme {
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
-
+    inputDecorationTheme: const InputDecorationTheme(
+      errorStyle: TextStyle(
+        color: const Color.fromARGB(255, 255, 0, 0),
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
     scrollbarTheme: ScrollbarThemeData(
       thumbColor: WidgetStateProperty.all(
         const Color.fromARGB(255, 255, 255, 255),

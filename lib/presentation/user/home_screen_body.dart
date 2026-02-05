@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
@@ -108,12 +109,18 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             ),
           ],
         ),
-        Container(
-          height: 40,
-          width: 40,
-          child: CircleAvatar(
-            radius: 20,
-            backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        GestureDetector(
+          onTap: () async {
+            await AuthService().logout(); // Firebase session
+            context.read<UserProvider>().clearUser(); // App state
+          },
+          child: Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onPrimary,
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         ),
       ],
