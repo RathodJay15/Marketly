@@ -7,6 +7,7 @@ import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
 import 'package:marketly/presentation/user/profile_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
+import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,8 @@ class _homeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    context.read<CartProvider>().startListening();
+
     // migrateCategories();
     // migrateProducts();
   }
@@ -55,6 +58,7 @@ class _homeScreenState extends State<HomeScreen>
   Future<void> onLogout() async {
     await AuthService().logout(); // Ends Firebase session
     context.read<UserProvider>().clearUser(); // Clears App state
+    context.read<CartProvider>().stopListening();
   }
 
   @override

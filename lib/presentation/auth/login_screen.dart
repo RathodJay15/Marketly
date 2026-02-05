@@ -42,6 +42,8 @@ class _loginScreenState extends State<LoginScreen> {
 
       if (user != null) {
         context.read<UserProvider>().setUser(user);
+        _emailController.clear();
+        _passwordController.clear();
         // navigation handled by authStateChanges
       }
     } catch (e) {
@@ -52,8 +54,6 @@ class _loginScreenState extends State<LoginScreen> {
     } finally {
       if (mounted) {
         setState(() => isLoading = false);
-        _emailController.clear();
-        _passwordController.clear();
       }
     }
   }

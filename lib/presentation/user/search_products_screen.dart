@@ -324,18 +324,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
-            return ProductCard(
-              product: products[index],
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        ProductDetailsScreen(product: products[index]),
-                  ),
-                );
-              },
-            );
+            return ProductCard(product: products[index]);
           },
         );
       },

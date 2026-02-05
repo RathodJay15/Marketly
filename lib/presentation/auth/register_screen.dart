@@ -181,7 +181,7 @@ class _registerScreenState extends State<RegisterScreen> {
                       hint: 'Address',
                       controller: _addressController,
                       validator: Validators.address,
-                      // maxLine: 3,
+                      maxLine: 3,
                     ),
 
                     const SizedBox(height: 40.0),
@@ -281,14 +281,15 @@ class _registerScreenState extends State<RegisterScreen> {
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
     VoidCallback? onToggleVisibility,
-    // int maxLine = 1,
+    int maxLine = 1,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      // maxLines: maxLine,
+      maxLines: maxLine,
+      minLines: 1,
       textInputAction: TextInputAction.next,
       style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
       decoration: InputDecoration(

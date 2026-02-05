@@ -571,27 +571,51 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   // ----------------------------------------------------
 
   void _openImagePreview(String imageUrl) {
-    showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Theme.of(context).colorScheme.onTertiary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: SizedBox(
-          width: 500,
-          height: MediaQuery.of(context).size.height * 0.6,
-          child: PinchZoom(
-            maxScale: 5,
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              height: 120,
-              fit: BoxFit.contain,
-              errorWidget: (context, url, error) => Container(
-                color: Theme.of(context).colorScheme.onPrimary,
-                child: Icon(Icons.image_not_supported),
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        barrierColor: Theme.of(context).colorScheme.onPrimary,
+        transitionDuration: const Duration(milliseconds: 200),
+        pageBuilder: (_, __, ___) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            body: SafeArea(
+              child: Stack(
+                children: [
+                  /// IMAGE WITH PINCH ZOOM
+                  Center(
+                    child: PinchZoom(
+                      maxScale: 5,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => Icon(
+                          Icons.image_not_supported,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                          size: 60,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  /// CLOSE BUTTON
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                        size: 28,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

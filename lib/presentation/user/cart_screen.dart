@@ -1,5 +1,10 @@
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/providers/cart_provider.dart';
+import 'package:provider/provider.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -12,16 +17,93 @@ class _cartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
+    return Consumer<CartProvider>(
+      builder: (context, cartProvider, _) {
+        if (cartProvider.items.isEmpty) {
+          return _emptyCartView(context, cartProvider);
+        }
+        return isLandscape
+            ? _landsacpeView(context, cartProvider)
+            : _protrateView(context, cartProvider);
+      },
+    );
+  }
+  // ---------------------------------------------------------------------------
+  // Empty Cart View
+  // ---------------------------------------------------------------------------
+
+  Widget _emptyCartView(BuildContext context, CartProvider cartProvider) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [_headerSection(), _cartPoductList(), _cartSummary()],
+      children: [
+        _headerSection(10, context, cartProvider),
+        Expanded(
+          child: Center(
+            child: Text(
+              'No Item in the cart, Cart is Empty !!',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _headerSection() {
+  // ---------------------------------------------------------------------------
+  // Lanscape View
+  // ---------------------------------------------------------------------------
+
+  Widget _landsacpeView(BuildContext context, CartProvider cartProvider) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: SizedBox(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _headerSection(0, context, cartProvider),
+                Expanded(child: _cartPoductList(context, cartProvider)),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(width: 350, child: _cartSummary(10, context, cartProvider)),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Protrate View
+  // ---------------------------------------------------------------------------
+
+  Widget _protrateView(BuildContext context, CartProvider cartProvider) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _headerSection(10, context, cartProvider),
+        _cartPoductList(context, cartProvider),
+        _cartSummary(20, context, cartProvider),
+      ],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Header Section
+  // ---------------------------------------------------------------------------
+
+  Widget _headerSection(
+    double paddingV,
+    BuildContext context,
+    CartProvider cartProvider,
+  ) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: paddingV),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -34,8 +116,53 @@ class _cartScreenState extends State<CartScreen> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  title: Text(
+                    'Empty cart?',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    ),
+                  ),
+                  content: Text(
+                    'Are you sure you want to remove all items from your cart? '
+                    'This action can’t be undone.',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text(
+                        'Yes, empty cart',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                cartProvider.clearCart();
+              }
+            },
             color: Theme.of(context).colorScheme.onSecondaryContainer,
+            padding: EdgeInsets.zero,
             icon: Icon(
               Icons.delete_sweep_outlined,
               color: Theme.of(context).colorScheme.onSurface,
@@ -47,57 +174,242 @@ class _cartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _cartPoductList() {
-    return Expanded(
-      child: Container(
-        padding: EdgeInsets.only(left: 10, right: 10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: .30),
-          borderRadius: BorderRadius.circular(30),
-        ),
+  // ---------------------------------------------------------------------------
+  // Cart List Section
+  // ---------------------------------------------------------------------------
 
-        child: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('Item Title'),
-              subtitle: Text('Item SubTitle'),
-            );
-          },
-        ),
+  Widget _cartPoductList(BuildContext context, CartProvider cartProvider) {
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        itemCount: cartProvider.items.length,
+        itemBuilder: (context, index) {
+          final item = cartProvider.items[index];
+          return Container(
+            margin: EdgeInsets.only(bottom: 10),
+            height: 120,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: CachedNetworkImage(
+                    imageUrl: item.thumbnail,
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.contain,
+                    errorWidget: (_, __, ___) => Container(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      child: const Icon(Icons.image_not_supported),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '\$${item.price} x ${item.quantity}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          '${item.discountPercentage}% off ',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 60,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          cartProvider.updateQuantity(
+                            item.id,
+                            item.quantity + 1,
+                          );
+                        },
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.add_rounded),
+                        iconSize: 25,
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                      Text(
+                        '${item.quantity}',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                          fontSize: 15,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          cartProvider.updateQuantity(
+                            item.id,
+                            item.quantity - 1,
+                          );
+                        },
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.remove_rounded),
+                        iconSize: 25,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _cartSummary() {
+  // ---------------------------------------------------------------------------
+  // Cart Summary Section
+  // ---------------------------------------------------------------------------
+
+  Widget _cartSummary(
+    double paddingH,
+    BuildContext context,
+    CartProvider cartProvider,
+  ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: paddingH, vertical: 10),
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  '7 Items',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                    fontSize: 20,
-                  ),
+              Text(
+                'Total Products: ${cartProvider.totalProducts}',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 18,
                 ),
               ),
               Text(
-                '\$ 99,999',
+                'Total of Quantity: ${cartProvider.totalQuantity}',
                 style: TextStyle(
-                  decoration: TextDecoration.lineThrough,
-                  decorationColor: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 18,
+                ),
+              ),
+            ],
+          ),
+          Divider(
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            thickness: 2,
+            radius: BorderRadius.circular(2),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Subtotal',
+                style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
                 ),
               ),
+              SizedBox(width: 5),
               Text(
-                '\$ 88,888',
+                '\$ ${cartProvider.subTotal.toStringAsFixed(2)}',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Discount',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 20,
+                ),
+              ),
+              SizedBox(width: 5),
+              Text(
+                '- ${cartProvider.totalDiscount.toStringAsFixed(2)}',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+          Divider(
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            thickness: 3,
+            radius: BorderRadius.circular(2),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Total',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              SizedBox(width: 5),
+              Text(
+                '\$ ${cartProvider.finalTotal.toStringAsFixed(2)}',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 25,
@@ -105,7 +417,28 @@ class _cartScreenState extends State<CartScreen> {
               ),
             ],
           ),
-          ElevatedButton(onPressed: () {}, child: Text('Go to Check Out')),
+          SizedBox(height: 10),
+          SizedBox(
+            width: 200,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+                minimumSize: const Size(double.infinity, 50.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+              child: Text(
+                'Go to Check Out!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

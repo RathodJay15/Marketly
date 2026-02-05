@@ -266,17 +266,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
               /// NORMAL PRODUCT CARD
               final product = products[index];
-
-              return ProductCard(
-                product: product,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        ProductDetailsScreen(product: products[index]),
-                  ),
-                ),
-              );
+              return ProductCard(product: product);
             },
           );
         },
