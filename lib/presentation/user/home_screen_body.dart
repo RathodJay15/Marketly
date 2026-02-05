@@ -4,6 +4,7 @@ import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
+import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
@@ -246,7 +247,15 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           }
 
           if (productProvider.tenProducts.isEmpty) {
-            return const Center(child: Text('No products found'));
+            return Center(
+              child: Text(
+                'No products found',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+            );
           }
 
           final products = productProvider.tenProducts;
@@ -277,22 +286,20 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   Widget _buildCartList() {
     return SizedBox(
       height: 160,
-      child: Consumer<ProductProvider>(
-        builder: (context, productProvider, _) {
-          if (productProvider.isHomeLoading) {
+      child: Consumer<CartProvider>(
+        builder: (context, cartProvider, _) {
+          final products = cartProvider.items;
+          if (products.isEmpty) {
             return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onInverseSurface,
+              child: Text(
+                'Cart is Empty',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
             );
           }
-
-          if (productProvider.tenProducts.isEmpty) {
-            return const Center(child: Text('No products found'));
-          }
-
-          final products = productProvider.tenProducts;
-
           return ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: products.length + 1, // +1 for See All

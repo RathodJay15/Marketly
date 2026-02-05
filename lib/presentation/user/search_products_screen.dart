@@ -308,7 +308,15 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
         final products = productProvider.visibleProducts;
 
         if (products.isEmpty) {
-          return const Center(child: Text('No products found'));
+          return Center(
+            child: Text(
+              'No products found',
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+          );
         }
         return GridView.builder(
           shrinkWrap: true,

@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
 
@@ -124,7 +125,7 @@ class ProductCard extends StatelessWidget {
 }
 
 class CartProductCard extends StatelessWidget {
-  final ProductModel product;
+  final CartItemModel product;
   final VoidCallback? onTap;
 
   const CartProductCard({super.key, required this.product, this.onTap});

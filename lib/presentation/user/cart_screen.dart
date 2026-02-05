@@ -41,7 +41,7 @@ class _cartScreenState extends State<CartScreen> {
             child: Text(
               'No Item in the cart, Cart is Empty !!',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontSize: 20,
               ),
             ),
