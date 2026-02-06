@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
-import 'package:marketly/presentation/widgets/product_details.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/product_provider.dart';

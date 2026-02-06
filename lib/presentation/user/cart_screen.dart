@@ -1,8 +1,6 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/presentation/user/checkout/checkout_flow_screen.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -374,7 +372,7 @@ class _cartScreenState extends State<CartScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Discount',
+                'Discount (${cartProvider.totalDiscountPercentage.toStringAsFixed(1)}%)',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -421,7 +419,13 @@ class _cartScreenState extends State<CartScreen> {
           SizedBox(
             width: 200,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                if (!cartProvider.isCartLocked) cartProvider.lockCart();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => CheckoutFlowScreen()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
                 minimumSize: const Size(double.infinity, 50.0),

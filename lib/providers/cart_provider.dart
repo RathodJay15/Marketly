@@ -12,6 +12,8 @@ class CartProvider extends ChangeNotifier {
   List<CartItemModel> get items => _items;
 
   String? get _uid => FirebaseAuth.instance.currentUser?.uid;
+  bool _isCartLocked = false;
+  bool get isCartLocked => _isCartLocked;
 
   // ─────────────────────────────────────────────
   // START LISTENING (call after login)
@@ -58,11 +60,13 @@ class CartProvider extends ChangeNotifier {
   // ACTIONS
   // ─────────────────────────────────────────────
   Future<void> addToCart(CartItemModel item) async {
+    if (_isCartLocked) return;
     if (_uid == null) return;
     await _cartService.addToCart(uid: _uid!, item: item);
   }
 
   Future<void> updateQuantity(String cartItemId, int quantity) async {
+    if (_isCartLocked) return;
     if (_uid == null) return;
     await _cartService.updateQuantity(
       uid: _uid!,
@@ -72,11 +76,23 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> removeItem(String cartItemId) async {
+    if (_isCartLocked) return;
     if (_uid == null) return;
     await _cartService.removeItem(_uid!, cartItemId);
   }
 
+  void lockCart() {
+    _isCartLocked = true;
+    notifyListeners();
+  }
+
+  void unlockCart() {
+    _isCartLocked = false;
+    notifyListeners();
+  }
+
   Future<void> clearCart() async {
+    if (_isCartLocked) return;
     if (_uid == null) return;
     await _cartService.clearCart(_uid!);
   }
