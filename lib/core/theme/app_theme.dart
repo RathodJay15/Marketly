@@ -31,7 +31,7 @@ class MarketTheme {
     splashColor: const Color.fromARGB(0, 0, 0, 0),
     inputDecorationTheme: const InputDecorationTheme(
       errorStyle: TextStyle(
-        color: const Color.fromARGB(255, 255, 0, 0),
+        color: Color.fromARGB(255, 255, 0, 0),
         fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
@@ -42,7 +42,7 @@ class MarketTheme {
     ),
     useMaterial3: true,
   );
-
+  //-------------------------------------------------------------------------------------------
   static ThemeData dark = ThemeData(
     brightness: Brightness.dark,
     textSelectionTheme: TextSelectionThemeData(
@@ -66,13 +66,13 @@ class MarketTheme {
       onSecondary: const Color.fromARGB(255, 0, 255, 0), //Button2
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
       onSurfaceVariant: const Color.fromARGB(255, 255, 200, 0), //Rating Bar
-      onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //
+      onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //\
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
     inputDecorationTheme: const InputDecorationTheme(
       errorStyle: TextStyle(
-        color: const Color.fromARGB(255, 255, 0, 0),
+        color: Color.fromARGB(255, 255, 0, 0),
         fontSize: 12,
         fontWeight: FontWeight.w500,
       ),

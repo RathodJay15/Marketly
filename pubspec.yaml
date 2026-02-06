@@ -22,6 +22,7 @@ dependencies:
   pinch_zoom: ^2.0.1
   http: ^1.6.0
   animations: ^2.1.1
+  another_stepper: ^1.2.2
 
 dev_dependencies:
   flutter_test:

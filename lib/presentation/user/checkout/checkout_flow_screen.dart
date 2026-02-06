@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:another_stepper/another_stepper.dart';
 import 'package:marketly/presentation/user/checkout/address_screen.dart';
 import 'package:marketly/presentation/user/checkout/order_summary_screen.dart';
 import 'package:marketly/presentation/user/checkout/payment_screen.dart';
@@ -9,17 +10,17 @@ class CheckoutFlowScreen extends StatefulWidget {
   const CheckoutFlowScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _checkoutFlowScreenState();
+  State<CheckoutFlowScreen> createState() => _CheckoutFlowScreenState();
 }
 
-class _checkoutFlowScreenState extends State<CheckoutFlowScreen> {
+class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
   late CartProvider _cartProvider;
 
   int _currentStep = 0;
 
   void _goNext() {
     if (_currentStep == 0) {
-      context.read<CartProvider>().lockCart();
+      _cartProvider.lockCart();
     }
 
     if (_currentStep < 2) {
@@ -44,14 +45,12 @@ class _checkoutFlowScreenState extends State<CheckoutFlowScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) {
-          return;
-        }
+        if (didPop) return;
 
         final shouldExit = await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
-            backgroundColor: Theme.of(context).colorScheme.primary,
+            // backgroundColor: Theme.of(context).colorScheme.primary,
             title: Text(
               "Cancel checkout?",
               style: TextStyle(
@@ -90,60 +89,90 @@ class _checkoutFlowScreenState extends State<CheckoutFlowScreen> {
           Navigator.of(context).pop(result);
         }
       },
-
       child: Scaffold(
-        extendBody: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
         body: SafeArea(
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              scaffoldBackgroundColor: Colors.white,
+          child: Column(
+            children: [
+              const SizedBox(height: 16),
+              AnotherStepper(
+                stepperDirection: Axis.horizontal,
+                activeIndex: _currentStep,
+                barThickness: 5,
+                activeBarColor: Theme.of(context).colorScheme.onSecondary,
+                inActiveBarColor: Theme.of(
+                  context,
+                ).colorScheme.onInverseSurface,
+                iconWidth: 36,
+                iconHeight: 36,
 
-              colorScheme: Theme.of(context).colorScheme.copyWith(
-                primary: Colors.black, // active step circle & line
-                onPrimary: Colors.white, // number color inside active circle
-                onSurface: const Color(0xFF5C5C5C), // inactive step text
+                stepperList: [
+                  _step("Review", 0),
+                  _step("Address", 1),
+                  _step("Payment", 2),
+                ],
               ),
 
-              dividerColor: Colors.transparent, // removes harsh dividers
-            ),
-            child: Stepper(
-              type: StepperType.horizontal,
-              currentStep: _currentStep,
-              controlsBuilder: (_, __) => const SizedBox(),
+              const SizedBox(height: 24),
 
-              onStepTapped: (index) {
-                if (index <= _currentStep) {
-                  setState(() => _currentStep = index);
-                }
-              },
-
-              steps: [
-                Step(
-                  title: const Text("Review"),
-                  content: OrderSummaryScreen(onNext: _goNext),
-                  isActive: _currentStep >= 0,
-                  state: _currentStep > 0
-                      ? StepState.complete
-                      : StepState.indexed,
+              /// STEP CONTENT
+              Expanded(
+                child: IndexedStack(
+                  index: _currentStep,
+                  children: [
+                    OrderSummaryScreen(onNext: _goNext),
+                    AddressScreen(onNext: _goNext, onBack: _goBack),
+                    PaymentScreen(onBack: _goBack),
+                  ],
                 ),
-                Step(
-                  title: const Text("Address"),
-                  content: AddressScreen(onNext: _goNext, onBack: _goBack),
-                  isActive: _currentStep >= 1,
-                  state: _currentStep > 1
-                      ? StepState.complete
-                      : StepState.indexed,
-                ),
-                Step(
-                  title: const Text("Payment"),
-                  content: PaymentScreen(onBack: _goBack),
-                  isActive: _currentStep >= 2,
-                  state: StepState.indexed,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  StepperData _step(String title, int index) {
+    final isCompleted = _currentStep > index;
+    final isActive = _currentStep == index;
+
+    return StepperData(
+      title: StepperText(
+        title,
+        textStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: isActive || isCompleted
+              ? FontWeight.w600
+              : FontWeight.w400,
+          color: isActive || isCompleted
+              ? Theme.of(context).colorScheme.onSecondary
+              : Theme.of(context).colorScheme.onInverseSurface,
+        ),
+      ),
+      iconWidget: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: isCompleted || isActive
+              ? Theme.of(context).colorScheme.onSecondary
+              : Theme.of(context).colorScheme.onInverseSurface,
+        ),
+        child: Center(
+          child: isCompleted
+              ? Icon(
+                  Icons.check,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.primary,
+                )
+              : Text(
+                  '${index + 1}',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 12,
+                  ),
+                ),
         ),
       ),
     );

@@ -118,7 +118,7 @@ class _cartScreenState extends State<CartScreen> {
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  // backgroundColor: Theme.of(context).colorScheme.primary,
                   title: Text(
                     'Empty cart?',
                     style: TextStyle(
