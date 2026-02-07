@@ -59,15 +59,13 @@ class _cartScreenState extends State<CartScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: SizedBox(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _headerSection(0, context, cartProvider),
-                Expanded(child: _cartPoductList(context, cartProvider)),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _headerSection(0, context, cartProvider),
+              _cartPoductList(context, cartProvider),
+            ],
           ),
         ),
         SizedBox(width: 350, child: _cartSummary(10, context, cartProvider)),

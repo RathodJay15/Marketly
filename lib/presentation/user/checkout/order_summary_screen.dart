@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/order_provider.dart';
+import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
   final VoidCallback onNext;
-  const OrderSummaryScreen({super.key, required this.onNext});
+  final VoidCallback onCancel;
+  const OrderSummaryScreen({
+    super.key,
+    required this.onNext,
+    required this.onCancel,
+  });
 
   @override
   State<StatefulWidget> createState() => _orderSummaryScreenState();
@@ -16,23 +23,58 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
   Widget build(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return Consumer<CartProvider>(
-      builder: (context, cartProvider, _) {
-        return isLandscape
-            ? _landsacpeView(context, cartProvider)
-            : _protrateView(context, cartProvider, widget.onNext);
-      },
+    return PopScope(
+      canPop: false,
+      child: Consumer<CartProvider>(
+        builder: (context, cartProvider, _) {
+          return isLandscape
+              ? _landsacpeView(
+                  context,
+                  cartProvider,
+                  widget.onNext,
+                  widget.onCancel,
+                )
+              : _protrateView(
+                  context,
+                  cartProvider,
+                  widget.onNext,
+                  widget.onCancel,
+                );
+        },
+      ),
     );
   }
   // ---------------------------------------------------------------------------
   // Lanscape View
   // ---------------------------------------------------------------------------
 
-  Widget _landsacpeView(BuildContext context, CartProvider cartProvider) {
+  Widget _landsacpeView(
+    BuildContext context,
+    CartProvider cartProvider,
+    VoidCallback onNext,
+    VoidCallback onCancel,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [],
+      children: [
+        Expanded(
+          flex: 2,
+          child: _productListScetion(10, context, cartProvider),
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 350,
+                child: _totalSection(10, context, cartProvider),
+              ),
+              _bottomButtoms(onNext, onCancel),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -44,14 +86,15 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
     BuildContext context,
     CartProvider cartProvider,
     VoidCallback onNext,
+    VoidCallback onCancel,
   ) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _productListScetion(context, cartProvider),
+        Expanded(child: _productListScetion(20, context, cartProvider)),
         _totalSection(20, context, cartProvider),
-        _bottomButtoms(onNext),
+        _bottomButtoms(onNext, onCancel),
       ],
     );
   }
@@ -60,51 +103,56 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
   // Product List Section
   // ---------------------------------------------------------------------------
 
-  Widget _productListScetion(BuildContext context, CartProvider cartProvider) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView.separated(
-          itemCount: cartProvider.items.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            final item = cartProvider.items[index];
-            return Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSecondaryContainer,
+  Widget _productListScetion(
+    double paddingH,
+    BuildContext context,
+    CartProvider cartProvider,
+  ) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: paddingH),
+      child: ListView.separated(
+        itemCount: cartProvider.items.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder: (context, index) {
+          final item = cartProvider.items[index];
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                collapsedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                iconColor: Theme.of(context).colorScheme.onInverseSurface,
-                collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
-
-                title: _collapsedHeader(context, item),
-                children: [
-                  _priceRow("Base price", item.price),
-                  if (item.discountedTotal > 0)
-                    _priceRow(
-                      "Discount (${item.discountPercentage} % off)",
-                      -(item.price - item.discountedTotal),
-                      isDiscount: true,
-                    ),
-                  Divider(color: Theme.of(context).colorScheme.onPrimary),
-                  _priceRow("Item total", item.discountedTotal, isBold: true),
-                ],
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-            );
-          },
-        ),
+              iconColor: Theme.of(context).colorScheme.onInverseSurface,
+              collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
+              title: _collapsedHeader(context, item),
+              children: [
+                _priceRow("Subtotal", item.total),
+                if (item.discountedTotal > 0)
+                  _priceRow(
+                    "Discount (${item.discountPercentage} % off)",
+                    -(item.total - item.discountedTotal),
+                    isDiscount: true,
+                  ),
+                Divider(color: Theme.of(context).colorScheme.onPrimary),
+                _priceRow(
+                  "Item final total",
+                  item.discountedTotal,
+                  isBold: true,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -124,6 +172,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -137,6 +186,13 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               const SizedBox(height: 4),
               Text(
+                "Base Price: ${item.price}",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ),
+              Text(
                 "Qty: ${item.quantity}",
                 style: TextStyle(
                   fontSize: 14,
@@ -148,7 +204,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
         ),
         const SizedBox(width: 15),
         Text(
-          "\$${item.discountedTotal.toStringAsFixed(0)}",
+          "\$${item.discountedTotal.toStringAsFixed(2)}",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onInverseSurface,
@@ -179,7 +235,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
           ),
           Text(
-            "${value < 0 ? "-" : ""}\$${value.abs().toStringAsFixed(0)}",
+            "${value < 0 ? "-" : ""}\$${value.abs().toStringAsFixed(2)}",
             style: TextStyle(
               fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
               color: isDiscount
@@ -288,17 +344,40 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
   // Bottom Buttom
   //----------------------------------------------------------------------------
 
-  Widget _bottomButtoms(VoidCallback onNext) {
+  Widget _bottomButtoms(VoidCallback onNext, VoidCallback onCancel) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           SizedBox(
             width: 120,
             child: ElevatedButton(
-              onPressed: onNext,
+              onPressed: () => onCancel(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.onSurface,
+                minimumSize: const Size(double.infinity, 50.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 120,
+            child: ElevatedButton(
+              onPressed: () {
+                _setOrderFromCart(context);
+                onNext();
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
                 minimumSize: const Size(double.infinity, 50.0),
@@ -318,5 +397,46 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
         ],
       ),
     );
+  }
+
+  void _setOrderFromCart(BuildContext context) {
+    final cartProvider = context.read<CartProvider>();
+    final userProvider = context.read<UserProvider>();
+    final orderProvider = context.read<OrderProvider>();
+
+    final user = userProvider.user;
+    if (user == null) return;
+
+    // Init order only once
+    if (orderProvider.order == null) {
+      orderProvider.initOrder(
+        userId: user.uid,
+        userInfo: {"name": user.name, "email": user.email, "phone": user.phone},
+      );
+    }
+
+    // Convert cart → order items
+    final items = cartProvider.items.map((item) {
+      return {
+        "productId": item.id,
+        "title": item.title,
+        "price": item.price,
+        "quantity": item.quantity,
+        "discount": item.discountPercentage,
+        "finalPrice": item.discountedTotal,
+        "image": item.thumbnail,
+      };
+    }).toList();
+
+    // Pricing
+    final pricing = {
+      "subtotal": cartProvider.subTotal,
+      "discount": cartProvider.totalDiscount,
+      "discountPercentage": cartProvider.totalDiscountPercentage,
+      "total": cartProvider.finalTotal,
+    };
+
+    orderProvider.setItems(items);
+    orderProvider.setPricing(pricing);
   }
 }

@@ -5,6 +5,7 @@ import 'package:marketly/firebase_options.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
+import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
@@ -28,6 +29,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

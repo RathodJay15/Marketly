@@ -2,8 +2,12 @@ class UserModel {
   final String uid;
   final String name;
   final String email;
-  final String address;
+  final List<Map<String, dynamic>> addresses;
   final String phone;
+  final String city;
+  final String state;
+  final String country;
+  final String pincode;
   final String profilePic;
   final String role; // 'admin' or 'user'
 
@@ -13,8 +17,12 @@ class UserModel {
     required this.email,
     required this.role,
     required this.phone,
-    required this.address,
+    required this.addresses,
     required this.profilePic,
+    required this.city,
+    required this.country,
+    required this.state,
+    required this.pincode,
   });
 
   factory UserModel.fromFirestore(Map<String, dynamic> map, String uid) {
@@ -22,8 +30,12 @@ class UserModel {
       uid: uid,
       name: map['name'],
       email: map['email'],
-      address: map['address'],
+      addresses: List<Map<String, dynamic>>.from(map['addresses'] ?? []),
       phone: map['phone'],
+      city: map['city'],
+      country: map['country'],
+      pincode: map['pincode'],
+      state: map['state'],
       profilePic: map['profilePic'],
       role: map['role'],
     );
@@ -33,9 +45,13 @@ class UserModel {
     return {
       'name': name,
       'email': email,
-      'address': address,
+      'addresses': addresses,
       'phone': phone,
       'role': role,
+      'state': state,
+      'city': city,
+      'country': country,
+      'pincode': pincode,
       'profilePic': profilePic,
     };
   }

@@ -17,6 +17,10 @@ class _registerScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _countyController = TextEditingController();
+  final TextEditingController _pincodeController = TextEditingController();
 
   final _authService = authService;
 
@@ -52,6 +56,10 @@ class _registerScreenState extends State<RegisterScreen> {
         password: _passwordController.text.trim(),
         phone: _phoneController.text.trim(),
         address: _addressController.text.trim(),
+        city: _cityController.text.trim(),
+        state: _stateController.text.trim(),
+        country: _countyController.text.trim(),
+        pincode: _pincodeController.text.trim(),
         profilePic: '',
       );
 
@@ -182,6 +190,35 @@ class _registerScreenState extends State<RegisterScreen> {
                       controller: _addressController,
                       validator: Validators.address,
                       maxLine: 3,
+                    ),
+                    const SizedBox(height: 20.0),
+                    _textFormField(
+                      icon: Icons.location_city_outlined,
+                      hint: 'City',
+                      controller: _cityController,
+                      validator: Validators.username,
+                    ),
+                    const SizedBox(height: 20.0),
+                    _textFormField(
+                      icon: Icons.map_outlined,
+                      hint: 'State',
+                      controller: _stateController,
+                      validator: Validators.username,
+                    ),
+                    const SizedBox(height: 20.0),
+                    _textFormField(
+                      icon: Icons.public_outlined,
+                      hint: 'Country',
+                      controller: _countyController,
+                      validator: Validators.username,
+                    ),
+
+                    const SizedBox(height: 20.0),
+                    _textFormField(
+                      icon: Icons.pin_outlined,
+                      hint: 'Pincode',
+                      controller: _pincodeController,
+                      validator: Validators.username,
                     ),
 
                     const SizedBox(height: 40.0),
@@ -401,6 +438,48 @@ class Validators {
 
     if (value.trim().length < 10) {
       return 'Address is too short';
+    }
+
+    return null;
+  }
+
+  // City
+  static String? city(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'City is required';
+    }
+
+    return null;
+  }
+
+  // State
+  static String? state(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'State is required';
+    }
+
+    return null;
+  }
+
+  // Country
+  static String? country(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Country is required';
+    }
+
+    return null;
+  }
+
+  // Pin code (6 digits)
+  static String? pincode(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Pin code is required';
+    }
+
+    final phoneRegex = RegExp(r'^[0-9]{6}$');
+
+    if (!phoneRegex.hasMatch(value.trim())) {
+      return 'Enter a valid 6-digit Pin code';
     }
 
     return null;

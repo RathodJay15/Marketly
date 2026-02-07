@@ -8,21 +8,22 @@ class AuthService {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
+  // ------------------------------------------------------------
+  // Get user profile
+  // ------------------------------------------------------------
   Future<UserModel?> getUserProfile(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
-
       if (!doc.exists || doc.data() == null) return null;
-
       return UserModel.fromFirestore(doc.data()!, uid);
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Error fetching user data');
     } catch (e) {
       throw Exception('Failed to load user profile');
     }
   }
 
-  // login
+  // ------------------------------------------------------------
+  // Login
+  // ------------------------------------------------------------
   Future<UserModel?> login({
     required String email,
     required String password,
@@ -32,30 +33,26 @@ class AuthService {
         email: email,
         password: password,
       );
-      final user = result.user;
 
-      if (user == null) return null;
-
-      return await getUserProfile(user.uid);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'wrong-password' ||
-          e.code == 'user-not-found' ||
-          e.code == 'invalid-credential') {
-        throw Exception('Invalid email or password');
-      } else {
-        throw Exception('from auth_service:${e.message}');
-      }
-    } catch (e) {
-      throw Exception('Somthing went wrong during login!!');
+      if (result.user == null) return null;
+      return await getUserProfile(result.user!.uid);
+    } on FirebaseAuthException catch (_) {
+      throw Exception('Invalid email or password');
     }
   }
 
-  // register
+  // ------------------------------------------------------------
+  // Register
+  // ------------------------------------------------------------
   Future<UserModel?> register({
     required String name,
     required String email,
     required String password,
     required String phone,
+    required String city,
+    required String state,
+    required String country,
+    required String pincode,
     required String address,
     required String profilePic,
   }) async {
@@ -68,14 +65,26 @@ class AuthService {
       final user = cred.user;
       if (user == null) return null;
 
+      final defaultAddress = [
+        {
+          "id": DateTime.now().millisecondsSinceEpoch.toString(),
+          "address": address,
+          "isDefault": true,
+        },
+      ];
+
       final userModel = UserModel(
         uid: user.uid,
         name: name,
         email: email,
         phone: phone,
-        address: address,
+        city: city,
+        state: state,
+        country: country,
+        pincode: pincode,
         role: 'user',
         profilePic: profilePic,
+        addresses: defaultAddress,
       );
 
       await _firestore
@@ -84,14 +93,103 @@ class AuthService {
           .set(userModel.toFirestore());
 
       return userModel;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message ?? 'Registration failed');
     } catch (e) {
-      throw Exception('Somthing went wrong during registration!!');
+      throw Exception('Registration failed');
     }
   }
 
-  // logout
+  // ------------------------------------------------------------
+  // Add new address
+  // ------------------------------------------------------------
+  Future<void> addAddress({
+    required String uid,
+    required String address,
+    bool setAsDefault = false,
+  }) async {
+    final userRef = _firestore.collection('users').doc(uid);
+    final doc = await userRef.get();
+
+    final addresses = List<Map<String, dynamic>>.from(
+      doc.data()?['addresses'] ?? [],
+    );
+
+    if (setAsDefault) {
+      for (final a in addresses) {
+        a['isDefault'] = false;
+      }
+    }
+
+    addresses.add({
+      "id": DateTime.now().millisecondsSinceEpoch.toString(),
+      "address": address,
+      "isDefault": setAsDefault,
+    });
+
+    await userRef.update({"addresses": addresses});
+  }
+
+  // ------------------------------------------------------------
+  // Update address text
+  // ------------------------------------------------------------
+  Future<void> updateAddress({
+    required String uid,
+    required String addressId,
+    required String newAddress,
+  }) async {
+    final userRef = _firestore.collection('users').doc(uid);
+    final doc = await userRef.get();
+
+    final addresses = List<Map<String, dynamic>>.from(
+      doc.data()?['addresses'] ?? [],
+    );
+
+    final index = addresses.indexWhere((a) => a['id'] == addressId);
+    if (index == -1) return;
+
+    addresses[index]['address'] = newAddress;
+
+    await userRef.update({"addresses": addresses});
+  }
+
+  // ------------------------------------------------------------
+  // Set default address
+  // ------------------------------------------------------------
+  Future<void> setDefaultAddress({
+    required String uid,
+    required String addressId,
+  }) async {
+    final userRef = _firestore.collection('users').doc(uid);
+    final doc = await userRef.get();
+
+    final addresses = List<Map<String, dynamic>>.from(
+      doc.data()?['addresses'] ?? [],
+    );
+
+    for (final addr in addresses) {
+      addr['isDefault'] = addr['id'] == addressId;
+    }
+
+    await userRef.update({"addresses": addresses});
+  }
+
+  Future<void> unsetDefaultAddress(String uid) async {
+    final userRef = _firestore.collection('users').doc(uid);
+    final doc = await userRef.get();
+
+    final addresses = List<Map<String, dynamic>>.from(
+      doc.data()?['addresses'] ?? [],
+    );
+
+    for (final addr in addresses) {
+      addr['isDefault'] = false;
+    }
+
+    await userRef.update({"addresses": addresses});
+  }
+
+  // ------------------------------------------------------------
+  // Logout
+  // ------------------------------------------------------------
   Future<void> logout() async {
     await _firebaseAuth.signOut();
   }

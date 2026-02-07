@@ -34,6 +34,47 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
     }
   }
 
+  Future<void> _confirmCancelCheckout({Object? result}) async {
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          "Cancel checkout?",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+        content: Text(
+          "Your cart will be unlocked.",
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              "No",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              "Yes",
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldExit == true) {
+      _cartProvider.unlockCart();
+      Navigator.of(context).pop(result);
+    }
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -46,48 +87,7 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-
-        final shouldExit = await showDialog<bool>(
-          context: context,
-          builder: (_) => AlertDialog(
-            // backgroundColor: Theme.of(context).colorScheme.primary,
-            title: Text(
-              "Cancel checkout?",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-            ),
-            content: Text(
-              "Your cart will be unlocked.",
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(
-                  "No",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(
-                  "Yes",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-
-        if (shouldExit == true) {
-          _cartProvider.unlockCart();
-          Navigator.of(context).pop(result);
-        }
+        await _confirmCancelCheckout(result: result);
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -115,12 +115,14 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
 
               const SizedBox(height: 24),
 
-              /// STEP CONTENT
               Expanded(
                 child: IndexedStack(
                   index: _currentStep,
                   children: [
-                    OrderSummaryScreen(onNext: _goNext),
+                    OrderSummaryScreen(
+                      onNext: _goNext,
+                      onCancel: _confirmCancelCheckout,
+                    ),
                     AddressScreen(onNext: _goNext, onBack: _goBack),
                     PaymentScreen(onBack: _goBack),
                   ],
@@ -170,7 +172,7 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
                   '${index + 1}',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
-                    fontSize: 12,
+                    fontSize: 18,
                   ),
                 ),
         ),
