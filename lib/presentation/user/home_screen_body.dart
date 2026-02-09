@@ -113,6 +113,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           onTap: () async {
             await AuthService().logout(); // Firebase session
             context.read<UserProvider>().clearUser(); // App state
+            context.read<CartProvider>().stopListening();
           },
           child: Container(
             height: 50,

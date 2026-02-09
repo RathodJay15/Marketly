@@ -5,7 +5,7 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
-import 'package:marketly/presentation/user/profile_screen.dart';
+import 'package:marketly/presentation/user/menu_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
@@ -75,7 +75,7 @@ class _homeScreenState extends State<HomeScreen>
             HomeScreenBody(),
             SearchProductsScreen(),
             CartScreen(),
-            ProfileScreen(),
+            MenuScreen(),
           ],
         ),
       ),
@@ -143,9 +143,9 @@ class _homeScreenState extends State<HomeScreen>
                     BottomNavigationBarItem(
                       icon: Padding(
                         padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Icon(Icons.person, size: 20),
+                        child: Icon(Icons.menu_rounded, size: 20),
                       ),
-                      label: AppConstants.profile,
+                      label: AppConstants.menu,
                     ),
                   ],
                 ),
