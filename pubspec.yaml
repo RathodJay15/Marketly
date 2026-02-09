@@ -23,6 +23,7 @@ dependencies:
   http: ^1.6.0
   animations: ^2.1.1
   another_stepper: ^1.2.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

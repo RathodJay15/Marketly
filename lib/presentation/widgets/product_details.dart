@@ -186,6 +186,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                     backgroundColor: Theme.of(
                       context,
                     ).colorScheme.onInverseSurface,
+                    duration: Duration(seconds: 1),
                   ),
                 );
               },

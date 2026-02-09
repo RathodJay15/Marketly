@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
-import 'package:marketly/data/services/order_service.dart';
+import 'package:marketly/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _paymentScreenState extends State<PaymentScreen> {
-  String _paymentMethod = 'cod';
+  String _paymentMethod = 'Cash on Delivery';
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +29,45 @@ class _paymentScreenState extends State<PaymentScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _actionButton(
-                label: "Back",
-                onTap: widget.onBack,
-                bg: Theme.of(context).colorScheme.onSurface,
+              SizedBox(
+                width: 140,
+                child: ElevatedButton(
+                  onPressed: widget.onBack,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.onSurface,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Back',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
               ),
-              _actionButton(
-                label: "Place Order",
-                onTap: _placeOrder,
-                bg: Theme.of(context).colorScheme.onInverseSurface,
+              SizedBox(
+                width: 160,
+                child: ElevatedButton(
+                  onPressed: _placeOrder,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Place Order',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -60,33 +91,15 @@ class _paymentScreenState extends State<PaymentScreen> {
     }
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       children: [
-        _sectionTitle("Final Order Summary"),
-        _greyCard(
-          children: [
-            ...order.items.map(
-              (item) => _row(
-                "${item['title']} x ${item['quantity']}",
-                "₹${item['total']}",
-              ),
-            ),
-            const Divider(color: Colors.white24),
-            _row("Subtotal", "₹${order.pricing['subtotal']}"),
-            _row("Discount", "-₹${order.pricing['discount']}"),
-            _row("Total", "₹${order.pricing['total']}", isBold: true),
-          ],
-        ),
-
-        const SizedBox(height: 24),
-
         _sectionTitle("User Details"),
         _greyCard(
           children: [
             _row("Name", order.userInfo['name']),
             _row("Email", order.userInfo['email']),
             _row("Phone", order.userInfo['phone']),
-            const Divider(color: Colors.white24),
+            Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row("Address", order.address['address']),
             _row("City", order.address['city']),
             _row("State", order.address['state']),
@@ -97,12 +110,41 @@ class _paymentScreenState extends State<PaymentScreen> {
 
         const SizedBox(height: 24),
 
+        _sectionTitle("Final Order Summary"),
+        _greyCard(
+          children: [
+            ...order.items.map(
+              (item) => _row(
+                "${item['title']} x ${item['quantity']}",
+                "\$${item['finalPrice'].toStringAsFixed(2)}",
+              ),
+            ),
+            Divider(color: Theme.of(context).colorScheme.onPrimary),
+            _row(
+              "Subtotal",
+              "\$${order.pricing['subtotal'].toStringAsFixed(2)}",
+            ),
+            _row(
+              "Discount",
+              "-\$${order.pricing['discount'].toStringAsFixed(2)}",
+            ),
+            Divider(color: Theme.of(context).colorScheme.onPrimary),
+            _row(
+              "Total",
+              "\$${order.pricing['total'].toStringAsFixed(2)}",
+              isBold: true,
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
         _sectionTitle("Payment Method"),
         _greyCard(
           children: [
-            _radioTile("upi", "UPI"),
-            _radioTile("card", "Card"),
-            _radioTile("cod", "Cash on Delivery"),
+            _radioTile("UPI", "UPI"),
+            _radioTile("Card", "Card"),
+            _radioTile("Cash on Delivery", "Cash on Delivery"),
           ],
         ),
       ],
@@ -116,24 +158,36 @@ class _paymentScreenState extends State<PaymentScreen> {
   Future<void> _placeOrder() async {
     final orderProvider = context.read<OrderProvider>();
     final cartProvider = context.read<CartProvider>();
-    final orderService = OrderService();
+    final navigationProvider = context.read<NavigationProvider>();
 
-    final order = orderProvider.order;
-    if (order == null) return;
-
-    // set payment method
     orderProvider.setPaymentMethod(_paymentMethod);
 
-    // save order
-    await orderService.placeOrder(order);
+    // Place order via PROVIDER
+    await orderProvider.placeOrder();
 
-    // clear states
+    // Clear states
+    cartProvider.unlockCart();
     cartProvider.clearCart();
     orderProvider.clearOrder();
 
-    // navigate to home
-    if (!mounted) return;
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    // set NavBar index to Profile
+    navigationProvider.setScreenIndex(3);
+
+    // navigate to Profile/my order
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => MyOrdersScreen()),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Order placed successfully 🎉',
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -145,8 +199,8 @@ class _paymentScreenState extends State<PaymentScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onInverseSurface,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
@@ -158,10 +212,14 @@ class _paymentScreenState extends State<PaymentScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
-        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(children: children),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
     );
   }
 
@@ -170,19 +228,33 @@ class _paymentScreenState extends State<PaymentScreen> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white70,
-              fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
+          SizedBox(
+            width: 150,
+            child: Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                fontWeight: isBold ? FontWeight.w900 : FontWeight.w600,
+              ),
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
+
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: isBold ? FontWeight.w900 : FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],
@@ -194,38 +266,19 @@ class _paymentScreenState extends State<PaymentScreen> {
     return RadioListTile<String>(
       value: value,
       groupValue: _paymentMethod,
-      activeColor: Colors.white,
-      title: Text(label, style: const TextStyle(color: Colors.white)),
+      fillColor: WidgetStateColor.resolveWith(
+        (states) => Theme.of(context).colorScheme.onPrimary,
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onInverseSurface,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       onChanged: (val) {
         setState(() => _paymentMethod = val!);
       },
-    );
-  }
-
-  Widget _actionButton({
-    required String label,
-    required VoidCallback onTap,
-    required Color bg,
-  }) {
-    return SizedBox(
-      width: 140,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bg,
-          minimumSize: const Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-      ),
     );
   }
 }

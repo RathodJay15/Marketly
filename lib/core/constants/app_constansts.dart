@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+
 class AppConstants {
   static const String welcomeMsg = "Hello, Welcome 👋";
   static const String searchProducts = "Search products..";
@@ -8,4 +11,18 @@ class AppConstants {
   static const String profile = "Profile";
   static const String ourProducts = "Our Products";
   static const String seeAll = "See all";
+
+  static String formatedDate(Timestamp timestamp) {
+    final dateTime = timestamp.toDate();
+
+    final date = DateFormat('d MMMM yyyy').format(dateTime);
+
+    return date;
+  }
+
+  static String formatedTime(Timestamp timestamp) {
+    final dateTime = timestamp.toDate();
+    final time = DateFormat('HH:mm').format(dateTime);
+    return time;
+  }
 }
