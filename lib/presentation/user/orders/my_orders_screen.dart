@@ -144,7 +144,8 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
                         child: Text(
                           'View Order details',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),

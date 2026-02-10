@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/presentation/user/menu/my_account_screen.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/providers/cart_provider.dart';
@@ -83,58 +85,56 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
   Widget _buildProfileCard() {
     final user = context.read<UserProvider>().user;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppConstants.welcomeMsg,
-              style: TextStyle(
-                fontSize: 15,
-                color: Theme.of(context).colorScheme.onPrimary,
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => MyAccountScreen()),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppConstants.welcomeMsg,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
-            ),
-            Text(
-              context.read<UserProvider>().user!.name.isEmpty
-                  ? 'Username'
-                  : context.read<UserProvider>().user!.name,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              Text(
+                context.read<UserProvider>().user!.name.isEmpty
+                    ? 'Username'
+                    : context.read<UserProvider>().user!.name,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
-        ),
-        Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-            borderRadius: BorderRadius.circular(10),
-            image: (user!.profilePic != null && user.profilePic!.isNotEmpty)
-                ? DecorationImage(
-                    image: NetworkImage(
-                      '${user.profilePic}?v=${DateTime.now().millisecondsSinceEpoch}',
-                    ),
-                    fit: BoxFit.cover,
-                  )
-                : null,
+            ],
           ),
-          child: (user.profilePic == null || user.profilePic!.isEmpty)
-              ? Center(
-                  child: Icon(
-                    Icons.person,
-                    size: 30,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                )
-              : null,
-        ),
-      ],
+          Container(
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+            clipBehavior: Clip.antiAlias,
+            child: CachedNetworkImage(
+              imageUrl: context.read<UserProvider>().user!.profilePic!,
+              height: 50,
+              width: 50,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+              errorWidget: (_, __, ___) => Container(
+                color: Theme.of(context).colorScheme.onPrimary,
+                child: const Icon(Icons.image_not_supported),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

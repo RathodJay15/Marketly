@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/data/models/user_model.dart';
@@ -180,30 +181,22 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         children: [
           // Image / Placeholder
           Container(
-            key: ValueKey(user.profilePic),
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-              borderRadius: BorderRadius.circular(10),
-              image: (user.profilePic != null && user.profilePic!.isNotEmpty)
-                  ? DecorationImage(
-                      image: NetworkImage(
-                        '${user.profilePic}?v=${DateTime.now().millisecondsSinceEpoch}',
-                      ),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+            clipBehavior: Clip.antiAlias,
+            child: CachedNetworkImage(
+              imageUrl:
+                  '${user.profilePic}?v=${DateTime.now().millisecondsSinceEpoch}',
+              height: 120,
+              width: 120,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+              errorWidget: (_, __, ___) => Container(
+                color: Theme.of(context).colorScheme.onPrimary,
+                child: const Icon(Icons.image_not_supported),
+              ),
             ),
-            child: (user.profilePic == null || user.profilePic!.isEmpty)
-                ? Center(
-                    child: Icon(
-                      Icons.person,
-                      size: 60,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                  )
-                : null,
           ),
 
           // Edit button
