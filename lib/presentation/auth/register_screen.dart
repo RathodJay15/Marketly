@@ -65,6 +65,8 @@ class _registerScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
+    FocusScope.of(context).unfocus();
+
     setState(() {
       isLoading = true;
       _errorMsg = null;

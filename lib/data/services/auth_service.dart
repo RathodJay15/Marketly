@@ -85,6 +85,7 @@ class AuthService {
         role: 'user',
         profilePic: profilePic,
         addresses: defaultAddress,
+        themeMode: 'system',
       );
 
       await _firestore

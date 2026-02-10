@@ -29,6 +29,7 @@ class _loginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
+    FocusScope.of(context).unfocus();
     setState(() {
       isLoading = true;
       _errorMsg = null;

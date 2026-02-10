@@ -9,6 +9,7 @@ class UserModel {
   final String country;
   final String pincode;
   final String? profilePic;
+  final String themeMode;
   final String role; // 'admin' or 'user'
 
   UserModel({
@@ -23,6 +24,7 @@ class UserModel {
     required this.country,
     required this.state,
     required this.pincode,
+    required this.themeMode,
   });
 
   factory UserModel.fromFirestore(Map<String, dynamic> map, String uid) {
@@ -38,6 +40,7 @@ class UserModel {
       state: map['state'],
       profilePic: map['profilePic'],
       role: map['role'],
+      themeMode: map['themeMode'] ?? 'system',
     );
   }
 
@@ -53,6 +56,7 @@ class UserModel {
       'country': country,
       'pincode': pincode,
       'profilePic': profilePic,
+      'themeMode': themeMode,
     };
   }
 
@@ -67,6 +71,7 @@ class UserModel {
     String? pincode,
     String? profilePic,
     String? role,
+    String? themeMode,
   }) {
     return UserModel(
       uid: uid,
@@ -80,6 +85,7 @@ class UserModel {
       pincode: pincode ?? this.pincode,
       profilePic: profilePic ?? this.profilePic,
       role: role ?? this.role,
+      themeMode: themeMode ?? this.themeMode,
     );
   }
 }

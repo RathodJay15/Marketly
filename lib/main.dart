@@ -31,12 +31,16 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.system,
-        theme: MarketTheme.light,
-        darkTheme: MarketTheme.dark,
-        home: const AuthGate(),
+      child: Consumer<UserProvider>(
+        builder: (context, userProvider, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            themeMode: userProvider.themeMode,
+            theme: MarketTheme.light,
+            darkTheme: MarketTheme.dark,
+            home: const AuthGate(),
+          );
+        },
       ),
     );
   }

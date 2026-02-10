@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
@@ -49,6 +50,7 @@ class _menuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user!;
     return ListView(
       scrollDirection: Axis.vertical,
       children: [
@@ -60,6 +62,21 @@ class _menuScreenState extends State<MenuScreen> {
           'My Order',
         ),
         _buildTile(goToCart, Icons.shopping_cart, 'My Cart'),
+
+        _themeTile(
+          currentTheme: user.themeMode, // 'system' | 'light' | 'dark'
+          onChanged: (theme) async {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({'themeMode': theme});
+
+            context.read<UserProvider>().setUser(
+              user.copyWith(themeMode: theme),
+            );
+          },
+        ),
+
         _buildTile(logout, Icons.logout_outlined, 'Logout'),
       ],
     );
@@ -102,6 +119,70 @@ class _menuScreenState extends State<MenuScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _themeTile({
+    required String currentTheme, // 'system' | 'light' | 'dark'
+    required ValueChanged<String> onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        height: 50,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.brightness_6_outlined,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              size: 25,
+            ),
+
+            const SizedBox(width: 10),
+
+            Text(
+              'Theme',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                fontSize: 18,
+              ),
+            ),
+
+            const Spacer(),
+
+            DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: currentTheme,
+                dropdownColor: Theme.of(
+                  context,
+                ).colorScheme.onSecondaryContainer,
+                icon: Icon(
+                  Icons.arrow_drop_down,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'system', child: Text('System')),
+                  DropdownMenuItem(value: 'light', child: Text('Light')),
+                  DropdownMenuItem(value: 'dark', child: Text('Dark')),
+                ],
+                onChanged: (value) {
+                  if (value == null) return;
+                  onChanged(value);
+                },
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
