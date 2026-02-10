@@ -84,7 +84,6 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Widget _buildProfileCard() {
-    final user = context.read<UserProvider>().user;
     return GestureDetector(
       onTap: () => Navigator.push(
         context,

@@ -44,7 +44,7 @@ class _menuScreenState extends State<MenuScreen> {
   void logout() async {
     await AuthService().logout(); // Firebase session
     context.read<UserProvider>().clearUser(); // App state
-    context.read<NavigationProvider>().setScreenIndex(0);
+    context.read<NavigationProvider>().setScreenIndex(0); // set navbar to home
     context.read<CartProvider>().stopListening();
   }
 
