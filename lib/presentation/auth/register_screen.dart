@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
+import 'package:marketly/data/services/profile_pic_service.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -21,10 +25,14 @@ class _registerScreenState extends State<RegisterScreen> {
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countyController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
+  final ProfilePicService _profilePicService = ProfilePicService();
 
   final _authService = authService;
 
   final _formKey = GlobalKey<FormState>();
+
+  File? _selectedImage;
+  final ImagePicker _imagePicker = ImagePicker();
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
@@ -41,6 +49,19 @@ class _registerScreenState extends State<RegisterScreen> {
     setState(() {
       _obscureConfirm = !_obscureConfirm;
     });
+  }
+
+  Future<void> _pickImage() async {
+    final picked = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
   }
 
   Future<void> _register() async {
@@ -63,6 +84,19 @@ class _registerScreenState extends State<RegisterScreen> {
         profilePic: '',
       );
 
+      if (_selectedImage != null) {
+        final imageUrl = await _profilePicService.uploadProfileImage(
+          uid: user!.uid,
+          imageFile: _selectedImage!,
+        );
+
+        if (imageUrl != null) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({'profilePic': imageUrl});
+        }
+      }
       if (user != null) {
         context.read<UserProvider>().setUser(user);
         Navigator.pop(context);
@@ -221,6 +255,12 @@ class _registerScreenState extends State<RegisterScreen> {
                       validator: Validators.username,
                     ),
 
+                    const SizedBox(height: 20.0),
+                    _profileImageFormField(
+                      imageFile: _selectedImage,
+                      onTap: _pickImage,
+                    ),
+
                     const SizedBox(height: 40.0),
 
                     // Sign up Button
@@ -356,6 +396,68 @@ class _registerScreenState extends State<RegisterScreen> {
                 ),
               )
             : null,
+      ),
+    );
+  }
+
+  Widget _profileImageFormField({
+    required File? imageFile,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            // left icon
+            Icon(
+              Icons.person_outline,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+
+            const SizedBox(width: 12),
+
+            // text / preview
+            Expanded(
+              child: imageFile == null
+                  ? Text(
+                      'Upload profile picture (optional)',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    )
+                  : Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundImage: FileImage(imageFile),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Image selected',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontSize: 17,
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+
+            Icon(
+              Icons.camera_alt_outlined,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+          ],
+        ),
       ),
     );
   }

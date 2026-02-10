@@ -301,7 +301,7 @@ class _addressScreenState extends State<AddressScreen> {
         keyboardType: keyboardType,
         maxLines: maxLines,
         minLines: 1,
-        textInputAction: TextInputAction.next,
+        textInputAction: TextInputAction.done,
         style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
         decoration: InputDecoration(
           hintText: hint,

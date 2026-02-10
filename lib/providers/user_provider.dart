@@ -6,7 +6,6 @@ class UserProvider extends ChangeNotifier {
   UserModel? get user => _user;
 
   void setUser(UserModel user) {
-    if (_user?.uid == user.uid) return;
     _user = user;
     notifyListeners();
   }

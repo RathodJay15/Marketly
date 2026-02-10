@@ -78,7 +78,15 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
           );
         }
         if (orderProvider.orders.isEmpty) {
-          return const SizedBox(child: Text('No Order History!'));
+          return Center(
+            child: Text(
+              'No Order History!',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 20,
+              ),
+            ),
+          );
         }
 
         return Padding(

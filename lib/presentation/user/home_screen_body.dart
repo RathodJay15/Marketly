@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
-import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/providers/cart_provider.dart';
@@ -83,6 +82,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Widget _buildProfileCard() {
+    final user = context.read<UserProvider>().user;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,20 +109,30 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             ),
           ],
         ),
-        GestureDetector(
-          onTap: () async {
-            await AuthService().logout(); // Firebase session
-            context.read<UserProvider>().clearUser(); // App state
-            context.read<CartProvider>().stopListening();
-          },
-          child: Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
-              borderRadius: BorderRadius.circular(10),
-            ),
+        Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            borderRadius: BorderRadius.circular(10),
+            image: (user!.profilePic != null && user.profilePic!.isNotEmpty)
+                ? DecorationImage(
+                    image: NetworkImage(
+                      '${user.profilePic}?v=${DateTime.now().millisecondsSinceEpoch}',
+                    ),
+                    fit: BoxFit.cover,
+                  )
+                : null,
           ),
+          child: (user.profilePic == null || user.profilePic!.isEmpty)
+              ? Center(
+                  child: Icon(
+                    Icons.person,
+                    size: 30,
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                )
+              : null,
         ),
       ],
     );
