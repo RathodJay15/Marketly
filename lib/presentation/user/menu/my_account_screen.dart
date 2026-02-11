@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -162,7 +164,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             iconSize: 35,
           ),
           Text(
-            'My Account',
+            AppConstants.myAccount,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
               fontSize: 25,
@@ -238,7 +240,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
           _editableField(
             fieldKey: 'name',
             controller: nameCtrl,
-            hint: "Full Name",
+            hint: AppConstants.username,
             icon: Icons.person_outline,
             validator: Validators.username,
           ),
@@ -246,7 +248,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
           _editableField(
             fieldKey: 'phone',
             controller: phoneCtrl,
-            hint: "Phone Number",
+            hint: AppConstants.phone,
             icon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
             validator: Validators.phone,
@@ -268,7 +270,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                   fontWeight: FontWeight.bold,
                 ),
                 decoration: InputDecoration(
-                  hintText: "Address",
+                  hintText: AppConstants.adrs,
                   filled: true,
                   hintStyle: TextStyle(
                     color: Theme.of(context).colorScheme.onInverseSurface,
@@ -294,28 +296,28 @@ class _myAccountScreenState extends State<MyAccountScreen> {
           _editableField(
             fieldKey: 'city',
             controller: cityCtrl,
-            hint: "City",
+            hint: AppConstants.ct,
             icon: Icons.location_city_outlined,
             validator: Validators.city,
           ),
           _editableField(
             fieldKey: 'state',
             controller: stateCtrl,
-            hint: "State",
+            hint: AppConstants.state,
             icon: Icons.map_outlined,
             validator: Validators.city,
           ),
           _editableField(
             fieldKey: 'country',
             controller: countryCtrl,
-            hint: "Country",
+            hint: AppConstants.cntry,
             icon: Icons.public_rounded,
             validator: Validators.city,
           ),
           _editableField(
             fieldKey: 'pincode',
             controller: pincodeCtrl,
-            hint: "Pincode",
+            hint: AppConstants.pincode,
             icon: Icons.pin_outlined,
             validator: Validators.city,
           ),
@@ -423,101 +425,5 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         pincode: updates['pincode'],
       ),
     );
-  }
-}
-
-class Validators {
-  // Username
-  static String? username(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Username is required';
-    }
-
-    return null;
-  }
-
-  //  Email
-  static String? email(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Email is required';
-    }
-
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-    if (!emailRegex.hasMatch(value.trim())) {
-      return 'Enter a valid email address';
-    }
-
-    return null;
-  }
-
-  // Phone Number (10 digits)
-  static String? phone(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Phone number is required';
-    }
-
-    final phoneRegex = RegExp(r'^[0-9]{10}$');
-
-    if (!phoneRegex.hasMatch(value.trim())) {
-      return 'Enter a valid 10-digit phone number';
-    }
-
-    return null;
-  }
-
-  // Address
-  static String? address(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Address is required';
-    }
-
-    if (value.trim().length < 10) {
-      return 'Address is too short';
-    }
-
-    return null;
-  }
-
-  // City
-  static String? city(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'City is required';
-    }
-
-    return null;
-  }
-
-  // State
-  static String? state(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'State is required';
-    }
-
-    return null;
-  }
-
-  // Country
-  static String? country(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Country is required';
-    }
-
-    return null;
-  }
-
-  // Pin code (6 digits)
-  static String? pincode(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Pin code is required';
-    }
-
-    final phoneRegex = RegExp(r'^[0-9]{6}$');
-
-    if (!phoneRegex.hasMatch(value.trim())) {
-      return 'Enter a valid 6-digit Pin code';
-    }
-
-    return null;
   }
 }

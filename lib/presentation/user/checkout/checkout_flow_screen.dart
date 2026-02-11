@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:another_stepper/another_stepper.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/checkout/address_screen.dart';
 import 'package:marketly/presentation/user/checkout/order_summary_screen.dart';
 import 'package:marketly/presentation/user/checkout/payment_screen.dart';
@@ -39,20 +40,20 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(
-          "Cancel checkout?",
+          AppConstants.cancelCheckOut,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
         ),
         content: Text(
-          "Your cart will be unlocked.",
+          AppConstants.areYouSureCancelCheckOut,
           style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              "No",
+              AppConstants.no,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
@@ -61,7 +62,7 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              "Yes",
+              AppConstants.yes,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),

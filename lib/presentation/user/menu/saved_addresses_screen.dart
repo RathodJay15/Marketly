@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -55,7 +56,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
           Text(
-            'Saved Addresses',
+            AppConstants.savedAdrs,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
               fontSize: 25,
@@ -100,7 +101,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
             ),
             subtitle: isDefault
                 ? Text(
-                    'Default address',
+                    AppConstants.defaultAdrs,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),
@@ -149,7 +150,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         minLines: 1,
         maxLines: 3,
         decoration: InputDecoration(
-          hintText: 'Add new address',
+          hintText: AppConstants.addNewAdrs,
           hintStyle: TextStyle(
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
@@ -250,20 +251,20 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(
-          'Delete address',
+          '${AppConstants.delete} ${AppConstants.adrs}',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
         ),
         content: Text(
-          'Are you sure you want to delete this address?',
+          AppConstants.areYouSureDeleteAdrs,
           style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              AppConstants.cancel,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
@@ -275,7 +276,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
               await _deleteAddress(user: user, addressId: address['id']);
             },
             child: Text(
-              'Delete',
+              AppConstants.delete,
               style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/checkout/checkout_flow_screen.dart';
 import 'package:marketly/providers/cart_provider.dart';
 
@@ -38,7 +39,7 @@ class _cartScreenState extends State<CartScreen> {
         Expanded(
           child: Center(
             child: Text(
-              'No Item in the cart, Cart is Empty !!',
+              AppConstants.emptyCartMsg,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimary,
                 fontSize: 20,
@@ -105,7 +106,7 @@ class _cartScreenState extends State<CartScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Cart',
+            AppConstants.cart,
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
@@ -119,14 +120,13 @@ class _cartScreenState extends State<CartScreen> {
                 builder: (context) => AlertDialog(
                   // backgroundColor: Theme.of(context).colorScheme.primary,
                   title: Text(
-                    'Empty cart?',
+                    AppConstants.dialogEmptyCart,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                   ),
                   content: Text(
-                    'Are you sure you want to remove all items from your cart? '
-                    'This action can’t be undone.',
+                    AppConstants.areYouSureEmptyCart,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
@@ -135,7 +135,7 @@ class _cartScreenState extends State<CartScreen> {
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
                       child: Text(
-                        'Cancel',
+                        AppConstants.cancel,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onInverseSurface,
                         ),
@@ -144,7 +144,7 @@ class _cartScreenState extends State<CartScreen> {
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
                       child: Text(
-                        'Yes, empty cart',
+                        AppConstants.yesEmptyCart,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
@@ -237,7 +237,7 @@ class _cartScreenState extends State<CartScreen> {
                           ),
                         ),
                         Text(
-                          '${item.discountPercentage}% off ',
+                          AppConstants.discountOff(item.discountPercentage),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -325,14 +325,14 @@ class _cartScreenState extends State<CartScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total Products: ${cartProvider.totalProducts}',
+                '${AppConstants.totalProducts}: ${cartProvider.totalProducts}',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 18,
                 ),
               ),
               Text(
-                'Total of Quantity: ${cartProvider.totalQuantity}',
+                '${AppConstants.totalQuantity}: ${cartProvider.totalQuantity}',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 18,
@@ -350,7 +350,7 @@ class _cartScreenState extends State<CartScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Subtotal',
+                AppConstants.subtotal,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -358,7 +358,7 @@ class _cartScreenState extends State<CartScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                '\$ ${cartProvider.subTotal.toStringAsFixed(2)}',
+                AppConstants.dolrAmount(cartProvider.subTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -371,7 +371,7 @@ class _cartScreenState extends State<CartScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Discount (${cartProvider.totalDiscountPercentage.toStringAsFixed(1)}%)',
+                '${AppConstants.discount} (${AppConstants.discountOff(cartProvider.totalDiscountPercentage)})',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -397,7 +397,7 @@ class _cartScreenState extends State<CartScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total',
+                AppConstants.total,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontWeight: FontWeight.bold,
@@ -406,7 +406,7 @@ class _cartScreenState extends State<CartScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                '\$ ${cartProvider.finalTotal.toStringAsFixed(2)}',
+                AppConstants.dolrAmount(cartProvider.finalTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 25,
@@ -433,7 +433,7 @@ class _cartScreenState extends State<CartScreen> {
                 ),
               ),
               child: Text(
-                'Go to Check Out!',
+                AppConstants.goTocheckOut,
                 style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context).colorScheme.primary,

@@ -12,10 +12,73 @@ class AdminService {
   }
 
   // ------------------------------------------------------------
-  // Total orders
+  // Total orders & pending, confirmed
   // ------------------------------------------------------------
   Future<int> getTotalOrders() async {
     final snapshot = await _firestore.collection('orders').get();
+    return snapshot.size;
+  }
+
+  Future<Map<String, int>> getOrderStatusStats() async {
+    final snapshot = await _firestore.collection('orders').get();
+
+    int confirmed = 0;
+    int pending = 0;
+
+    for (var doc in snapshot.docs) {
+      final List<dynamic> timeline = doc['statusTimeline'] ?? [];
+
+      bool isConfirmed = timeline.any(
+        (status) => status['status'] == 'ORDER_CONFIRMED',
+      );
+
+      if (isConfirmed) {
+        confirmed++;
+      } else {
+        pending++;
+      }
+    }
+
+    return {'confirmedOrders': confirmed, 'pendingOrders': pending};
+  }
+
+  // ------------------------------------------------------------
+  // Total products
+  // ------------------------------------------------------------
+  Future<int> getTotalProducts() async {
+    final snapshot = await _firestore.collection('products').get();
+    return snapshot.size;
+  }
+
+  // ------------------------------------------------------------
+  // Total categories
+  // ------------------------------------------------------------
+  Future<int> getTotalCategories() async {
+    final snapshot = await _firestore.collection('categories').get();
+    return snapshot.size;
+  }
+
+  // ------------------------------------------------------------
+  // Total Active categories
+  // ------------------------------------------------------------
+  Future<int> getTotalActiveCategories() async {
+    final snapshot = await _firestore
+        .collection('categories')
+        .where('isActive', isEqualTo: true)
+        .get();
+
+    return snapshot.size;
+  }
+
+  // ------------------------------------------------------------
+  // Total Inactive categories
+  // ------------------------------------------------------------
+  Future<int> getTotalInactiveCategories() async {
+    final snapshot = await _firestore
+        .collection('categories')
+        .where('isActive', isEqualTo: false)
+        .get();
+
     return snapshot.size;
   }
 
@@ -53,17 +116,32 @@ class AdminService {
     final usersFuture = getTotalUsers();
     final ordersFuture = getTotalOrders();
     final revenueFuture = getTotalRevenue();
+    final productFuture = getTotalProducts();
+    final totalCategoriesFuture = getTotalCategories();
+    final activeCategoriesFuture = getTotalActiveCategories();
+    final inactiveCategoriesFuture = getTotalInactiveCategories();
+    final orderStatusFuture = getOrderStatusStats();
 
     final results = await Future.wait([
       usersFuture,
       ordersFuture,
       revenueFuture,
+      productFuture,
+      totalCategoriesFuture,
+      activeCategoriesFuture,
+      inactiveCategoriesFuture,
+      orderStatusFuture,
     ]);
 
     return {
       'totalUsers': results[0],
       'totalOrders': results[1],
       'totalRevenue': results[2],
+      'totalProducts': results[3],
+      'totalCategories': results[4],
+      'activeCategories': results[5],
+      'inactiveCategories': results[6],
+      'orderStatus': results[7],
     };
   }
 }

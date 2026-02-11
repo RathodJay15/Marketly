@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/auth/register_screen.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -89,7 +90,7 @@ class _loginScreenState extends State<LoginScreen> {
                     SizedBox(height: 30.0),
 
                     Text(
-                      'Welcome to Marketly',
+                      AppConstants.welcomeMsgLogin,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                         fontSize: 32.0,
@@ -100,7 +101,7 @@ class _loginScreenState extends State<LoginScreen> {
 
                     // Subtitle
                     Text(
-                      'Sign in to continue',
+                      AppConstants.signInToContinue,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: 16.0,
@@ -148,7 +149,7 @@ class _loginScreenState extends State<LoginScreen> {
                       ),
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        hintText: 'Password',
+                        hintText: AppConstants.pass,
                         hintStyle: TextStyle(
                           color: Theme.of(context).colorScheme.onInverseSurface,
                         ),
@@ -208,7 +209,7 @@ class _loginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : Text(
-                              'Login',
+                              AppConstants.login,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Theme.of(context).colorScheme.primary,
@@ -236,7 +237,7 @@ class _loginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don't have an Account!",
+                          AppConstants.dontHaveAccount,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
@@ -253,7 +254,7 @@ class _loginScreenState extends State<LoginScreen> {
                             );
                           },
                           child: Text(
-                            "Register now",
+                            AppConstants.registerNow,
                             style: TextStyle(
                               color: Theme.of(
                                 context,

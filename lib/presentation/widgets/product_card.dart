@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
@@ -105,7 +106,7 @@ class ProductCard extends StatelessWidget {
 
                     /// PRICE
                     Text(
-                      '\$ ${product.price.toStringAsFixed(2)}',
+                      AppConstants.dolrAmount(product.price),
                       style: TextStyle(
                         fontSize: 22,
 
@@ -203,7 +204,7 @@ class CartProductCard extends StatelessWidget {
 
                   /// PRICE
                   Text(
-                    '\$ ${product.price.toStringAsFixed(2)}',
+                    AppConstants.dolrAmount(product.price),
                     style: TextStyle(
                       fontSize: 16,
 
@@ -238,7 +239,7 @@ class SeeAllCard extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            'See All',
+            AppConstants.seeAll,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,

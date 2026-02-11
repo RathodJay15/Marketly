@@ -52,7 +52,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
             iconSize: 35,
           ),
           Text(
-            'My Orders',
+            AppConstants.myOrders,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
               fontSize: 25,
@@ -80,7 +80,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
         if (orderProvider.orders.isEmpty) {
           return Center(
             child: Text(
-              'No Order History!',
+              AppConstants.noOrder,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimary,
                 fontSize: 20,
@@ -142,7 +142,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
                           ),
                         ),
                         child: Text(
-                          'View Order details',
+                          AppConstants.viewOrderDetails,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
@@ -41,7 +42,7 @@ class _paymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                   child: Text(
-                    'Back',
+                    AppConstants.back,
                     style: TextStyle(
                       fontSize: 18,
                       color: Theme.of(context).colorScheme.primary,
@@ -61,7 +62,7 @@ class _paymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                   child: Text(
-                    'Place Order',
+                    AppConstants.placeOrder,
                     style: TextStyle(
                       fontSize: 18,
                       color: Theme.of(context).colorScheme.primary,
@@ -93,45 +94,45 @@ class _paymentScreenState extends State<PaymentScreen> {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       children: [
-        _sectionTitle("User Details"),
+        _sectionTitle(AppConstants.usrDetails),
         _greyCard(
           children: [
-            _row("Name", order.userInfo['name']),
-            _row("Email", order.userInfo['email']),
-            _row("Phone", order.userInfo['phone']),
+            _row(AppConstants.username, order.userInfo['name']),
+            _row(AppConstants.email, order.userInfo['email']),
+            _row(AppConstants.phone, order.userInfo['phone']),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
-            _row("Address", order.address['address']),
-            _row("City", order.address['city']),
-            _row("State", order.address['state']),
-            _row("Country", order.address['country']),
-            _row("Pincode", order.address['pincode']),
+            _row(AppConstants.adrs, order.address['address']),
+            _row(AppConstants.ct, order.address['city']),
+            _row(AppConstants.state, order.address['state']),
+            _row(AppConstants.cntry, order.address['country']),
+            _row(AppConstants.pincode, order.address['pincode']),
           ],
         ),
 
         const SizedBox(height: 24),
 
-        _sectionTitle("Final Order Summary"),
+        _sectionTitle(AppConstants.fonalOrderSummary),
         _greyCard(
           children: [
             ...order.items.map(
               (item) => _row(
                 "${item['title']} x ${item['quantity']}",
-                "\$${item['finalPrice'].toStringAsFixed(2)}",
+                AppConstants.dolrAmount(item['finalPrice']),
               ),
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
-              "Subtotal",
-              "\$${order.pricing['subtotal'].toStringAsFixed(2)}",
+              AppConstants.subtotal,
+              AppConstants.dolrAmount(order.pricing['subtotal']),
             ),
             _row(
-              "Discount",
-              "-\$${order.pricing['discount'].toStringAsFixed(2)}",
+              AppConstants.discount,
+              "-${AppConstants.dolrAmount(order.pricing['discount'])}",
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
-              "Total",
-              "\$${order.pricing['total'].toStringAsFixed(2)}",
+              AppConstants.total,
+              AppConstants.dolrAmount(order.pricing['total']),
               isBold: true,
             ),
           ],
@@ -139,12 +140,12 @@ class _paymentScreenState extends State<PaymentScreen> {
 
         const SizedBox(height: 24),
 
-        _sectionTitle("Payment Method"),
+        _sectionTitle(AppConstants.paymentMethod),
         _greyCard(
           children: [
-            _radioTile("UPI", "UPI"),
-            _radioTile("Card", "Card"),
-            _radioTile("Cash on Delivery", "Cash on Delivery"),
+            _radioTile(AppConstants.upi, AppConstants.upi),
+            _radioTile(AppConstants.card, AppConstants.card),
+            _radioTile(AppConstants.cod, AppConstants.cod),
           ],
         ),
       ],
@@ -181,7 +182,7 @@ class _paymentScreenState extends State<PaymentScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Order placed successfully 🎉',
+          AppConstants.orderPlacedMsg,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
         backgroundColor: Theme.of(context).colorScheme.onInverseSurface,

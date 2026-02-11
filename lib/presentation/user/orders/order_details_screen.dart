@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/order_model.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
             iconSize: 35,
           ),
           Text(
-            'Order details',
+            AppConstants.orderDetails,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
               fontSize: 25,
@@ -58,23 +59,23 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       shrinkWrap: true,
       children: [
-        _sectionTitle("User Details"),
+        _sectionTitle(AppConstants.usrDetails),
         _greyCard(
           children: [
-            _row("Name", order.userInfo['name']),
-            _row("Email", order.userInfo['email']),
-            _row("Phone", order.userInfo['phone']),
-            _row("Address", order.address['address']),
-            _row("City", order.address['city']),
-            _row("State", order.address['state']),
-            _row("Country", order.address['country']),
-            _row("Pincode", order.address['pincode']),
+            _row(AppConstants.username, order.userInfo['name']),
+            _row(AppConstants.email, order.userInfo['email']),
+            _row(AppConstants.phone, order.userInfo['phone']),
+            _row(AppConstants.adrs, order.address['address']),
+            _row(AppConstants.ct, order.address['city']),
+            _row(AppConstants.state, order.address['state']),
+            _row(AppConstants.cntry, order.address['country']),
+            _row(AppConstants.pincode, order.address['pincode']),
           ],
         ),
 
         const SizedBox(height: 24),
 
-        _sectionTitle("Order Summary"),
+        _sectionTitle(AppConstants.orderSummary),
         _greyCard(
           children: [
             ...order.items.map(
@@ -85,17 +86,17 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
-              "Subtotal",
-              "\$${order.pricing['subtotal'].toStringAsFixed(2)}",
+              AppConstants.subtotal,
+              AppConstants.dolrAmount(order.pricing['subtotal']),
             ),
             _row(
-              "Discount",
-              "-\$${order.pricing['discount'].toStringAsFixed(2)}",
+              AppConstants.discount,
+              "-${AppConstants.dolrAmount(order.pricing['discount'])}",
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
-              "Total",
-              "\$${order.pricing['total'].toStringAsFixed(2)}",
+              AppConstants.total,
+              AppConstants.dolrAmount(order.pricing['total']),
               isBold: true,
             ),
           ],
@@ -103,7 +104,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
 
         const SizedBox(height: 24),
 
-        _sectionTitle("Payment Details"),
+        _sectionTitle(AppConstants.paymentDetails),
         _greyCard(
           children: [_row("Method", "${order.paymentMethod}", isBold: true)],
         ),

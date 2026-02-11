@@ -309,7 +309,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
         if (products.isEmpty) {
           return Center(
             child: Text(
-              'No products found',
+              AppConstants.noProductFound,
               style: TextStyle(
                 fontSize: 18,
                 color: Theme.of(context).colorScheme.onPrimary,

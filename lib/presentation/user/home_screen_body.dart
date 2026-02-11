@@ -105,7 +105,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
               ),
               Text(
                 context.read<UserProvider>().user!.name.isEmpty
-                    ? 'Username'
+                    ? AppConstants.username
                     : context.read<UserProvider>().user!.name,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
@@ -258,7 +258,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           if (productProvider.tenProducts.isEmpty) {
             return Center(
               child: Text(
-                'No products found',
+                AppConstants.noProductFound,
                 style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -301,7 +301,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           if (products.isEmpty) {
             return Center(
               child: Text(
-                'Cart is Empty',
+                AppConstants.emptyCartMsg,
                 style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).colorScheme.onPrimary,

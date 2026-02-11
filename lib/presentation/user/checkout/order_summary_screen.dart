@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
@@ -136,16 +137,16 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
               title: _collapsedHeader(context, item),
               children: [
-                _priceRow("Subtotal", item.total),
+                _priceRow(AppConstants.subtotal, item.total),
                 if (item.discountedTotal > 0)
                   _priceRow(
-                    "Discount (${item.discountPercentage} % off)",
+                    '${AppConstants.discount} ${AppConstants.discountOff(item.discountPercentage)}',
                     -(item.total - item.discountedTotal),
                     isDiscount: true,
                   ),
                 Divider(color: Theme.of(context).colorScheme.onPrimary),
                 _priceRow(
-                  "Item final total",
+                  AppConstants.itemFinalTot,
                   item.discountedTotal,
                   isBold: true,
                 ),
@@ -186,14 +187,14 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                "Base Price: ${item.price}",
+                "${AppConstants.basePrice}: ${AppConstants.dolrAmount(item.price)}",
                 style: TextStyle(
                   fontSize: 14,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               Text(
-                "Qty: ${item.quantity}",
+                "${AppConstants.qty}: ${item.quantity}",
                 style: TextStyle(
                   fontSize: 14,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -204,7 +205,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
         ),
         const SizedBox(width: 15),
         Text(
-          "\$${item.discountedTotal.toStringAsFixed(2)}",
+          AppConstants.dolrAmount(item.discountedTotal),
           style: TextStyle(
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onInverseSurface,
@@ -235,7 +236,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
           ),
           Text(
-            "${value < 0 ? "-" : ""}\$${value.abs().toStringAsFixed(2)}",
+            "${value < 0 ? "-" : ""}\$${AppConstants.dolrAmount(value.abs())}",
             style: TextStyle(
               fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
               color: isDiscount
@@ -271,7 +272,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Subtotal',
+                AppConstants.subtotal,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -279,7 +280,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                '\$ ${cartProvider.subTotal.toStringAsFixed(2)}',
+                AppConstants.dolrAmount(cartProvider.subTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -292,7 +293,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Discount (${cartProvider.totalDiscountPercentage.toStringAsFixed(1)}%)',
+                '${AppConstants.discount} (${AppConstants.discountOff(cartProvider.totalDiscountPercentage)})',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -300,7 +301,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                '- ${cartProvider.totalDiscount.toStringAsFixed(2)}',
+                '- ${AppConstants.dolrAmount(cartProvider.totalDiscount)}',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -318,7 +319,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total',
+                AppConstants.total,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontWeight: FontWeight.bold,
@@ -327,7 +328,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                '\$ ${cartProvider.finalTotal.toStringAsFixed(2)}',
+                AppConstants.dolrAmount(cartProvider.finalTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 25,
@@ -363,7 +364,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
                 ),
               ),
               child: Text(
-                "Cancel",
+                AppConstants.cancel,
                 style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).colorScheme.primary,
@@ -386,7 +387,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
                 ),
               ),
               child: Text(
-                "Next",
+                AppConstants.next,
                 style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).colorScheme.primary,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -115,7 +117,7 @@ class _addressScreenState extends State<AddressScreen> {
                     ),
                   ),
                   child: Text(
-                    "Back",
+                    AppConstants.back,
                     style: TextStyle(
                       fontSize: 18,
                       color: Theme.of(context).colorScheme.primary,
@@ -143,7 +145,7 @@ class _addressScreenState extends State<AddressScreen> {
                     ),
                   ),
                   child: Text(
-                    "Next",
+                    AppConstants.next,
                     style: TextStyle(
                       fontSize: 18,
                       color: Theme.of(context).colorScheme.primary,
@@ -178,14 +180,14 @@ class _addressScreenState extends State<AddressScreen> {
 
               _field(
                 nameCtrl,
-                "Full Name",
+                AppConstants.username,
                 Validators.username,
                 icon: Icons.person_outline,
               ),
 
               _field(
                 emailCtrl,
-                "Email",
+                AppConstants.email,
                 Validators.email,
                 icon: Icons.email_outlined,
                 readOnly: true,
@@ -193,7 +195,7 @@ class _addressScreenState extends State<AddressScreen> {
 
               _field(
                 phoneCtrl,
-                "Phone Number",
+                AppConstants.phone,
                 Validators.phone,
                 icon: Icons.phone_outlined,
                 keyboardType: TextInputType.phone,
@@ -204,7 +206,7 @@ class _addressScreenState extends State<AddressScreen> {
                 value: selectedAddressId,
                 dropdownColor: Theme.of(context).colorScheme.onPrimary,
                 hint: Text(
-                  "Select Address",
+                  AppConstants.selectAdrs,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
@@ -251,28 +253,28 @@ class _addressScreenState extends State<AddressScreen> {
 
               _field(
                 cityCtrl,
-                "City",
+                AppConstants.ct,
                 Validators.city,
                 icon: Icons.location_city_outlined,
               ),
 
               _field(
                 stateCtrl,
-                "State",
+                AppConstants.state,
                 Validators.state,
                 icon: Icons.map_outlined,
               ),
 
               _field(
                 countryCtrl,
-                "Country",
+                AppConstants.cntry,
                 Validators.country,
                 icon: Icons.public_outlined,
               ),
 
               _field(
                 pincodeCtrl,
-                "Pincode",
+                AppConstants.pincode,
                 Validators.pincode,
                 icon: Icons.pin_outlined,
                 keyboardType: TextInputType.number,
@@ -322,101 +324,5 @@ class _addressScreenState extends State<AddressScreen> {
         validator: validator,
       ),
     );
-  }
-}
-
-class Validators {
-  // Username
-  static String? username(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Username is required';
-    }
-
-    return null;
-  }
-
-  //  Email
-  static String? email(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Email is required';
-    }
-
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-    if (!emailRegex.hasMatch(value.trim())) {
-      return 'Enter a valid email address';
-    }
-
-    return null;
-  }
-
-  // Phone Number (10 digits)
-  static String? phone(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Phone number is required';
-    }
-
-    final phoneRegex = RegExp(r'^[0-9]{10}$');
-
-    if (!phoneRegex.hasMatch(value.trim())) {
-      return 'Enter a valid 10-digit phone number';
-    }
-
-    return null;
-  }
-
-  // Address
-  static String? address(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Address is required';
-    }
-
-    if (value.trim().length < 10) {
-      return 'Address is too short';
-    }
-
-    return null;
-  }
-
-  // City
-  static String? city(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'City is required';
-    }
-
-    return null;
-  }
-
-  // State
-  static String? state(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'State is required';
-    }
-
-    return null;
-  }
-
-  // Country
-  static String? country(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Country is required';
-    }
-
-    return null;
-  }
-
-  // Pin code (6 digits)
-  static String? pincode(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Pin code is required';
-    }
-
-    final phoneRegex = RegExp(r'^[0-9]{6}$');
-
-    if (!phoneRegex.hasMatch(value.trim())) {
-      return 'Enter a valid 6-digit Pin code';
-    }
-
-    return null;
   }
 }

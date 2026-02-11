@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
@@ -54,14 +55,14 @@ class _menuScreenState extends State<MenuScreen> {
     return ListView(
       scrollDirection: Axis.vertical,
       children: [
-        _buildTile(goToMyAccount, Icons.person, 'My Account'),
-        _buildTile(goToMyAddresses, Icons.location_on, 'Saved Addresses'),
+        _buildTile(goToMyAccount, Icons.person, AppConstants.myAccount),
+        _buildTile(goToMyAddresses, Icons.location_on, AppConstants.savedAdrs),
         _buildTile(
           goToMyOrders,
           Icons.format_list_bulleted_rounded,
-          'My Order',
+          AppConstants.myOrders,
         ),
-        _buildTile(goToCart, Icons.shopping_cart, 'My Cart'),
+        _buildTile(goToCart, Icons.shopping_cart, AppConstants.myCart),
 
         _themeTile(
           currentTheme: user.themeMode, // 'system' | 'light' | 'dark'
@@ -77,7 +78,7 @@ class _menuScreenState extends State<MenuScreen> {
           },
         ),
 
-        _buildTile(logout, Icons.logout_outlined, 'Logout'),
+        _buildTile(logout, Icons.logout_outlined, AppConstants.logout),
       ],
     );
   }

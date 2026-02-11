@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/providers/cart_provider.dart';
@@ -178,7 +179,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Product added to cart',
+                      AppConstants.addedToCart,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -306,7 +307,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
           children: [
             Expanded(
               child: Text(
-                '\$${product.price}',
+                AppConstants.dolrAmount(product.price),
                 style: TextStyle(
                   fontSize: 30,
                   color: Theme.of(context).colorScheme.onInverseSurface,
@@ -315,7 +316,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
             Text(
-              '${product.discountPercentage}% off',
+              AppConstants.discountOff(product.discountPercentage),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimary,
                 fontSize: 18,
@@ -351,7 +352,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
 
         const SizedBox(height: 12),
 
-        _sectionTitle("Description"),
+        _sectionTitle(AppConstants.description),
         _sectionDetail(product.description),
 
         Row(
@@ -362,12 +363,12 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _sectionTitle("Category"),
-                _sectionTitle("Brand"),
-                _sectionTitle("Stock"),
-                _sectionTitle("Weight"),
-                _sectionTitle("Tags"),
-                _sectionTitle("Dimensions"),
+                _sectionTitle(AppConstants.category),
+                _sectionTitle(AppConstants.brand),
+                _sectionTitle(AppConstants.stock),
+                _sectionTitle(AppConstants.weight),
+                _sectionTitle(AppConstants.tags),
+                _sectionTitle(AppConstants.dimensions),
               ],
             ),
             SizedBox(width: 10),
@@ -456,7 +457,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            '\$${product.price}',
+                            AppConstants.dolrAmount(product.price),
                             style: TextStyle(
                               fontSize: 30,
                               color: Theme.of(
@@ -467,7 +468,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                         ),
                         Text(
-                          '${product.discountPercentage}% off',
+                          AppConstants.discountOff(product.discountPercentage),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                             fontSize: 18,
@@ -507,7 +508,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
 
                     const SizedBox(height: 12),
 
-                    _sectionTitle("Description"),
+                    _sectionTitle(AppConstants.description),
                     _sectionDetail(product.description),
 
                     Row(
@@ -518,12 +519,12 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _sectionTitle("Category"),
-                            _sectionTitle("Brand"),
-                            _sectionTitle("Stock"),
-                            _sectionTitle("Weight"),
-                            _sectionTitle("Tags"),
-                            _sectionTitle("Dimensions"),
+                            _sectionTitle(AppConstants.category),
+                            _sectionTitle(AppConstants.brand),
+                            _sectionTitle(AppConstants.stock),
+                            _sectionTitle(AppConstants.weight),
+                            _sectionTitle(AppConstants.tags),
+                            _sectionTitle(AppConstants.dimensions),
                           ],
                         ),
                         SizedBox(width: 10),

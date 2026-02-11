@@ -25,4 +25,18 @@ class CategoryModel {
       order: data['order'],
     );
   }
+
+  CategoryModel copyWith({
+    String? slug,
+    String? title,
+    bool? isActive,
+    int? order,
+  }) {
+    return CategoryModel(
+      slug: slug ?? this.slug,
+      title: title ?? this.title,
+      isActive: isActive ?? this.isActive,
+      order: order ?? this.order,
+    );
+  }
 }

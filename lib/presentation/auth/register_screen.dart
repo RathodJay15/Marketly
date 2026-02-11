@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/data/services/profile_pic_service.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -149,7 +150,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     SizedBox(height: 30.0),
 
                     Text(
-                      'Get started with Marketly',
+                      AppConstants.getStartedMsg,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                         fontSize: 32.0,
@@ -160,7 +161,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     // Subtitle
                     Text(
-                      'Sign up to continue',
+                      AppConstants.signUpToContinue,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: 16.0,
@@ -171,7 +172,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     // Username
                     _textFormField(
                       icon: Icons.person,
-                      hint: 'Username',
+                      hint: AppConstants.username,
                       controller: _usernameController,
                       validator: Validators.username,
                     ),
@@ -180,7 +181,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     // Email
                     _textFormField(
                       icon: Icons.email_rounded,
-                      hint: 'Email',
+                      hint: AppConstants.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: Validators.email,
@@ -190,7 +191,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     _textFormField(
                       icon: Icons.lock,
-                      hint: 'Password',
+                      hint: AppConstants.pass,
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       validator: Validators.password,
@@ -200,7 +201,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.lock,
-                      hint: 'Confirm Password',
+                      hint: AppConstants.confPass,
                       controller: _confirmController,
                       obscureText: _obscureConfirm,
                       validator: (value) => Validators.confirmPassword(
@@ -213,7 +214,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.phone,
-                      hint: 'Phone',
+                      hint: AppConstants.phone,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       validator: Validators.phone,
@@ -222,7 +223,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.home_rounded,
-                      hint: 'Address',
+                      hint: AppConstants.adrs,
                       controller: _addressController,
                       validator: Validators.address,
                       maxLine: 3,
@@ -230,21 +231,21 @@ class _registerScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.location_city_outlined,
-                      hint: 'City',
+                      hint: AppConstants.ct,
                       controller: _cityController,
                       validator: Validators.username,
                     ),
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.map_outlined,
-                      hint: 'State',
+                      hint: AppConstants.state,
                       controller: _stateController,
                       validator: Validators.username,
                     ),
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.public_outlined,
-                      hint: 'Country',
+                      hint: AppConstants.cntry,
                       controller: _countyController,
                       validator: Validators.username,
                     ),
@@ -252,7 +253,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20.0),
                     _textFormField(
                       icon: Icons.pin_outlined,
-                      hint: 'Pincode',
+                      hint: AppConstants.pincode,
                       controller: _pincodeController,
                       validator: Validators.username,
                     ),
@@ -293,7 +294,7 @@ class _registerScreenState extends State<RegisterScreen> {
                               ),
                             )
                           : Text(
-                              'SIGN UP',
+                              AppConstants.signup,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.primary,
                                 fontSize: 18.0,
@@ -321,7 +322,7 @@ class _registerScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Already have an Account!",
+                          AppConstants.haveAnAccount,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
@@ -331,7 +332,7 @@ class _registerScreenState extends State<RegisterScreen> {
                             Navigator.pop(context);
                           },
                           child: Text(
-                            "Login",
+                            AppConstants.login,
                             style: TextStyle(
                               color: Theme.of(
                                 context,
@@ -429,7 +430,7 @@ class _registerScreenState extends State<RegisterScreen> {
             Expanded(
               child: imageFile == null
                   ? Text(
-                      'Upload profile picture (optional)',
+                      AppConstants.upldProfilePic,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
@@ -442,7 +443,7 @@ class _registerScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Image selected',
+                          AppConstants.imgSelected,
                           style: TextStyle(
                             color: Theme.of(
                               context,
