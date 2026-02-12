@@ -31,6 +31,7 @@ class CategoryService {
   Future<void> addCategory({
     required String slug,
     required String title,
+    required bool isActive,
   }) async {
     final collectionRef = _firestore.collection(_collection);
     final docRef = collectionRef.doc(slug);
@@ -56,9 +57,55 @@ class CategoryService {
     await docRef.set({
       'slug': slug,
       'title': title,
-      'isActive': true,
+      'isActive': isActive,
       'order': nextOrder,
     });
+  }
+
+  /// Update full category (title, slug, active state)
+  Future<void> updateCategory({
+    required String oldSlug,
+    required String slug,
+    required String title,
+    required bool isActive,
+  }) async {
+    final collectionRef = _firestore.collection(_collection);
+
+    // If slug changed → we must rename document
+    if (oldSlug != slug) {
+      final oldDoc = await collectionRef.doc(oldSlug).get();
+
+      if (!oldDoc.exists) {
+        throw Exception("Category not found");
+      }
+
+      // Check if new slug already exists
+      final newDocCheck = await collectionRef.doc(slug).get();
+      if (newDocCheck.exists) {
+        throw Exception("Slug already exists");
+      }
+
+      final oldData = oldDoc.data()!;
+
+      // Create new doc with updated data
+      await collectionRef.doc(slug).set({
+        ...oldData,
+        'slug': slug,
+        'title': title,
+        'isActive': isActive,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Delete old document
+      await collectionRef.doc(oldSlug).delete();
+    } else {
+      // If slug not changed → simple update
+      await collectionRef.doc(slug).update({
+        'title': title,
+        'isActive': isActive,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
   }
 
   // Update active state

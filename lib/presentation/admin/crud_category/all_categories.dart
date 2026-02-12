@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
-import 'package:marketly/presentation/admin/edit_category.dart';
-import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
-import 'package:marketly/providers/admin/categories.dart';
+import 'package:marketly/presentation/admin/crud_category/add_category.dart';
+import 'package:marketly/presentation/admin/crud_category/edit_category.dart';
+import 'package:marketly/providers/admin/admin_categories_provider.dart';
 import 'package:provider/provider.dart';
 
 class AllCategories extends StatefulWidget {
@@ -43,7 +43,7 @@ class _allCategoriesState extends State<AllCategories> {
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Consumer<AdminCategoryProvider>(
           builder: (context, provider, _) {
             if (provider.isLoading) {
@@ -55,19 +55,49 @@ class _allCategoriesState extends State<AllCategories> {
             }
 
             return ListView.builder(
-              itemCount: provider.categories.length,
+              itemCount: provider.categories.length + 1,
               itemBuilder: (context, index) {
-                final category = provider.categories[index];
-
+                if (index == 0) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AddCategory()),
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Theme.of(context).colorScheme.primary,
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          AppConstants.addCategory,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                final category = provider.categories[index - 1];
                 return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(10),
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                   child: ListTile(
                     leading: Text(
-                      category.order.toString(),
+                      index.toString(),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                         fontSize: 25,
@@ -82,52 +112,29 @@ class _allCategoriesState extends State<AllCategories> {
                       ),
                     ),
                     subtitle: Text(
-                      category.slug,
+                      category.isActive
+                          ? AppConstants.active
+                          : AppConstants.inActive,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        color: category.isActive
+                            ? Theme.of(context).colorScheme.onSecondary
+                            : Theme.of(context).colorScheme.onSurface,
                         fontSize: 15,
                       ),
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    EditCategory(category: category),
-                              ),
-                            );
-                          },
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          icon: Icon(Icons.edit),
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                        Switch(
-                          value: category.isActive,
-                          activeColor: Theme.of(
-                            context,
-                          ).colorScheme.onInverseSurface,
-                          inactiveThumbColor: Theme.of(
-                            context,
-                          ).colorScheme.onPrimary,
-                          inactiveTrackColor: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
-                          onChanged: (value) async {
-                            provider.toggleCategoryStatus(
-                              slug: category.slug,
-                              isActive: value,
-                            );
-                            await context
-                                .read<AdminDashboardProvider>()
-                                .refreshDashboard();
-                          },
-                        ),
-                      ],
+                    trailing: IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditCategory(category: category),
+                          ),
+                        );
+                      },
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: Icon(Icons.edit),
+                      color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                   ),
                 );

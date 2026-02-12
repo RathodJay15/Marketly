@@ -28,6 +28,42 @@ class OrderService {
         .toList();
   }
 
+  // For admin
+  Future<List<OrderModel>> getAllOrders() async {
+    final snap = await _firestore.collection('orders').get();
+
+    return snap.docs
+        .map((d) => OrderModel.fromFirestore(d.data(), d.id))
+        .toList();
+  }
+
+  Future<void> updateOrderStatus({
+    required String orderId,
+    required String status,
+  }) async {
+    final docRef = _firestore.collection('orders').doc(orderId);
+
+    final doc = await docRef.get();
+    if (!doc.exists) throw Exception("Order not found");
+
+    final data = doc.data()!;
+    List<dynamic> timeline = data['statusTimeline'] ?? [];
+
+    // Prevent duplicate status
+    final alreadyExists = timeline.any(
+      (element) => element['status'] == status,
+    );
+
+    if (alreadyExists) return;
+
+    timeline.add({"status": status, "time": FieldValue.serverTimestamp()});
+
+    await docRef.update({
+      "statusTimeline": timeline,
+      "updatedAt": FieldValue.serverTimestamp(),
+    });
+  }
+
   Future<Map<String, dynamic>> generateOrderNumber() async {
     return _firestore.runTransaction((transaction) async {
       final counterRef = _firestore.collection('counters').doc('orders');

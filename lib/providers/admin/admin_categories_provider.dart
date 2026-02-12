@@ -34,11 +34,16 @@ class AdminCategoryProvider extends ChangeNotifier {
   Future<bool> addCategory({
     required String slug,
     required String title,
+    required bool isActive,
   }) async {
     try {
       _setLoading(true);
 
-      await _categoryService.addCategory(slug: slug, title: title);
+      await _categoryService.addCategory(
+        slug: slug,
+        title: title,
+        isActive: isActive,
+      );
 
       await fetchAllCategories(); // Refresh list
       return true;
@@ -72,6 +77,48 @@ class AdminCategoryProvider extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       notifyListeners();
+    }
+  }
+
+  // ------------------------------------------------------------
+  // Update Category (Title, Slug, Active Status)
+  // ------------------------------------------------------------
+  Future<bool> updateCategory({
+    required String oldSlug,
+    required String slug,
+    required String title,
+    required bool isActive,
+  }) async {
+    try {
+      _setLoading(true);
+
+      await _categoryService.updateCategory(
+        oldSlug: oldSlug,
+        slug: slug,
+        title: title,
+        isActive: isActive,
+      );
+
+      final index = _categories.indexWhere(
+        (category) => category.slug == oldSlug,
+      );
+
+      if (index != -1) {
+        _categories[index] = _categories[index].copyWith(
+          slug: slug,
+          title: title,
+          isActive: isActive,
+        );
+        notifyListeners();
+      }
+
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
     }
   }
 

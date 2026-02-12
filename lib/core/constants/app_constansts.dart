@@ -6,6 +6,18 @@ class AppConstants {
   static const String searchProducts = "Search products..";
   static const String totalCategories = "Total Categories";
   static const String categories = "Categories";
+  static const String addCategory = "Add Category";
+  static const String addProduct = "Add Product";
+  static const String updtCategory = "Update Category";
+  static const String updtOrder = "Update Order";
+  static const String orderStatus = "Order Status";
+  static const String orderID = "Order ID";
+  static const String orderNo = "Order Number";
+  static const String userID = "User ID";
+  static const String updtOrderStatus = "Update Order Status";
+  static const String title = "Title";
+  static const String slug = "Slug";
+  static const String activeStatus = "Active status";
   static const String totalOrders = "Total Orders";
   static const String totalUsers = "Total Users";
   static const String active = "Active";
@@ -35,6 +47,8 @@ class AppConstants {
   static const String getStartedMsg = "Get started with Marketly";
   static const String signUpToContinue = "Sign up to continue";
   static const String upldProfilePic = "Upload profile picture (optional)";
+  static const String upldThumbnail = "Upload thumbnail image";
+  static const String upldProductImages = "Upload product images";
   static const String imgSelected = "Image selected";
   static const String noProductFound = "No products found";
   static const String emptyCartMsg = "Cart is Empty";
@@ -50,6 +64,8 @@ class AppConstants {
       "Are you sure you want to delete this address?";
   static const String areYouSureEmptyCart =
       "Are you sure you want to remove all items from your cart?\nThis action can’t be undone.";
+  static const String areYouSureDeleteCate =
+      "Are you sure you want to delete this category?";
   static const String yes = "Yes";
   static const String no = "No";
   static const String myAccount = "My Account";
@@ -83,7 +99,15 @@ class AppConstants {
   static const String stock = "Stock";
   static const String weight = "Weight";
   static const String tags = "Tags";
+  static const String tagsFieldHint = "Enter multiple tags , speparated";
+  static const String price = "Price";
+  static const String rating = "Rating";
   static const String dimensions = "Dimensions";
+  static const String height = "Height";
+  static const String width = "Width";
+  static const String depth = "Depth";
+  static const String thubnailImg = "Thumbnail Image";
+  static const String images = "Images";
   static const String subtotal = "Subtotal";
   static const String discount = "Discount";
   static const String itemFinalTot = "Item final total";

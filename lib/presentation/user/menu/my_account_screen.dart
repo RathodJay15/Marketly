@@ -9,7 +9,7 @@ import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:marketly/data/services/profile_pic_service.dart';
+import 'package:marketly/data/services/image_service.dart';
 
 class MyAccountScreen extends StatefulWidget {
   @override
@@ -32,7 +32,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
 
   String? selectedAddressId;
 
-  final ProfilePicService _profilePicService = ProfilePicService();
+  final ImageService _profilePicService = ImageService();
 
   final ImagePicker _imagePicker = ImagePicker();
 

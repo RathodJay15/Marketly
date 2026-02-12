@@ -38,8 +38,44 @@ class ProductService {
   }
 
   // Add new product
-  Future<void> addProduct(ProductModel product) async {
-    await _firestore.collection(_collection).add(product.toFirestore());
+  Future<DocumentReference> createProduct({
+    required String title,
+    required String description,
+    required String category,
+    required double price,
+    required double discount,
+    required double rating,
+    required int stock,
+    required List<String> tags,
+    required String brand,
+    required double weight,
+    required Map<String, double> dimensions,
+  }) async {
+    try {
+      final docRef = _firestore.collection(_collection).doc();
+
+      await docRef.set({
+        'id': docRef.id,
+        'title': title,
+        'description': description,
+        'category': category,
+        'price': price,
+        'discount': discount,
+        'rating': rating,
+        'stock': stock,
+        'tags': tags,
+        'brand': brand,
+        'weight': weight,
+        'dimensions': dimensions,
+        'thumbnail': null,
+        'images': [],
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return docRef;
+    } catch (e) {
+      throw Exception("Failed to create product: $e");
+    }
   }
 
   // Update product

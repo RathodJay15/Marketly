@@ -219,10 +219,8 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
                 children: [
                   if (_isSearching)
                     IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                      ),
+                      icon: Icon(Icons.close),
+                      color: Theme.of(context).colorScheme.onInverseSurface,
                       onPressed: _closeOrClearSearch,
                     ),
                   TextButton(

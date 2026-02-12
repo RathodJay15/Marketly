@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/product_service.dart';
@@ -110,14 +111,32 @@ class ProductProvider extends ChangeNotifier {
   }
 
   // Add product
-  Future<void> addProduct(ProductModel product) async {
-    try {
-      await _productService.addProduct(product);
-      await fetchAllProducts();
-    } catch (e) {
-      _error = e.toString();
-      notifyListeners();
-    }
+  Future<DocumentReference> createProduct({
+    required String title,
+    required String description,
+    required String category,
+    required double price,
+    required double discount,
+    required double rating,
+    required int stock,
+    required List<String> tags,
+    required String brand,
+    required double weight,
+    required Map<String, double> dimensions,
+  }) async {
+    return await _productService.createProduct(
+      title: title,
+      description: description,
+      category: category,
+      price: price,
+      discount: discount,
+      rating: rating,
+      stock: stock,
+      tags: tags,
+      brand: brand,
+      weight: weight,
+      dimensions: dimensions,
+    );
   }
 
   // Update product

@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
-import 'package:marketly/data/services/profile_pic_service.dart';
+import 'package:marketly/core/data_instance/validators.dart';
+import 'package:marketly/data/services/image_service.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -26,7 +27,7 @@ class _registerScreenState extends State<RegisterScreen> {
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _countyController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
-  final ProfilePicService _profilePicService = ProfilePicService();
+  final ImageService _profilePicService = ImageService();
 
   final _authService = authService;
 
@@ -463,130 +464,5 @@ class _registerScreenState extends State<RegisterScreen> {
         ),
       ),
     );
-  }
-}
-
-class Validators {
-  //
-  static String? username(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Username is required';
-    }
-
-    return null;
-  }
-
-  //  Email
-  static String? email(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Email is required';
-    }
-
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-    if (!emailRegex.hasMatch(value.trim())) {
-      return 'Enter a valid email address';
-    }
-
-    return null;
-  }
-
-  // Password
-  // Minimum 8 characters, 1 number, 1 special character
-  static String? password(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password is required';
-    }
-
-    final passwordRegex = RegExp(r'^(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$');
-
-    if (!passwordRegex.hasMatch(value)) {
-      return 'Enter at least 8 characters & include a number & special character';
-    }
-
-    return null;
-  }
-
-  // Confirm Password
-  static String? confirmPassword(String? value, String password) {
-    if (value == null || value.isEmpty) {
-      return 'Confirm password is required';
-    }
-
-    if (value != password) {
-      return 'Passwords do not match';
-    }
-
-    return null;
-  }
-
-  // Phone Number (10 digits)
-  static String? phone(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Phone number is required';
-    }
-
-    final phoneRegex = RegExp(r'^[0-9]{10}$');
-
-    if (!phoneRegex.hasMatch(value.trim())) {
-      return 'Enter a valid 10-digit phone number';
-    }
-
-    return null;
-  }
-
-  // Address
-  static String? address(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Address is required';
-    }
-
-    if (value.trim().length < 10) {
-      return 'Address is too short';
-    }
-
-    return null;
-  }
-
-  // City
-  static String? city(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'City is required';
-    }
-
-    return null;
-  }
-
-  // State
-  static String? state(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'State is required';
-    }
-
-    return null;
-  }
-
-  // Country
-  static String? country(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Country is required';
-    }
-
-    return null;
-  }
-
-  // Pin code (6 digits)
-  static String? pincode(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Pin code is required';
-    }
-
-    final phoneRegex = RegExp(r'^[0-9]{6}$');
-
-    if (!phoneRegex.hasMatch(value.trim())) {
-      return 'Enter a valid 6-digit Pin code';
-    }
-
-    return null;
   }
 }

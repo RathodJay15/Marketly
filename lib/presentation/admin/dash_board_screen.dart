@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
-import 'package:marketly/presentation/admin/all_categories.dart';
-import 'package:marketly/presentation/admin/all_products.dart';
+import 'package:marketly/presentation/admin/crud_category/all_categories.dart';
+import 'package:marketly/presentation/admin/crud_product/all_products.dart';
 import 'package:marketly/presentation/admin/all_users.dart';
+import 'package:marketly/presentation/admin/orders/all_orders.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => AllUsers()));
   }
 
+  void _goToOrders() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => AllOrders()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,6 +80,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             );
           }
           return ListView(
+            shrinkWrap: true,
             children: [
               _stats(dashboardProvider),
 
@@ -109,7 +115,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 subtitle1Val: dashboardProvider.confirmedOrders.toString(),
                 subtitle2: '${AppConstants.pending} : ',
                 subtitle2Val: dashboardProvider.pendingOrders.toString(),
-                onTap: () => _goToCategories(),
+                onTap: () => _goToOrders(),
               ),
 
               _sectionTitle(AppConstants.users),
@@ -272,7 +278,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       value,
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),
@@ -346,7 +352,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           titleVal,
                           style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
@@ -360,7 +366,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           subtitle1,
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(
                               context,
                             ).colorScheme.onInverseSurface,
@@ -370,7 +376,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           subtitle1Val,
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
@@ -379,7 +385,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           subtitle2,
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(
                               context,
                             ).colorScheme.onInverseSurface,
@@ -389,7 +395,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                           subtitle2Val,
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w600,
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
                         ),
