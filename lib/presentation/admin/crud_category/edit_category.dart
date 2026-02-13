@@ -80,6 +80,17 @@ class _editCategoryState extends State<EditCategory> {
       await context.read<AdminCategoryProvider>().deleteCategory(
         widget.category.slug,
       );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppConstants.categoryDeleted,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
       await context.read<AdminDashboardProvider>().refreshDashboard();
       Navigator.pop(context, true);
     }

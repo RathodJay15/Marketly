@@ -223,6 +223,62 @@ class _editProductState extends State<EditProduct> {
     }
   }
 
+  Future<void> _onDelete() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        title: Text(
+          AppConstants.deleteProduct,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+        content: Text(
+          AppConstants.areYouSureDeleteProduct,
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              AppConstants.cancel,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              AppConstants.delete,
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await context.read<ProductProvider>().deleteProduct(widget.product.id);
+      await context.read<ProductProvider>().fetchAllProducts();
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppConstants.productDeleted,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+      Navigator.pop(context, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,6 +299,13 @@ class _editProductState extends State<EditProduct> {
             fontSize: 22,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: _onDelete,
+            icon: const Icon(Icons.delete_rounded),
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ],
       ),
       body: _detailsForm(),
     );
