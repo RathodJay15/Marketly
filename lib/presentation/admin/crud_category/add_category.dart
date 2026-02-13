@@ -18,11 +18,7 @@ class _addCategoryState extends State<AddCategory> {
   TextEditingController titleCtrl = TextEditingController();
   TextEditingController slugCtrl = TextEditingController();
   bool isActive = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool isAdding = false;
 
   @override
   void dispose() {
@@ -34,14 +30,37 @@ class _addCategoryState extends State<AddCategory> {
   // ---------------- Add ----------------
   Future<void> _onAdd() async {
     if (!_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    setState(() => isAdding = true);
+    try {
+      await context.read<AdminCategoryProvider>().addCategory(
+        title: titleCtrl.text.trim(),
+        slug: slugCtrl.text.trim(),
+        isActive: isActive,
+      );
+      if (!mounted) return;
 
-    await context.read<AdminCategoryProvider>().addCategory(
-      title: titleCtrl.text.trim(),
-      slug: slugCtrl.text.trim(),
-      isActive: isActive,
-    );
-    await context.read<AdminDashboardProvider>().refreshDashboard();
-    Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppConstants.categoryAdded,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+      await context.read<AdminDashboardProvider>().refreshDashboard();
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      debugPrint("Error Uploading CAtegory");
+    } finally {
+      if (mounted) {
+        setState(() => isAdding = false);
+      }
+    }
   }
 
   @override

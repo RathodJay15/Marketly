@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/admin/crud_product/add_product.dart';
+import 'package:marketly/presentation/admin/crud_product/edit_product.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -106,11 +107,15 @@ class _allProductsState extends State<AllProducts> {
                 }
                 if (index == 1) {
                   return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => AddProduct()),
                       );
+
+                      if (result == true) {
+                        context.read<ProductProvider>().fetchAllProducts();
+                      }
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 10),
@@ -181,12 +186,12 @@ class _allProductsState extends State<AllProducts> {
                     ),
                     trailing: IconButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (_) => EditCategory(category: category),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditProduct(product: product),
+                          ),
+                        );
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),

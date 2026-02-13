@@ -3,42 +3,47 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
+import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/image_service.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 
-class AddProduct extends StatefulWidget {
-  const AddProduct({super.key});
+class EditProduct extends StatefulWidget {
+  final ProductModel product;
+  const EditProduct({super.key, required this.product});
 
   @override
-  State<AddProduct> createState() => _addProductState();
+  State<EditProduct> createState() => _editProductState();
 }
 
-class _addProductState extends State<AddProduct> {
+class _editProductState extends State<EditProduct> {
   final ImageService _imageService = ImageService();
 
   final _formKey = GlobalKey<FormState>();
 
-  TextEditingController titleCtrl = TextEditingController();
-  TextEditingController descriptionCtrl = TextEditingController();
-  TextEditingController priceCtrl = TextEditingController();
-  TextEditingController categoryCtrl = TextEditingController();
-  TextEditingController discountCtrl = TextEditingController();
-  TextEditingController ratingCtrl = TextEditingController();
-  TextEditingController stockCtrl = TextEditingController();
-  TextEditingController tagsCtrl = TextEditingController();
-  TextEditingController brandCtrl = TextEditingController();
-  TextEditingController weightCtrl = TextEditingController();
-  TextEditingController heightCtrl = TextEditingController();
-  TextEditingController widthCtrl = TextEditingController();
-  TextEditingController depthCtrl = TextEditingController();
-
+  late TextEditingController titleCtrl;
+  late TextEditingController descriptionCtrl;
+  late TextEditingController priceCtrl;
+  late TextEditingController categoryCtrl;
+  late TextEditingController discountCtrl;
+  late TextEditingController ratingCtrl;
+  late TextEditingController stockCtrl;
+  late TextEditingController tagsCtrl;
+  late TextEditingController brandCtrl;
+  late TextEditingController weightCtrl;
+  late TextEditingController heightCtrl;
+  late TextEditingController widthCtrl;
+  late TextEditingController depthCtrl;
   bool isAdding = false;
 
   File? _selectedThumbnail;
+  String? _networkThumbnail;
+
   List<File>? _selectedImages;
+  late List<String> _networkImages;
+
   final ImagePicker _imagePicker = ImagePicker();
 
   Future<void> _pickThumbnail() async {
@@ -90,6 +95,33 @@ class _addProductState extends State<AddProduct> {
     Future.microtask(() {
       context.read<CategoryProvider>().loadCategories();
     });
+
+    _networkThumbnail = widget.product.thumbnail;
+    _networkImages = List.from(widget.product.images);
+
+    final product = widget.product;
+
+    titleCtrl = TextEditingController(text: product.title);
+    descriptionCtrl = TextEditingController(text: product.description);
+    priceCtrl = TextEditingController(text: product.price.toString());
+    categoryCtrl = TextEditingController(text: product.category);
+    discountCtrl = TextEditingController(
+      text: product.discountPercentage.toString(),
+    );
+    ratingCtrl = TextEditingController(text: product.rating.toString());
+    stockCtrl = TextEditingController(text: product.stock.toString());
+    tagsCtrl = TextEditingController(text: product.tags!.join(","));
+    brandCtrl = TextEditingController(text: product.brand);
+    weightCtrl = TextEditingController(text: product.weight.toString());
+    heightCtrl = TextEditingController(
+      text: product.dimensions['height'].toString(),
+    );
+    widthCtrl = TextEditingController(
+      text: product.dimensions['width'].toString(),
+    );
+    depthCtrl = TextEditingController(
+      text: product.dimensions['depth'].toString(),
+    );
   }
 
   @override
@@ -111,29 +143,36 @@ class _addProductState extends State<AddProduct> {
   }
 
   // ---------------- Add ----------------
-  Future<void> _onAdd() async {
+  Future<void> _onUpdate() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final thumbnailError = Validators.thumbnail(_selectedThumbnail);
-    if (thumbnailError != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(thumbnailError)));
-      return;
-    }
-
-    final imagesError = Validators.productImages(_selectedImages);
-    if (imagesError != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(imagesError)));
-      return;
-    }
     FocusScope.of(context).unfocus();
-
     setState(() => isAdding = true);
+
     try {
-      final docRef = await context.read<ProductProvider>().createProduct(
+      String? thumbnailUrl = _networkThumbnail;
+      List<String>? imageUrls = List.from(_networkImages);
+
+      //  Upload new thumbnail only if selected
+      if (_selectedThumbnail != null) {
+        thumbnailUrl = await _imageService.uploadProductThumbnail(
+          productId: widget.product.id,
+          imageFile: _selectedThumbnail!,
+        );
+      }
+      //  Upload new images only if selected
+      if (_selectedImages != null && _selectedImages!.isNotEmpty) {
+        final uploadedUrls = await _imageService.uploadProductImages(
+          productId: widget.product.id,
+          imageFiles: _selectedImages!,
+        );
+
+        imageUrls.addAll(uploadedUrls);
+      }
+
+      //  Create updated product object
+      ProductModel updatedProduct = ProductModel(
+        id: widget.product.id,
         title: titleCtrl.text.trim(),
         description: descriptionCtrl.text.trim(),
         category: categoryCtrl.text.trim(),
@@ -149,23 +188,22 @@ class _addProductState extends State<AddProduct> {
           'width': double.parse(widthCtrl.text.trim()),
           'depth': double.parse(depthCtrl.text.trim()),
         },
+        thumbnail: thumbnailUrl!,
+        images: imageUrls,
       );
-      final thumbnailUrl = await _imageService.uploadProductThumbnail(
-        productId: docRef.id,
-        imageFile: _selectedThumbnail!,
+
+      //  Update product in Firestore
+      await context.read<ProductProvider>().updateProduct(
+        widget.product.id,
+        updatedProduct,
       );
-      final imageUrls = await _imageService.uploadProductImages(
-        productId: docRef.id,
-        imageFiles: _selectedImages!,
-      );
-      await docRef.update({'thumbnail': thumbnailUrl, 'images': imageUrls});
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppConstants.productAdded,
+            AppConstants.productUpdated,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
@@ -177,8 +215,7 @@ class _addProductState extends State<AddProduct> {
       await context.read<AdminDashboardProvider>().refreshDashboard();
       Navigator.pop(context, true);
     } catch (e) {
-      if (!mounted) return;
-      debugPrint("Error Uploading Product");
+      debugPrint("Error Updating Product: $e");
     } finally {
       if (mounted) {
         setState(() => isAdding = false);
@@ -199,7 +236,7 @@ class _addProductState extends State<AddProduct> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          AppConstants.addProduct,
+          AppConstants.updtProduct,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onInverseSurface,
             fontWeight: FontWeight.bold,
@@ -298,15 +335,21 @@ class _addProductState extends State<AddProduct> {
           _label(AppConstants.thubnailImg),
 
           if (_selectedThumbnail != null)
-            _thumbnailPreview(imageFile: _selectedThumbnail),
+            _thumbnailPreview(imageFile: _selectedThumbnail)
+          else if (_networkThumbnail != null && _networkThumbnail!.isNotEmpty)
+            _thumbnailNetworkPreview(),
+
           _thumbnailImageFormField(
             imageFile: _selectedThumbnail,
             onTap: _pickThumbnail,
           ),
 
           _label(AppConstants.images),
-          if (_selectedImages != null)
-            _imagesPreview(imageFiles: _selectedImages),
+          if (_selectedImages != null && _selectedImages!.isNotEmpty)
+            _imagesPreview(imageFiles: _selectedImages)
+          else if (_networkImages.isNotEmpty)
+            _imagesNetworkPreview(_networkImages),
+
           _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
 
           const SizedBox(height: 30),
@@ -320,7 +363,7 @@ class _addProductState extends State<AddProduct> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: _onAdd,
+              onPressed: _onUpdate,
               child: isAdding
                   ? SizedBox(
                       height: 22,
@@ -331,7 +374,7 @@ class _addProductState extends State<AddProduct> {
                       ),
                     )
                   : Text(
-                      AppConstants.addProduct,
+                      AppConstants.updtProduct,
                       style: TextStyle(
                         fontSize: 16,
                         color: Theme.of(context).colorScheme.primary,
@@ -515,39 +558,71 @@ class _addProductState extends State<AddProduct> {
   }
 
   Widget _thumbnailPreview({required File? imageFile}) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      height: 120,
-      width: 120,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
-      ),
-      child: Padding(
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(8.0),
+        height: 120,
+        width: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+        ),
         child: Image(image: FileImage(imageFile!)),
       ),
     );
   }
 
-  Widget _imagesPreview({required List<File>? imageFiles}) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      height: 120,
-      width: 120,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Theme.of(context).colorScheme.onSecondaryContainer,
-      ),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: imageFiles!.length,
-        itemBuilder: (context, index) {
-          return Padding(
+  Widget _thumbnailNetworkPreview() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(8.0),
-            child: Image(image: FileImage(imageFiles[index])),
-          );
-        },
+            height: 120,
+            width: 120,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                _networkThumbnail!,
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // 🔥 Remove Button (Same Style As Images)
+          Positioned(
+            right: 6,
+            top: 6,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _networkThumbnail = null;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.close,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -609,6 +684,83 @@ class _addProductState extends State<AddProduct> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _imagesPreview({required List<File>? imageFiles}) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      height: 120,
+      width: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: imageFiles!.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image(image: FileImage(imageFiles[index])),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _imagesNetworkPreview(List<String> imageUrls) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _networkImages.length,
+        itemBuilder: (context, index) {
+          final imageUrl = _networkImages[index];
+
+          return Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(imageUrl, width: 100, fit: BoxFit.cover),
+                ),
+              ),
+
+              // 🔥 Remove Button
+              Positioned(
+                right: 6,
+                top: 6,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _networkImages.removeAt(index);
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';
@@ -84,6 +83,12 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Widget _buildProfileCard() {
+    final user = context.watch<UserProvider>().user;
+
+    final hasValidUrl =
+        user?.profilePic != null &&
+        user!.profilePic!.isNotEmpty &&
+        user.profilePic!.startsWith('http');
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -104,9 +109,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                 ),
               ),
               Text(
-                context.read<UserProvider>().user!.name.isEmpty
-                    ? AppConstants.username
-                    : context.read<UserProvider>().user!.name,
+                user!.name.isEmpty ? AppConstants.username : user.name,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 20,
@@ -118,19 +121,25 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           Container(
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
             clipBehavior: Clip.antiAlias,
-            child: CachedNetworkImage(
-              imageUrl: context.read<UserProvider>().user!.profilePic!,
-              height: 50,
-              width: 50,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-              errorWidget: (_, __, ___) => Container(
-                color: Theme.of(context).colorScheme.onPrimary,
-                child: const Icon(Icons.image_not_supported),
-              ),
-            ),
+            child: hasValidUrl
+                ? Image.network(
+                    user.profilePic!,
+                    height: 50,
+                    width: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      height: 50,
+                      width: 50,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      child: const Icon(Icons.person, size: 24),
+                    ),
+                  )
+                : Container(
+                    height: 50,
+                    width: 50,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    child: const Icon(Icons.person, size: 30),
+                  ),
           ),
         ],
       ),

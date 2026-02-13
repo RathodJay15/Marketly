@@ -177,28 +177,33 @@ class _myAccountScreenState extends State<MyAccountScreen> {
   }
 
   Widget _profilePictureSection(UserModel user) {
+    final hasValidUrl =
+        user.profilePic != null &&
+        user.profilePic!.isNotEmpty &&
+        user.profilePic!.startsWith('http');
     return Align(
       alignment: Alignment.center,
       child: Stack(
         children: [
           // Image / Placeholder
           Container(
+            height: 120,
+            width: 120,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
             clipBehavior: Clip.antiAlias,
-            child: CachedNetworkImage(
-              imageUrl:
-                  '${user.profilePic}?v=${DateTime.now().millisecondsSinceEpoch}',
-              height: 120,
-              width: 120,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-              errorWidget: (_, __, ___) => Container(
-                color: Theme.of(context).colorScheme.onPrimary,
-                child: const Icon(Icons.image_not_supported),
-              ),
-            ),
+            child: hasValidUrl
+                ? Image.network(
+                    user.profilePic!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      child: const Icon(Icons.person, size: 120),
+                    ),
+                  )
+                : Container(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    child: const Icon(Icons.person, size: 100),
+                  ),
           ),
 
           // Edit button

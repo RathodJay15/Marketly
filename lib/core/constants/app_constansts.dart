@@ -7,8 +7,12 @@ class AppConstants {
   static const String totalCategories = "Total Categories";
   static const String categories = "Categories";
   static const String addCategory = "Add Category";
+  static const String categoryAdded = "Category added successfully ✅";
   static const String addProduct = "Add Product";
+  static const String productAdded = "Product added successfully ✅";
   static const String updtCategory = "Update Category";
+  static const String updtProduct = "Update Product";
+  static const String productUpdated = "Product Updated successfully ✅";
   static const String updtOrder = "Update Order";
   static const String orderStatus = "Order Status";
   static const String orderID = "Order ID";
