@@ -125,6 +125,11 @@ class _registerScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _confirmController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _countyController.dispose();
+    _pincodeController.dispose();
     super.dispose();
   }
 
@@ -257,6 +262,7 @@ class _registerScreenState extends State<RegisterScreen> {
                       hint: AppConstants.pincode,
                       controller: _pincodeController,
                       validator: Validators.username,
+                      keyboardType: TextInputType.number,
                     ),
 
                     const SizedBox(height: 20.0),

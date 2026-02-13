@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/services/image_service.dart';
-import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +12,7 @@ class AddProduct extends StatefulWidget {
   const AddProduct({super.key});
 
   @override
-  State<AddProduct> createState() => _addProductState();
+  State<StatefulWidget> createState() => _addProductState();
 }
 
 class _addProductState extends State<AddProduct> {
@@ -174,7 +173,7 @@ class _addProductState extends State<AddProduct> {
         ),
       );
 
-      await context.read<AdminDashboardProvider>().refreshDashboard();
+      await context.read<ProductProvider>().fetchAllProducts();
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;

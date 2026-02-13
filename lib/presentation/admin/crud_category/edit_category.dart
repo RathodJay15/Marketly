@@ -12,7 +12,7 @@ class EditCategory extends StatefulWidget {
   const EditCategory({super.key, required this.category});
 
   @override
-  State<EditCategory> createState() => _editCategoryState();
+  State<StatefulWidget> createState() => _editCategoryState();
 }
 
 class _editCategoryState extends State<EditCategory> {

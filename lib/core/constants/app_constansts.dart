@@ -19,11 +19,14 @@ class AppConstants {
   static const String orderNo = "Order Number";
   static const String userID = "User ID";
   static const String updtOrderStatus = "Update Order Status";
+  static const String orderStatusUpdated = "Order Status Update successfully ✅";
   static const String title = "Title";
   static const String slug = "Slug";
   static const String activeStatus = "Active status";
   static const String totalOrders = "Total Orders";
   static const String totalUsers = "Total Users";
+  static const String addUser = "Add User";
+  static const String userCreated = "User Created successfully ✅";
   static const String active = "Active";
   static const String pending = "Pending";
   static const String confirmed = "Confirmed";
@@ -61,6 +64,7 @@ class AppConstants {
   static const String next = "Next";
   static const String cancel = "Cancel";
   static const String delete = "Delete";
+  static const String deleteAcc = "Delete Account";
   static const String cancelCheckOut = "Cancel checkout?";
   static const String areYouSureCancelCheckOut =
       "Are you sure you wnat to cancel check out process?";
@@ -70,6 +74,8 @@ class AppConstants {
       "Are you sure you want to remove all items from your cart?\nThis action can’t be undone.";
   static const String areYouSureDeleteCate =
       "Are you sure you want to delete this category?";
+  static const String areYouSureDeleteAccount =
+      "Are you sure you want to delete this Account?";
   static const String yes = "Yes";
   static const String no = "No";
   static const String myAccount = "My Account";

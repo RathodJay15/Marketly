@@ -15,7 +15,7 @@ class EditProduct extends StatefulWidget {
   const EditProduct({super.key, required this.product});
 
   @override
-  State<EditProduct> createState() => _editProductState();
+  State<StatefulWidget> createState() => _editProductState();
 }
 
 class _editProductState extends State<EditProduct> {
@@ -36,7 +36,7 @@ class _editProductState extends State<EditProduct> {
   late TextEditingController heightCtrl;
   late TextEditingController widthCtrl;
   late TextEditingController depthCtrl;
-  bool isAdding = false;
+  bool isEditing = false;
 
   File? _selectedThumbnail;
   String? _networkThumbnail;
@@ -147,7 +147,7 @@ class _editProductState extends State<EditProduct> {
     if (!_formKey.currentState!.validate()) return;
 
     FocusScope.of(context).unfocus();
-    setState(() => isAdding = true);
+    setState(() => isEditing = true);
 
     try {
       String? thumbnailUrl = _networkThumbnail;
@@ -218,7 +218,7 @@ class _editProductState extends State<EditProduct> {
       debugPrint("Error Updating Product: $e");
     } finally {
       if (mounted) {
-        setState(() => isAdding = false);
+        setState(() => isEditing = false);
       }
     }
   }
@@ -333,24 +333,22 @@ class _editProductState extends State<EditProduct> {
           _dimensions(),
 
           _label(AppConstants.thubnailImg),
+          _thumbnailImageFormField(
+            imageFile: _selectedThumbnail,
+            onTap: _pickThumbnail,
+          ),
 
           if (_selectedThumbnail != null)
             _thumbnailPreview(imageFile: _selectedThumbnail)
           else if (_networkThumbnail != null && _networkThumbnail!.isNotEmpty)
             _thumbnailNetworkPreview(),
 
-          _thumbnailImageFormField(
-            imageFile: _selectedThumbnail,
-            onTap: _pickThumbnail,
-          ),
-
           _label(AppConstants.images),
           if (_selectedImages != null && _selectedImages!.isNotEmpty)
-            _imagesPreview(imageFiles: _selectedImages)
-          else if (_networkImages.isNotEmpty)
-            _imagesNetworkPreview(_networkImages),
+            _imagesPreview(imageFiles: _selectedImages),
 
           _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
+          if (_networkImages.isNotEmpty) _imagesNetworkPreview(_networkImages),
 
           const SizedBox(height: 30),
 
@@ -364,7 +362,7 @@ class _editProductState extends State<EditProduct> {
                 ),
               ),
               onPressed: _onUpdate,
-              child: isAdding
+              child: isEditing
                   ? SizedBox(
                       height: 22,
                       width: 22,

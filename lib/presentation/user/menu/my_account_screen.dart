@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:marketly/auth_gate.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/user_model.dart';
@@ -326,6 +328,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             icon: Icons.pin_outlined,
             validator: Validators.city,
           ),
+          SizedBox(height: 30),
+          _deleteAccountBTN(user.uid),
         ],
       ),
     );
@@ -388,6 +392,66 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         ),
       ),
     );
+  }
+
+  Widget _deleteAccountBTN(String uid) {
+    return ElevatedButton(
+      onPressed: () async {
+        await _deleteAccount(context);
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.onSurface,
+        minimumSize: const Size(double.infinity, 50.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: Text(
+        AppConstants.deleteAcc,
+        style: TextStyle(
+          fontSize: 16,
+          color: Theme.of(context).colorScheme.onInverseSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      final userProvider = context.read<UserProvider>();
+      final user = userProvider.user;
+
+      if (user == null) return;
+
+      // 🔥 Delete Firestore document
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .delete();
+
+      // 🔥 Delete Auth user
+      await FirebaseAuth.instance.currentUser!.delete();
+
+      // 🔥 Clear provider
+      userProvider.clearUser();
+
+      // 🔥 Navigate to login
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const AuthGate()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please re-login to delete account.")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
   }
 
   Future<void> _updateUserField(String fieldKey) async {

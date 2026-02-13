@@ -9,7 +9,7 @@ class AddCategory extends StatefulWidget {
   const AddCategory({super.key});
 
   @override
-  State<AddCategory> createState() => _addCategoryState();
+  State<StatefulWidget> createState() => _addCategoryState();
 }
 
 class _addCategoryState extends State<AddCategory> {

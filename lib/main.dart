@@ -4,6 +4,7 @@ import 'package:marketly/auth_gate.dart';
 import 'package:marketly/firebase_options.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/admin/admin_order_provider.dart';
+import 'package:marketly/providers/admin/admin_user_provider.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/admin/admin_categories_provider.dart';
@@ -36,6 +37,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminCategoryProvider()),
         ChangeNotifierProvider(create: (_) => AdminDashboardProvider()),
         ChangeNotifierProvider(create: (_) => AdminOrderProvider()),
+        ChangeNotifierProvider(create: (_) => AdminUserProvider()),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userProvider, _) {

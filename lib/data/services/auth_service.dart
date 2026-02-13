@@ -21,6 +21,25 @@ class AuthService {
     }
   }
 
+  //--------------------------------------------------------------
+  //  get all users
+  //--------------------------------------------------------------
+
+  Future<List<UserModel?>> getAllUser() async {
+    try {
+      final snapshot = await _firestore.collection('users').get();
+
+      return snapshot.docs.map((doc) {
+        return UserModel.fromFirestore(
+          doc.data(),
+          doc.id, // pass document id as uid
+        );
+      }).toList();
+    } catch (e) {
+      throw Exception('Failed to load user list');
+    }
+  }
+
   // ------------------------------------------------------------
   // Login
   // ------------------------------------------------------------

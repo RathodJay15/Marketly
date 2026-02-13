@@ -3,7 +3,7 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/admin/crud_category/all_categories.dart';
 import 'package:marketly/presentation/admin/crud_product/all_products.dart';
-import 'package:marketly/presentation/admin/all_users.dart';
+import 'package:marketly/presentation/admin/users/all_users.dart';
 import 'package:marketly/presentation/admin/orders/all_orders.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/user_provider.dart';

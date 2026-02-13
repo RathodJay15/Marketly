@@ -137,7 +137,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                 : Container(
                     height: 50,
                     width: 50,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
                     child: const Icon(Icons.person, size: 30),
                   ),
           ),

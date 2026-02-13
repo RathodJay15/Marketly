@@ -57,6 +57,13 @@ class _allOrdersState extends State<AllOrders> {
               itemCount: provider.orders.length,
               itemBuilder: (context, index) {
                 final order = provider.orders[index];
+                late Set<String> _selectedStatuses;
+                _selectedStatuses = order.statusTimeline
+                    .map((e) => e['status'] as String)
+                    .toSet();
+                final isConfirmed = _selectedStatuses.contains(
+                  "ORDER_CONFIRMED",
+                );
                 return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
@@ -71,13 +78,28 @@ class _allOrdersState extends State<AllOrders> {
                         fontSize: 25,
                       ),
                     ),
-                    title: Text(
-                      order.orderNumber,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          order.orderNumber,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          isConfirmed ? Icons.check_circle : Icons.pending,
+                          color: isConfirmed
+                              ? Theme.of(context).colorScheme.onSecondary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ],
                     ),
                     subtitle: Column(
                       mainAxisAlignment: MainAxisAlignment.start,

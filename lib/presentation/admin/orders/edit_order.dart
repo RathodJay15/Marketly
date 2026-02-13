@@ -15,6 +15,7 @@ class EditOrder extends StatefulWidget {
 
 class _editOrderScreen extends State<EditOrder> {
   late Set<String> _selectedStatuses;
+  bool isEditing = false;
 
   static const List<String> _orderSteps = [
     'ORDER_PLACED',
@@ -33,31 +34,53 @@ class _editOrderScreen extends State<EditOrder> {
   }
 
   Future<void> _saveOrderStatus() async {
-    final docRef = FirebaseFirestore.instance
-        .collection('orders')
-        .doc(widget.order.id);
+    try {
+      setState(() => isEditing = true);
+      final docRef = FirebaseFirestore.instance
+          .collection('orders')
+          .doc(widget.order.id);
 
-    final doc = await docRef.get();
+      final doc = await docRef.get();
 
-    if (!doc.exists) return;
+      if (!doc.exists) return;
 
-    List<dynamic> timeline = doc.data()?['statusTimeline'] ?? [];
+      List<dynamic> timeline = doc.data()?['statusTimeline'] ?? [];
 
-    final existingStatuses = timeline.map((e) => e['status'] as String).toSet();
+      final existingStatuses = timeline
+          .map((e) => e['status'] as String)
+          .toSet();
 
-    final newStatuses = _selectedStatuses.difference(existingStatuses);
+      final newStatuses = _selectedStatuses.difference(existingStatuses);
 
-    for (String status in newStatuses) {
-      timeline.add({'status': status, 'time': Timestamp.now()});
+      for (String status in newStatuses) {
+        timeline.add({'status': status, 'time': Timestamp.now()});
+      }
+
+      await docRef.update({
+        'statusTimeline': timeline,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppConstants.orderStatusUpdated,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+      await context.read<AdminDashboardProvider>().refreshDashboard();
+      Navigator.pop(context, true);
+    } catch (e) {
+      debugPrint("Error Updating Order: $e");
+    } finally {
+      if (mounted) {
+        setState(() => isEditing = false);
+      }
     }
-
-    await docRef.update({
-      'statusTimeline': timeline,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-
-    await context.read<AdminDashboardProvider>().refreshDashboard();
-    Navigator.pop(context, true);
   }
 
   @override
@@ -259,14 +282,23 @@ class _editOrderScreen extends State<EditOrder> {
                 ),
               ),
               onPressed: _saveOrderStatus,
-              child: Text(
-                AppConstants.updtOrderStatus,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+              child: isEditing
+                  ? SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  : Text(
+                      AppConstants.updtOrderStatus,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
             ),
           ),
         ],
