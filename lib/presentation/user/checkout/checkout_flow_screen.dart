@@ -4,6 +4,7 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/checkout/address_screen.dart';
 import 'package:marketly/presentation/user/checkout/order_summary_screen.dart';
 import 'package:marketly/presentation/user/checkout/payment_screen.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -36,38 +37,10 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
   }
 
   Future<void> _confirmCancelCheckout({Object? result}) async {
-    final shouldExit = await showDialog<bool>(
+    final shouldExit = await MarketlyDialog.showMyDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(
-          AppConstants.cancelCheckOut,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
-        ),
-        content: Text(
-          AppConstants.areYouSureCancelCheckOut,
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              AppConstants.no,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              AppConstants.yes,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ),
-        ],
-      ),
+      title: AppConstants.cancelCheckOut,
+      content: AppConstants.areYouSureCancelCheckOut,
     );
 
     if (shouldExit == true) {

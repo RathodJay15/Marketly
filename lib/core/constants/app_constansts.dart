@@ -50,6 +50,9 @@ class AppConstants {
   static const String login = "Login";
   static const String signup = "Sign up";
   static const String register = "Register";
+  static const String camera = "Camera";
+  static const String gallery = "Gallery";
+  static const String deleteProfilePic = "Delete Profile Picture";
   static const String dontHaveAccount = "Don't have an Account!";
   static const String haveAnAccount = "Already have an Account!";
   static const String registerNow = "$register now";
@@ -65,6 +68,7 @@ class AppConstants {
   static const String deleteProduct = "Delete Product";
   static const String back = "Back";
   static const String next = "Next";
+  static const String exit = "Exit";
   static const String cancel = "Cancel";
   static const String delete = "Delete";
   static const String deleteAcc = "Delete Account";
@@ -77,10 +81,14 @@ class AppConstants {
       "Are you sure you want to delete this product?";
   static const String areYouSureEmptyCart =
       "Are you sure you want to remove all items from your cart?\nThis action can’t be undone.";
+  static const String areYouSureDeleteAcc =
+      "Are you sure you want to Delete this account?\nThis action can’t be undone.";
   static const String areYouSureDeleteCate =
       "Are you sure you want to delete this category?";
-  static const String areYouSureDeleteAccount =
-      "Are you sure you want to delete this Account?";
+  static const String areYouSureLogout =
+      "Are you sure you want to logout from this Account?";
+  static const String areYouSureLeave =
+      "Are you sure you want to leave this app?";
   static const String yes = "Yes";
   static const String no = "No";
   static const String myAccount = "My Account";

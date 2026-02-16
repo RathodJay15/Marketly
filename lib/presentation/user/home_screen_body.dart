@@ -84,9 +84,10 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
   Widget _buildProfileCard() {
     final user = context.watch<UserProvider>().user;
-    debugPrint(user?.profilePic);
-    final hasValidUrl =
-        user?.profilePic != null && user!.profilePic!.isNotEmpty;
+    if (user == null) {
+      return const SizedBox();
+    }
+    final hasValidUrl = user.profilePic != null && user.profilePic!.isNotEmpty;
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -107,7 +108,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                 ),
               ),
               Text(
-                user!.name.isEmpty ? AppConstants.username : user.name,
+                user.name.isEmpty ? AppConstants.username : user.name,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 20,

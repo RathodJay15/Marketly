@@ -6,60 +6,69 @@ import 'package:marketly/presentation/user/home_screen.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-class AuthGate extends StatefulWidget {
+class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
   @override
-  State<AuthGate> createState() => _authGateState();
-}
-
-class _authGateState extends State<AuthGate> {
-  bool _isCheckingAuth = true;
-  @override
-  void initState() {
-    super.initState();
-
-    authService.authStateChanges.listen((firebaseUser) async {
-      final userProvider = context.read<UserProvider>();
-
-      if (firebaseUser == null) {
-        userProvider.clearUser();
-        setState(() => _isCheckingAuth = false);
-        return;
-      }
-
-      final userModel = await authService.getUserProfile(firebaseUser.uid);
-
-      if (userModel != null) {
-        userProvider.setUser(userModel);
-      }
-      setState(() => _isCheckingAuth = false);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserProvider>().user;
+    return StreamBuilder(
+      stream: authService.authStateChanges,
+      builder: (context, snapshot) {
+        // 🔹 Loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+          );
+        }
 
-    if (_isCheckingAuth) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
-        ),
-      );
-    }
+        final firebaseUser = snapshot.data;
 
-    if (user == null) {
-      return const LoginScreen();
-    }
+        // 🔹 Not logged in
+        if (firebaseUser == null) {
+          context.read<UserProvider>().clearUser();
+          return const LoginScreen();
+        }
 
-    if (user.role == 'admin') {
-      return const DashBoardScreen();
-    }
+        // 🔹 Logged in → fetch profile
+        return FutureBuilder(
+          future: authService.getUserProfile(firebaseUser.uid),
+          builder: (context, userSnapshot) {
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                body: Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                ),
+              );
+            }
 
-    return const HomeScreen();
+            final userModel = userSnapshot.data;
+
+            if (userModel == null) {
+              return const LoginScreen();
+            }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                context.read<UserProvider>().setUser(userModel);
+              }
+            });
+
+            if (userModel.role == 'admin') {
+              return const DashBoardScreen();
+            }
+
+            return const HomeScreen();
+          },
+        );
+      },
+    );
   }
 }

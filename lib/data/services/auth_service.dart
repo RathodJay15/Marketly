@@ -17,7 +17,21 @@ class AuthService {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
       if (!doc.exists || doc.data() == null) return null;
-      return UserModel.fromFirestore(doc.data()!, uid);
+
+      UserModel user = UserModel.fromFirestore(doc.data()!, uid);
+
+      if (user.isDeleted) {
+        throw FirebaseAuthException(
+          code: 'account-deactivated',
+          message: 'This account has been deactivated.',
+        );
+      }
+
+      return user;
+    } on FirebaseAuthException catch (e) {
+      if (e.message == 'This account has been deactivated.') {
+        throw Exception('This account has been deleted.');
+      }
     } catch (e) {
       throw Exception('Failed to load user profile');
     }
@@ -115,6 +129,8 @@ class AuthService {
           .set(userModel.toFirestore());
 
       return userModel;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message);
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Registration failed');

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/category_model.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/admin/admin_categories_provider.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
@@ -41,39 +42,12 @@ class _editCategoryState extends State<EditCategory> {
 
   // ---------------- DELETE ----------------
   Future<void> _onDelete() async {
-    final confirm = await showDialog<bool>(
+    final confirm = await MarketlyDialog.showMyDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-        title: Text(
-          '${AppConstants.delete} ${AppConstants.category}',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
-        ),
-        content: Text(
-          AppConstants.areYouSureDeleteCate,
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              AppConstants.cancel,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              AppConstants.delete,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ),
-        ],
-      ),
+      actionN: AppConstants.cancel,
+      actionY: AppConstants.delete,
+      content: AppConstants.areYouSureDeleteCate,
+      title: '${AppConstants.delete} ${AppConstants.category}',
     );
 
     if (confirm == true) {

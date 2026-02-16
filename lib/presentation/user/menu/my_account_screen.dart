@@ -1,12 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/auth_gate.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
+import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -50,15 +54,83 @@ class _myAccountScreenState extends State<MyAccountScreen> {
   Future<File?> _pickImage() async {
     if (_isPickingImage) return null;
 
+    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      // backgroundColor: Theme.of(context).colorScheme.primary,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(
+                  Icons.camera_alt_rounded,
+                  size: 30,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+                title: Text(
+                  AppConstants.camera,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 23,
+                  ),
+                ),
+                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.photo_library,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  size: 30,
+                ),
+                title: Text(
+                  AppConstants.gallery,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 23,
+                  ),
+                ),
+                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.delete_rounded,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  size: 30,
+                ),
+                title: Text(
+                  AppConstants.deleteProfilePic,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 23,
+                  ),
+                ),
+                onTap: () {
+                  _deleteProfileImage();
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source == null) return null;
+
     _isPickingImage = true;
 
     try {
       final picked = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         imageQuality: 70,
       );
 
       if (picked == null) return null;
+
       return File(picked.path);
     } finally {
       _isPickingImage = false;
@@ -185,47 +257,68 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         user.profilePic!.startsWith('http');
     return Align(
       alignment: Alignment.center,
-      child: Stack(
+      child: Column(
         children: [
-          // Image / Placeholder
-          Container(
-            height: 120,
-            width: 120,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            clipBehavior: Clip.antiAlias,
-            child: hasValidUrl
-                ? Image.network(
-                    user.profilePic!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      child: const Icon(Icons.person, size: 120),
-                    ),
-                  )
-                : Container(
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    child: const Icon(Icons.person, size: 100),
-                  ),
-          ),
-
-          // Edit button
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: InkWell(
-              onTap: _isPickingImage ? null : () => _changeProfilePicture(user),
-              child: Container(
-                padding: const EdgeInsets.all(8),
+          Stack(
+            children: [
+              // Image / Placeholder
+              Container(
+                height: 120,
+                width: 120,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(60),
                 ),
-                child: Icon(
-                  Icons.edit,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                  size: 18,
+                clipBehavior: Clip.antiAlias,
+                child: hasValidUrl
+                    ? Image.network(
+                        user.profilePic!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSecondaryContainer,
+                          child: const Icon(Icons.person, size: 60),
+                        ),
+                      )
+                    : Container(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        child: const Icon(Icons.person, size: 60),
+                      ),
+              ),
+
+              // Edit button
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: InkWell(
+                  onTap: _isPickingImage
+                      ? null
+                      : () => _changeProfilePicture(user),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
+                      Icons.camera_alt_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 20,
+                    ),
+                  ),
                 ),
               ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Text(
+            user.email.isEmpty ? AppConstants.username : user.email,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ],
@@ -329,7 +422,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             validator: Validators.city,
           ),
           SizedBox(height: 30),
-          // _deleteAccountBTN(user.uid),
+          _deleteAccountBTN(user.uid),
         ],
       ),
     );
@@ -394,65 +487,92 @@ class _myAccountScreenState extends State<MyAccountScreen> {
     );
   }
 
-  // Widget _deleteAccountBTN(String uid) {
-  //   return ElevatedButton(
-  //     onPressed: () async {
-  //       await _deleteAccount(context);
-  //     },
-  //     style: ElevatedButton.styleFrom(
-  //       backgroundColor: Theme.of(context).colorScheme.onSurface,
-  //       minimumSize: const Size(double.infinity, 50.0),
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(10.0),
-  //       ),
-  //     ),
-  //     child: Text(
-  //       AppConstants.deleteAcc,
-  //       style: TextStyle(
-  //         fontSize: 16,
-  //         color: Theme.of(context).colorScheme.onInverseSurface,
-  //         fontWeight: FontWeight.w600,
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _deleteAccountBTN(String uid) {
+    return ElevatedButton(
+      onPressed: () async {
+        final confirm = await MarketlyDialog.showMyDialog(
+          context: context,
+          title: AppConstants.deleteAcc,
+          content: AppConstants.areYouSureDeleteAcc,
+          actionN: AppConstants.cancel,
+          actionY: AppConstants.delete,
+        );
+        if (confirm == true) {
+          await _deleteAccount(context);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).colorScheme.onSurface,
+        minimumSize: const Size(double.infinity, 50.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      child: Text(
+        AppConstants.deleteAcc,
+        style: TextStyle(
+          fontSize: 16,
+          color: Theme.of(context).colorScheme.onInverseSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
 
-  // Future<void> _deleteAccount(BuildContext context) async {
-  //   try {
-  //     final userProvider = context.read<UserProvider>();
-  //     final user = userProvider.user;
+  Future<void> _deleteAccount(BuildContext context) async {
+    final userProvider = context.read<UserProvider>();
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .update({
+            'isDeleted': true,
+            'deletedAt': FieldValue.serverTimestamp(), // optional audit field
+          });
+      // Clear provider
+      userProvider.clearUser();
+      context.read<NavigationProvider>().setScreenIndex(
+        0,
+      ); // set navbar to home
+      context.read<CartProvider>().stopListening();
 
-  //     if (user == null) return;
+      // Navigate to login
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const AuthGate()),
+        (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+  }
 
-  //     // 🔥 Delete Firestore document
-  //     await FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc(user.uid)
-  //         .delete();
+  Future<void> _deleteProfileImage() async {
+    final user = context.read<UserProvider>().user;
+    if (user == null) return;
 
-  //     // 🔥 Delete Auth user
-  //     await FirebaseAuth.instance.currentUser!.delete();
+    try {
+      // 🔥 Only delete if URL exists
+      if (user.profilePic != null && user.profilePic!.isNotEmpty) {
+        final ref = FirebaseStorage.instance.refFromURL(user.profilePic!);
+        await ref.delete();
+      }
 
-  //     // 🔥 Clear provider
-  //     userProvider.clearUser();
+      // Update Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'profilePic': ''},
+      );
 
-  //     // 🔥 Navigate to login
-  //     Navigator.of(context).pushAndRemoveUntil(
-  //       MaterialPageRoute(builder: (_) => const AuthGate()),
-  //       (route) => false,
-  //     );
-  //   } on FirebaseAuthException catch (e) {
-  //     if (e.code == 'requires-recent-login') {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Please re-login to delete account.")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text("Error: $e")));
-  //   }
-  // }
+      // Update Provider
+      final updatedUser = user.copyWith(profilePic: '');
+      context.read<UserProvider>().setUser(updatedUser);
+    } catch (e) {
+      debugPrint("Delete profile error: $e");
+    }
+  }
 
   Future<void> _updateUserField(String fieldKey) async {
     final user = context.read<UserProvider>().user!;

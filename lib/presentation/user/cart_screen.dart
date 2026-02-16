@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/checkout/checkout_flow_screen.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 
 import 'package:provider/provider.dart';
@@ -115,43 +116,12 @@ class _cartScreenState extends State<CartScreen> {
           ),
           IconButton(
             onPressed: () async {
-              final confirm = await showDialog<bool>(
+              final confirm = await MarketlyDialog.showMyDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  // backgroundColor: Theme.of(context).colorScheme.primary,
-                  title: Text(
-                    AppConstants.dialogEmptyCart,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                  ),
-                  content: Text(
-                    AppConstants.areYouSureEmptyCart,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text(
-                        AppConstants.cancel,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text(
-                        AppConstants.yesEmptyCart,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                title: AppConstants.dialogEmptyCart,
+                content: AppConstants.areYouSureEmptyCart,
+                actionN: AppConstants.cancel,
+                actionY: AppConstants.yesEmptyCart,
               );
 
               if (confirm == true) {

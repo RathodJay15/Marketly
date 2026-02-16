@@ -5,6 +5,7 @@ import 'package:marketly/presentation/admin/crud_category/all_categories.dart';
 import 'package:marketly/presentation/admin/crud_product/all_products.dart';
 import 'package:marketly/presentation/admin/users/all_users.dart';
 import 'package:marketly/presentation/admin/orders/all_orders.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -25,9 +26,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     });
   }
 
-  Future<void> onLogout() async {
-    await AuthService().logout();
-    context.read<UserProvider>().clearUser();
+  void onLogout() async {
+    final shouldExit = await MarketlyDialog.showMyDialog(
+      context: context,
+      title: AppConstants.logout,
+      content: AppConstants.areYouSureLogout,
+    );
+
+    if (shouldExit == true) {
+      await AuthService().logout(); // Firebase session
+      context.read<UserProvider>().clearUser(); // App state
+    }
   }
 
   void _goToCategories() {

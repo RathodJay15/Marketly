@@ -55,8 +55,57 @@ class _registerScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _pickImage() async {
+    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      // backgroundColor: Theme.of(context).colorScheme.primary,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(
+                  Icons.camera_alt_rounded,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  size: 30,
+                ),
+                title: Text(
+                  AppConstants.camera,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 23,
+                  ),
+                ),
+                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.photo_library,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  size: 30,
+                ),
+                title: Text(
+                  AppConstants.gallery,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 23,
+                  ),
+                ),
+                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source == null) return;
+
     final picked = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
+      source: source,
       imageQuality: 70,
     );
 
@@ -89,8 +138,6 @@ class _registerScreenState extends State<RegisterScreen> {
         profilePic: '',
       );
       if (user != null) {
-        UserModel updatedUser = user;
-
         if (_selectedImage != null) {
           final imageUrl = await _profilePicService.uploadProfileImage(
             uid: user.uid,
@@ -102,12 +149,10 @@ class _registerScreenState extends State<RegisterScreen> {
                 .collection('users')
                 .doc(user.uid)
                 .update({'profilePic': imageUrl});
-
-            updatedUser = user.copyWith(profilePic: imageUrl);
           }
         }
 
-        context.read<UserProvider>().setUser(updatedUser);
+        if (!mounted) return;
         Navigator.pop(context);
         // authStateChanges → HomeScreen
       }

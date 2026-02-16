@@ -7,6 +7,7 @@ import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
 import 'package:marketly/presentation/user/menu/menu_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -61,25 +62,46 @@ class _homeScreenState extends State<HomeScreen>
     context.read<CartProvider>().stopListening();
   }
 
+  Future<void> _confirmLeave({Object? result}) async {
+    final shouldExit = await MarketlyDialog.showMyDialog(
+      context: context,
+      title: AppConstants.exit,
+      content: AppConstants.areYouSureLeave,
+    );
+
+    if (shouldExit == true) {
+      Navigator.of(context).pop(result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context); // required for keepAlive
 
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: SafeArea(
-        child: IndexedStack(
-          index: context.select<NavigationProvider, int>((p) => p.screenIndex),
-          children: [
-            HomeScreenBody(),
-            SearchProductsScreen(),
-            CartScreen(),
-            MenuScreen(),
-          ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _confirmLeave(result: result);
+      },
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        body: SafeArea(
+          child: IndexedStack(
+            index: context.select<NavigationProvider, int>(
+              (p) => p.screenIndex,
+            ),
+            children: [
+              HomeScreenBody(),
+              SearchProductsScreen(),
+              CartScreen(),
+              MenuScreen(),
+            ],
+          ),
         ),
+        bottomNavigationBar: _navBar(),
       ),
-      bottomNavigationBar: _navBar(),
     );
   }
 

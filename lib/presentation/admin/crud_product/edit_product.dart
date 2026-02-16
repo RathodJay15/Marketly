@@ -5,6 +5,7 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/image_service.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
@@ -224,39 +225,12 @@ class _editProductState extends State<EditProduct> {
   }
 
   Future<void> _onDelete() async {
-    final confirm = await showDialog<bool>(
+    final confirm = await MarketlyDialog.showMyDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-        title: Text(
-          AppConstants.deleteProduct,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
-        ),
-        content: Text(
-          AppConstants.areYouSureDeleteProduct,
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              AppConstants.cancel,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              AppConstants.delete,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ),
-        ],
-      ),
+      title: AppConstants.deleteProduct,
+      content: AppConstants.areYouSureDeleteProduct,
+      actionN: AppConstants.cancel,
+      actionY: AppConstants.delete,
     );
 
     if (confirm == true) {
@@ -413,8 +387,7 @@ class _editProductState extends State<EditProduct> {
           _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
           if (_networkImages.isNotEmpty) _imagesNetworkPreview(_networkImages),
 
-          const SizedBox(height: 30),
-
+          const SizedBox(height: 10),
           SizedBox(
             height: 50,
             child: ElevatedButton(
@@ -443,6 +416,7 @@ class _editProductState extends State<EditProduct> {
                     ),
             ),
           ),
+          const SizedBox(height: 30),
         ],
       ),
     );
