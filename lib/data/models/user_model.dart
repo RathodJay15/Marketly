@@ -1,8 +1,10 @@
+import 'package:marketly/data/models/address_model.dart';
+
 class UserModel {
   final String uid;
   final String name;
   final String email;
-  final List<Map<String, dynamic>> addresses;
+  final List<AddressModel> addresses;
   final String phone;
   final String city;
   final String state;
@@ -32,7 +34,10 @@ class UserModel {
       uid: uid,
       name: map['name'],
       email: map['email'],
-      addresses: List<Map<String, dynamic>>.from(map['addresses'] ?? []),
+      addresses: (map['addresses'] as List<dynamic>? ?? [])
+          .map((a) => AddressModel.fromMap(Map<String, dynamic>.from(a)))
+          .toList(),
+
       phone: map['phone'],
       city: map['city'],
       country: map['country'],
@@ -48,7 +53,7 @@ class UserModel {
     return {
       'name': name,
       'email': email,
-      'addresses': addresses,
+      'addresses': addresses.map((a) => a.toMap()).toList(),
       'phone': phone,
       'role': role,
       'state': state,
@@ -63,7 +68,7 @@ class UserModel {
   UserModel copyWith({
     String? name,
     String? email,
-    List<Map<String, dynamic>>? addresses,
+    List<AddressModel>? addresses,
     String? phone,
     String? city,
     String? state,

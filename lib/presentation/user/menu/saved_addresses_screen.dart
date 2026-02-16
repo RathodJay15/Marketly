@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -85,14 +86,14 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         }
 
         final address = addresses[index - 1];
-        final isDefault = address['isDefault'] == true;
+        final isDefault = address.isDefault == true;
 
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           color: Theme.of(context).colorScheme.onSecondaryContainer,
           child: ListTile(
             title: Text(
-              address['address'],
+              address.address,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
@@ -116,7 +117,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
               ).colorScheme.onSecondaryContainer,
               onChanged: (value) {
                 if (!value) return;
-                _setDefaultAddress(user: user, addressId: address['id']);
+                _setDefaultAddress(user: user, addressId: address.id);
               },
             ),
             trailing: IconButton(
@@ -201,11 +202,11 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
     required UserModel user,
     required String addressText,
   }) async {
-    final newAddress = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'address': addressText,
-      'isDefault': user.addresses.isEmpty,
-    };
+    final newAddress = AddressModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      address: addressText,
+      isDefault: user.addresses.isEmpty,
+    );
 
     final updatedAddresses = [...user.addresses, newAddress];
 
@@ -226,11 +227,11 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
     required String addressId,
   }) async {
     final updatedAddresses = user.addresses.map((addr) {
-      return {
-        'id': addr['id'],
-        'address': addr['address'],
-        'isDefault': addr['id'] == addressId,
-      };
+      return AddressModel(
+        id: addr.id,
+        address: addr.address,
+        isDefault: addr.id == addressId,
+      );
     }).toList();
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
@@ -245,7 +246,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
   void _confirmDeleteAddress({
     required BuildContext context,
     required UserModel user,
-    required Map<String, dynamic> address,
+    required AddressModel address,
   }) {
     showDialog(
       context: context,
@@ -273,7 +274,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await _deleteAddress(user: user, addressId: address['id']);
+              await _deleteAddress(user: user, addressId: address.id);
             },
             child: Text(
               AppConstants.delete,
@@ -290,14 +291,14 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
     required String addressId,
   }) async {
     // Remove selected address
-    final List<Map<String, dynamic>> updatedAddresses = user.addresses
-        .where((a) => a['id'] != addressId)
+    final List<AddressModel> updatedAddresses = user.addresses
+        .where((a) => a.id != addressId)
         .toList();
 
     //  If deleted address was default → assign new default
     if (updatedAddresses.isNotEmpty &&
-        !updatedAddresses.any((a) => a['isDefault'] == true)) {
-      updatedAddresses[0] = {...updatedAddresses[0], 'isDefault': true};
+        !updatedAddresses.any((a) => a.isDefault)) {
+      updatedAddresses[0] = updatedAddresses[0].copyWith(isDefault: true);
     }
 
     // Update Firestore

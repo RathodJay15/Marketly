@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -84,12 +86,12 @@ class AuthService {
       final user = cred.user;
       if (user == null) return null;
 
-      final defaultAddress = [
-        {
-          "id": DateTime.now().millisecondsSinceEpoch.toString(),
-          "address": address,
-          "isDefault": true,
-        },
+      List<AddressModel> defaultAddress = [
+        AddressModel(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          address: address,
+          isDefault: true,
+        ),
       ];
 
       final userModel = UserModel(
@@ -114,6 +116,7 @@ class AuthService {
 
       return userModel;
     } catch (e) {
+      debugPrint(e.toString());
       throw Exception('Registration failed');
     }
   }

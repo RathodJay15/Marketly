@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/core/data_instance/validators.dart';
+import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/data/services/image_service.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -87,22 +88,26 @@ class _registerScreenState extends State<RegisterScreen> {
         pincode: _pincodeController.text.trim(),
         profilePic: '',
       );
-
-      if (_selectedImage != null) {
-        final imageUrl = await _profilePicService.uploadProfileImage(
-          uid: user!.uid,
-          imageFile: _selectedImage!,
-        );
-
-        if (imageUrl != null) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .update({'profilePic': imageUrl});
-        }
-      }
       if (user != null) {
-        context.read<UserProvider>().setUser(user);
+        UserModel updatedUser = user;
+
+        if (_selectedImage != null) {
+          final imageUrl = await _profilePicService.uploadProfileImage(
+            uid: user.uid,
+            imageFile: _selectedImage!,
+          );
+
+          if (imageUrl != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({'profilePic': imageUrl});
+
+            updatedUser = user.copyWith(profilePic: imageUrl);
+          }
+        }
+
+        context.read<UserProvider>().setUser(updatedUser);
         Navigator.pop(context);
         // authStateChanges → HomeScreen
       }

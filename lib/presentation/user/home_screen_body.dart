@@ -84,11 +84,9 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
   Widget _buildProfileCard() {
     final user = context.watch<UserProvider>().user;
-
+    debugPrint(user?.profilePic);
     final hasValidUrl =
-        user?.profilePic != null &&
-        user!.profilePic!.isNotEmpty &&
-        user.profilePic!.startsWith('http');
+        user?.profilePic != null && user!.profilePic!.isNotEmpty;
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -130,8 +128,8 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                     errorBuilder: (_, __, ___) => Container(
                       height: 50,
                       width: 50,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      child: const Icon(Icons.person, size: 24),
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      child: const Icon(Icons.person, size: 30),
                     ),
                   )
                 : Container(

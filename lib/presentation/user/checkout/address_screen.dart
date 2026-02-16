@@ -43,12 +43,12 @@ class _addressScreenState extends State<AddressScreen> {
 
     if (user.addresses.isNotEmpty) {
       final defaultAddr = user.addresses.firstWhere(
-        (a) => a['isDefault'] == true,
+        (a) => a.isDefault == true,
         orElse: () => user.addresses.first,
       );
 
-      selectedAddressId = defaultAddr['id'];
-      addressCtrl.text = defaultAddr['address'];
+      selectedAddressId = defaultAddr.id;
+      addressCtrl.text = defaultAddr.address;
     }
 
     _initialized = true;
@@ -225,9 +225,9 @@ class _addressScreenState extends State<AddressScreen> {
                 ),
                 items: user.addresses.map((addr) {
                   return DropdownMenuItem<String>(
-                    value: addr['id'],
+                    value: addr.id,
                     child: Text(
-                      addr['address'],
+                      addr.address,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -238,11 +238,11 @@ class _addressScreenState extends State<AddressScreen> {
                 }).toList(),
                 onChanged: (value) {
                   final selected = user.addresses.firstWhere(
-                    (a) => a['id'] == value,
+                    (a) => a.id == value,
                   );
                   setState(() {
                     selectedAddressId = value;
-                    addressCtrl.text = selected['address'];
+                    addressCtrl.text = selected.address;
                   });
                 },
                 validator: (value) =>

@@ -61,7 +61,7 @@ class _userDetailsScreen extends State<UserDetails> {
         _sectionTitle(AppConstants.adrs),
         _greyCard(
           children: user.addresses.map((address) {
-            final formattedAddress = "${address['address']}";
+            final formattedAddress = address.address;
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
