@@ -149,12 +149,12 @@ class _myAccountScreenState extends State<MyAccountScreen> {
 
     if (imageUrl == null) return;
 
-    //  Update Firestore
+    // Update Firestore
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
       'profilePic': imageUrl,
     });
 
-    //  Update local provider
+    // Update Provider
     context.read<UserProvider>().setUser(user.copyWith(profilePic: imageUrl));
   }
 
@@ -269,23 +269,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                   borderRadius: BorderRadius.circular(60),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: hasValidUrl
-                    ? Image.network(
-                        user.profilePic!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSecondaryContainer,
-                          child: const Icon(Icons.person, size: 60),
-                        ),
-                      )
-                    : Container(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSecondaryContainer,
-                        child: const Icon(Icons.person, size: 60),
-                      ),
+                child: _imageSection(user.profilePic!, hasValidUrl),
               ),
 
               // Edit button
@@ -322,6 +306,32 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _imageSection(String imgURL, bool hasValidUrl) {
+    if (!hasValidUrl) {
+      return Container(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        child: const Icon(Icons.person, size: 60),
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: imgURL,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => Container(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        child: Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => Container(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        child: const Icon(Icons.person, size: 60),
       ),
     );
   }

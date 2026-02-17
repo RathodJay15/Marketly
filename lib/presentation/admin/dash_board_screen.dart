@@ -89,7 +89,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             );
           }
           return ListView(
-            shrinkWrap: true,
             children: [
               _stats(dashboardProvider),
 
@@ -129,10 +128,17 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
               _sectionTitle(AppConstants.users),
 
-              _titleTile(
+              _subTitleTile(
                 icon: Icons.person,
-                label: AppConstants.totalUsers,
-                value: dashboardProvider.totalUsers.toString(),
+                title: '${AppConstants.totalUsers} : ',
+                titleVal: dashboardProvider.totalUsers.toString(),
+                subtitle1: '${AppConstants.active} : ',
+                subtitle1Val: dashboardProvider.activeUsers.toString(),
+                subtitle2: '${AppConstants.inActive} : ',
+                subtitle2Val:
+                    (dashboardProvider.totalUsers -
+                            dashboardProvider.activeUsers)
+                        .toString(),
                 onTap: () => _goToUsers(),
               ),
             ],

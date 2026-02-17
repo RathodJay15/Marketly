@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/core/data_instance/validators.dart';
-import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/data/services/image_service.dart';
-import 'package:marketly/providers/user_provider.dart';
-import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';
@@ -121,12 +122,29 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
             clipBehavior: Clip.antiAlias,
             child: hasValidUrl
-                ? Image.network(
-                    user.profilePic!,
+                ? CachedNetworkImage(
+                    imageUrl: user.profilePic!,
                     height: 50,
                     width: 50,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    placeholder: (context, url) => Container(
+                      height: 50,
+                      width: 50,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      child: Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                          ),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
                       height: 50,
                       width: 50,
                       color: Theme.of(context).colorScheme.onSecondaryContainer,

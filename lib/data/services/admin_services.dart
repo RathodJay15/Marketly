@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 
 class AdminService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -8,6 +9,20 @@ class AdminService {
   // ------------------------------------------------------------
   Future<int> getTotalUsers() async {
     final snapshot = await _firestore.collection('users').get();
+    return snapshot.size;
+  }
+
+  //-------------------------------------------------------------
+  // Active users
+  //-------------------------------------------------------------
+  Future<int> getTotalActiveUsers() async {
+    final snapshot = await _firestore
+        .collection('users')
+        .where('isDeleted', isEqualTo: false)
+        .get();
+
+    debugPrint(snapshot.size.toString());
+
     return snapshot.size;
   }
 
@@ -114,6 +129,7 @@ class AdminService {
   // ------------------------------------------------------------
   Future<Map<String, dynamic>> getDashboardStats() async {
     final usersFuture = getTotalUsers();
+    final activeUserFuture = getTotalActiveUsers();
     final ordersFuture = getTotalOrders();
     final revenueFuture = getTotalRevenue();
     final productFuture = getTotalProducts();
@@ -131,6 +147,7 @@ class AdminService {
       activeCategoriesFuture,
       inactiveCategoriesFuture,
       orderStatusFuture,
+      activeUserFuture,
     ]);
 
     return {
@@ -142,6 +159,7 @@ class AdminService {
       'activeCategories': results[5],
       'inactiveCategories': results[6],
       'orderStatus': results[7],
+      'activeUsers': results[8],
     };
   }
 }
