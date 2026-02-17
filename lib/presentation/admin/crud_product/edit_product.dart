@@ -249,6 +249,7 @@ class _editProductState extends State<EditProduct> {
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
+      await context.read<AdminDashboardProvider>().refreshDashboard();
       Navigator.pop(context, true);
     }
   }

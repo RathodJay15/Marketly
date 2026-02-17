@@ -108,14 +108,10 @@ class _allProductsState extends State<AllProducts> {
                 if (index == 1) {
                   return GestureDetector(
                     onTap: () async {
-                      final result = await Navigator.push(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => AddProduct()),
                       );
-
-                      if (result == true) {
-                        context.read<ProductProvider>().fetchAllProducts();
-                      }
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 10),
