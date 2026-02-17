@@ -25,13 +25,28 @@ class _userDetailsScreen extends State<UserDetails> {
           },
         ),
         automaticallyImplyLeading: false,
-        title: Text(
-          AppConstants.usrDetails,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              AppConstants.usrDetails,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
+            ),
+            SizedBox(width: 10),
+            if (user.isDeleted)
+              Text(
+                AppConstants.inActive,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                ),
+              ),
+          ],
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),

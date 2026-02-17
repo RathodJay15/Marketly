@@ -113,12 +113,25 @@ class _allUsersState extends State<AllUsers> {
                         fontSize: 18,
                       ),
                     ),
-                    subtitle: Text(
-                      user.name,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontSize: 15,
-                      ),
+                    subtitle: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          user.name,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontSize: 15,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          user.isDeleted ? Icons.block : null,
+                          color: user.isDeleted
+                              ? Theme.of(context).colorScheme.onSurface
+                              : null,
+                        ),
+                      ],
                     ),
                     trailing: IconButton(
                       onPressed: () {
