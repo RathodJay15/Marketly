@@ -101,6 +101,7 @@ class _cartScreenState extends State<CartScreen> {
     BuildContext context,
     CartProvider cartProvider,
   ) {
+    final isEmpty = cartProvider.items.isEmpty;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: paddingV),
       child: Row(
@@ -114,28 +115,29 @@ class _cartScreenState extends State<CartScreen> {
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
           ),
-          IconButton(
-            onPressed: () async {
-              final confirm = await MarketlyDialog.showMyDialog(
-                context: context,
-                title: AppConstants.dialogEmptyCart,
-                content: AppConstants.areYouSureEmptyCart,
-                actionN: AppConstants.cancel,
-                actionY: AppConstants.yesEmptyCart,
-              );
+          if (!isEmpty)
+            IconButton(
+              onPressed: () async {
+                final confirm = await MarketlyDialog.showMyDialog(
+                  context: context,
+                  title: AppConstants.dialogEmptyCart,
+                  content: AppConstants.areYouSureEmptyCart,
+                  actionN: AppConstants.cancel,
+                  actionY: AppConstants.yesEmptyCart,
+                );
 
-              if (confirm == true) {
-                cartProvider.clearCart();
-              }
-            },
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.delete_sweep_outlined,
-              color: Theme.of(context).colorScheme.onSurface,
-              size: 30,
+                if (confirm == true) {
+                  cartProvider.clearCart();
+                }
+              },
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+              padding: EdgeInsets.zero,
+              icon: Icon(
+                Icons.delete_sweep_outlined,
+                color: Theme.of(context).colorScheme.onSurface,
+                size: 30,
+              ),
             ),
-          ),
         ],
       ),
     );

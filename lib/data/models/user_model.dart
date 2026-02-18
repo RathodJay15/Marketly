@@ -12,6 +12,7 @@ class UserModel {
   final String pincode;
   final String? profilePic;
   final String themeMode;
+  final List<String>? fcmToken;
   final String role; // 'admin' or 'user'
   final bool isDeleted;
 
@@ -29,6 +30,7 @@ class UserModel {
     required this.pincode,
     required this.themeMode,
     this.isDeleted = false,
+    this.fcmToken,
   });
 
   factory UserModel.fromFirestore(Map<String, dynamic> map, String uid) {
@@ -49,6 +51,9 @@ class UserModel {
       role: map['role'],
       themeMode: map['themeMode'] ?? 'system',
       isDeleted: map['isDeleted'] ?? false,
+      fcmToken: (map['fcmToken'] as List<dynamic>?)
+          ?.map((e) => e.toString())
+          .toList(),
     );
   }
 
@@ -66,6 +71,7 @@ class UserModel {
       'profilePic': profilePic,
       'themeMode': themeMode,
       'isDeleted': isDeleted,
+      'fcmToken': fcmToken,
     };
   }
 
@@ -82,6 +88,7 @@ class UserModel {
     String? role,
     String? themeMode,
     bool? isDeleted,
+    List<String>? fcmToken,
   }) {
     return UserModel(
       uid: uid,
@@ -97,6 +104,7 @@ class UserModel {
       role: role ?? this.role,
       themeMode: themeMode ?? this.themeMode,
       isDeleted: isDeleted ?? this.isDeleted,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 }

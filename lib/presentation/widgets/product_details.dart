@@ -4,15 +4,16 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
+import 'package:marketly/data/services/product_service.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  final ProductModel product;
+  final String productId;
 
-  const ProductDetailsScreen({super.key, required this.product});
+  const ProductDetailsScreen({super.key, required this.productId});
 
   @override
   State<ProductDetailsScreen> createState() => _roductDetailsScreenState();
@@ -22,20 +23,71 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   final CarouselSliderController _carouselController =
       CarouselSliderController();
 
+  final ProductService _productService = ProductService();
+  ProductModel? _product;
+  bool _isLoading = true;
+  String? _error;
   int _currentIndex = 0;
   double _rating = 0;
 
   @override
   void initState() {
     super.initState();
+    _loadProduct();
+  }
+
+  Future<void> _loadProduct() async {
+    try {
+      final product = await _productService.fetchProductById(widget.productId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _product = product;
+        _rating = product.rating;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = "Product not found";
+        _isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+      );
+    }
 
-    final product = widget.product;
+    if (_error != null) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        body: Center(
+          child: Text(
+            _error!,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              fontSize: 25,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final product = _product!;
     final images = product.images;
     _rating = product.rating;
 

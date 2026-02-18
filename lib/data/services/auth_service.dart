@@ -232,4 +232,16 @@ class AuthService {
   Future<void> logout() async {
     await _firebaseAuth.signOut();
   }
+
+  // ------------------------------------------------------------
+  // Firebase Console Messaging Token
+  // ------------------------------------------------------------
+
+  Future<void> saveFcmToken(String uid, String token) async {
+    if (token == null) return;
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).update({
+      'fcmToken': FieldValue.arrayUnion([token]),
+    });
+  }
 }

@@ -25,7 +25,7 @@ class ProductCard extends StatelessWidget {
       ),
 
       transitionDuration: const Duration(milliseconds: 200),
-      openBuilder: (context, _) => ProductDetailsScreen(product: product),
+      openBuilder: (context, _) => ProductDetailsScreen(productId: product.id),
       closedBuilder: (context, openContainer) => GestureDetector(
         onTap: openContainer,
         child: Container(

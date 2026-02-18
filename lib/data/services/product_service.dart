@@ -5,6 +5,19 @@ class ProductService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _collection = 'products';
 
+  Future<ProductModel> fetchProductById(String productId) async {
+    final doc = await FirebaseFirestore.instance
+        .collection('products')
+        .doc(productId)
+        .get();
+
+    if (!doc.exists || doc.data() == null) {
+      throw Exception("Product not found");
+    }
+
+    return ProductModel.fromFirestore(doc.data()!, doc.id);
+  }
+
   // Fetch all products
   Future<List<ProductModel>> getAllProducts({int? limit}) async {
     Query query = _firestore.collection(_collection);
