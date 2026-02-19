@@ -24,37 +24,54 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   final notificationService = NotificationServices();
 
   await notificationService.initLocalNotifications(navigatorKey);
   await notificationService.createNotificationChannel();
   notificationService.listenToForegroundMessages();
 
-  runApp(MainApp(navigatorKey: navigatorKey));
+  runApp(
+    MainApp(
+      navigatorKey: navigatorKey,
+      notificationService: notificationService,
+    ),
+  );
 }
 
 class MainApp extends StatefulWidget {
   final GlobalKey<NavigatorState> navigatorKey;
+  final NotificationServices notificationService;
 
-  const MainApp({super.key, required this.navigatorKey});
+  const MainApp({
+    super.key,
+    required this.navigatorKey,
+    required this.notificationService,
+  });
 
   @override
   State<MainApp> createState() => _MainAppState();
 }
 
 class _MainAppState extends State<MainApp> {
-  final NotificationServices _notificationService = NotificationServices();
-
   @override
   void initState() {
     super.initState();
 
     // Delay to ensure navigator is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _notificationService.handleBackgroundNavigation(widget.navigatorKey);
-      _notificationService.handleTerminatedNavigation(widget.navigatorKey);
+      widget.notificationService.handleBackgroundNavigation(
+        widget.navigatorKey,
+      );
+      widget.notificationService.handleTerminatedNavigation(
+        widget.navigatorKey,
+      );
     });
   }
 

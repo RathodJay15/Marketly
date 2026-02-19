@@ -79,7 +79,7 @@ class NotificationServices {
   Future<void> createNotificationChannel() async {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel',
-      'High Importace Notifications',
+      'High Importance Notifications',
       description: 'Used for important notifications',
       importance: Importance.high,
     );
@@ -99,7 +99,7 @@ class NotificationServices {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
           'high_importance_channel',
-          'High Importace Notifications',
+          'High Importance Notifications',
           importance: Importance.high,
           priority: Priority.high,
         );
@@ -120,8 +120,8 @@ class NotificationServices {
   void listenToForegroundMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (message.notification != null) {
-        // final productId = message.data['productid']; //'Hqp76dSEh6keEiIKEi1o'
-        final productId = 'Hqp76dSEh6keEiIKEi1o';
+        final productId = message.data['productid']; //'Hqp76dSEh6keEiIKEi1o'
+        // final productId = 'Hqp76dSEh6keEiIKEi1o';
         showLocalNotification(
           title: message.notification!.title,
           body: message.notification!.body,
@@ -134,12 +134,12 @@ class NotificationServices {
   //----------------------------------------------------------------------------
   void handleBackgroundNavigation(GlobalKey<NavigatorState> navigatorKey) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      // final productId = message.data['productid'];
-      final productId = 'Hqp76dSEh6keEiIKEi1o';
+      final productId = message.data['productid'];
+      // final productId = 'Hqp76dSEh6keEiIKEi1o';
 
-      final type = message.data['type'];
+      print("BACKGROUND DATA: ${message.data}");
 
-      if (type == "new_product" && productId != null) {
+      if (productId != null) {
         _handleNavigation(productId, navigatorKey);
       }
     });
@@ -154,11 +154,11 @@ class NotificationServices {
 
     print("TERMINATED MESSAGE DATA: ${message.data}");
 
-    // final productId = message.data['productid'];
-    final productId = 'Hqp76dSEh6keEiIKEi1o';
-    final type = message.data['type'];
+    final productId = message.data['productid'];
+    // final productId = 'Hqp76dSEh6keEiIKEi1o';
+    print("TERMINATED DATA: ${message.data}");
 
-    if (type == "new_product" && productId != null) {
+    if (productId != null) {
       Future.delayed(const Duration(milliseconds: 500), () {
         navigatorKey.currentState?.push(
           MaterialPageRoute(
