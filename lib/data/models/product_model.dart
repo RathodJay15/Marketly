@@ -91,4 +91,22 @@ class ProductModel {
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
+
+  factory ProductModel.skeleton() {
+    return ProductModel(
+      id: '',
+      title: 'Product Title',
+      price: 0,
+      description: '',
+      images: [''],
+      brand: '',
+      category: 'Category',
+      dimensions: {},
+      discountPercentage: 0.0,
+      rating: 0.0,
+      thumbnail: '',
+      weight: 0.0,
+      // add all required fields with safe defaults
+    );
+  }
 }

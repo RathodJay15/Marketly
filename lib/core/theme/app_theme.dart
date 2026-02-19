@@ -27,6 +27,7 @@ class MarketTheme {
       onSurfaceVariant: const Color.fromARGB(255, 255, 200, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 0, 0, 0), //
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
+      onTertiaryContainer: const Color.fromARGB(255, 255, 255, 255),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
     inputDecorationTheme: const InputDecorationTheme(
@@ -68,6 +69,7 @@ class MarketTheme {
       onSurfaceVariant: const Color.fromARGB(255, 255, 200, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //\
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
+      onTertiaryContainer: const Color.fromARGB(255, 255, 255, 255),
     ),
     splashColor: const Color.fromARGB(0, 0, 0, 0),
     inputDecorationTheme: const InputDecorationTheme(

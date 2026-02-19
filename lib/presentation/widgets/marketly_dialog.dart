@@ -8,6 +8,8 @@ class MarketlyDialog {
     String content = 'Are you sure?',
     String actionN = AppConstants.no,
     String actionY = AppConstants.yes,
+    Color? actionNColor,
+    Color? actionYColor,
   }) {
     return showDialog<bool>(
       context: context,
@@ -31,7 +33,9 @@ class MarketlyDialog {
             child: Text(
               actionN,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
+                color:
+                    actionNColor ??
+                    Theme.of(context).colorScheme.onInverseSurface,
               ),
             ),
           ),
@@ -39,7 +43,9 @@ class MarketlyDialog {
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               actionY,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                color: actionYColor ?? Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
         ],

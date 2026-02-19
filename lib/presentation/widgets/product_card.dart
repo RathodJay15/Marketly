@@ -135,88 +135,102 @@ class CartProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 105,
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 1,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  /// IMAGE
-                  Center(
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          height: 75,
-                          width: 75,
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              bottomRight: Radius.circular(5),
-                              topRight: Radius.circular(45),
-                              bottomLeft: Radius.circular(45),
-                            ),
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onPrimary.withValues(alpha: .30),
-                          ),
-                        ),
-                        CachedNetworkImage(
-                          imageUrl: product.thumbnail,
-                          height: 60,
-                          width: 60,
-                          fit: BoxFit.contain,
-                          errorWidget: (_, __, ___) => Container(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            child: const Icon(Icons.image_not_supported),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  /// TITLE
-                  Text(
-                    product.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                  ),
-
-                  Spacer(),
-
-                  /// PRICE
-                  Text(
-                    AppConstants.dolrAmount(product.price),
-                    style: TextStyle(
-                      fontSize: 16,
-
-                      fontWeight: FontWeight.w900,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                  ),
-                ],
+      child: Stack(
+        children: [
+          Container(
+            width: 105,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
+              borderRadius: BorderRadius.circular(10),
             ),
-          ],
-        ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      /// IMAGE
+                      Center(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              height: 75,
+                              width: 75,
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(5),
+                                  bottomRight: Radius.circular(5),
+                                  topRight: Radius.circular(45),
+                                  bottomLeft: Radius.circular(45),
+                                ),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary.withValues(alpha: .30),
+                              ),
+                            ),
+                            CachedNetworkImage(
+                              imageUrl: product.thumbnail,
+                              height: 60,
+                              width: 60,
+                              fit: BoxFit.contain,
+                              errorWidget: (_, __, ___) => Container(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                child: const Icon(Icons.image_not_supported),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      /// TITLE
+                      Text(
+                        product.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
+                      ),
+
+                      Spacer(),
+
+                      /// PRICE
+                      Text(
+                        AppConstants.dolrAmount(product.price),
+                        style: TextStyle(
+                          fontSize: 16,
+
+                          fontWeight: FontWeight.w900,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 5,
+                  child: Text(
+                    'x${product.quantity}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

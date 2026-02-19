@@ -7,8 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:marketly/main.dart';
 import 'package:marketly/presentation/user/home_screen.dart';
 
 void main() {

@@ -65,6 +65,7 @@ class AppConstants {
   static const String noProductFound = "No products found";
   static const String emptyCartMsg = "Cart is Empty";
   static const String addedToCart = "Product added to cart";
+  static const String goToCart = "Go to Cart";
   static const String deleteProduct = "Delete Product";
   static const String back = "Back";
   static const String next = "Next";
@@ -72,6 +73,8 @@ class AppConstants {
   static const String cancel = "Cancel";
   static const String delete = "Delete";
   static const String deleteAcc = "Delete Account";
+  static const String removeItem = "Remove Item";
+  static const String itemRemoved = "Item removed from cart";
   static const String cancelCheckOut = "Cancel checkout?";
   static const String areYouSureCancelCheckOut =
       "Are you sure you wnat to cancel check out process?";
@@ -89,6 +92,8 @@ class AppConstants {
       "Are you sure you want to logout from this Account?";
   static const String areYouSureLeave =
       "Are you sure you want to leave this app?";
+  static const String areYouSureRemoveCartItem =
+      "Are you sure you wnat to romove this item from the cart?";
   static const String yes = "Yes";
   static const String no = "No";
   static const String myAccount = "My Account";

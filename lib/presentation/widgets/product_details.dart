@@ -5,8 +5,11 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/product_service.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
-import 'package:pinch_zoom/pinch_zoom.dart';
+import 'package:marketly/providers/navigation_provider.dart';
+import 'package:photo_view/photo_view_gallery.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
@@ -209,7 +212,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 size: 28,
               ),
               color: Theme.of(context).colorScheme.onSecondaryContainer,
-              onPressed: () {
+              onPressed: () async {
                 final cartProvider = context.read<CartProvider>();
 
                 final cartItem = CartItemModel(
@@ -228,20 +231,21 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
 
                 cartProvider.addToCart(cartItem);
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppConstants.addedToCart,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.onInverseSurface,
-                    duration: Duration(seconds: 1),
-                  ),
+                final confirm = await MarketlyDialog.showMyDialog(
+                  context: context,
+                  actionN: AppConstants.no,
+                  actionY: AppConstants.yes,
+                  title: AppConstants.addedToCart,
+                  content: AppConstants.goToCart,
+                  actionYColor: Theme.of(context).colorScheme.onSecondary,
                 );
+                if (confirm == true) {
+                  Provider.of<NavigationProvider>(
+                    context,
+                    listen: false,
+                  ).setScreenIndex(2);
+                  Navigator.pop(context);
+                }
               },
             ),
           ),
@@ -266,9 +270,11 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
           setState(() => _currentIndex = index);
         },
       ),
-      items: images.map<Widget>((img) {
+      items: images.asMap().entries.map<Widget>((entry) {
+        final int index = entry.key;
+        final String img = entry.value;
         return GestureDetector(
-          onTap: () => _openImagePreview(img),
+          onTap: () => _openImagePreview(images, index),
           child: Container(
             width: 350,
             decoration: BoxDecoration(
@@ -472,140 +478,145 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   // ----------------------------------------------------
 
   Widget _bottomSheet(ProductModel product) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.38,
-      minChildSize: 0.38,
-      maxChildSize: 0.55,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.onInverseSurface,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.38,
+        minChildSize: 0.38,
+        maxChildSize: 0.55,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _dragHandle(),
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    /// TITLE + PRICE
-                    Text(
-                      product.title,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onInverseSurface,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _dragHandle(),
+                Expanded(
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(20),
+                    children: [
+                      /// TITLE + PRICE
+                      Text(
+                        product.title,
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            AppConstants.dolrAmount(product.price),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              AppConstants.dolrAmount(product.price),
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onInverseSurface,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            AppConstants.discountOff(
+                              product.discountPercentage,
+                            ),
                             style: TextStyle(
-                              fontSize: 30,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      /// RATING
+                      Row(
+                        children: [
+                          RatingBarIndicator(
+                            rating: _rating,
+                            itemBuilder: (_, __) => Icon(
+                              Icons.star_rounded,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                            itemCount: 5,
+                            itemSize: 28,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            _rating.toStringAsFixed(1),
+                            style: TextStyle(
                               color: Theme.of(
                                 context,
                               ).colorScheme.onInverseSurface,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        Text(
-                          AppConstants.discountOff(product.discountPercentage),
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 18,
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      _sectionTitle(AppConstants.description),
+                      _sectionDetail(product.description),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _sectionTitle(AppConstants.category),
+                              _sectionTitle(AppConstants.brand),
+                              _sectionTitle(AppConstants.stock),
+                              _sectionTitle(AppConstants.weight),
+                              _sectionTitle(AppConstants.tags),
+                              _sectionTitle(AppConstants.dimensions),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    /// RATING
-                    Row(
-                      children: [
-                        RatingBarIndicator(
-                          rating: _rating,
-                          itemBuilder: (_, __) => Icon(
-                            Icons.star_rounded,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
-                          itemCount: 5,
-                          itemSize: 28,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          _rating.toStringAsFixed(1),
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onInverseSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _sectionTitle(AppConstants.description),
-                    _sectionDetail(product.description),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _sectionTitle(AppConstants.category),
-                            _sectionTitle(AppConstants.brand),
-                            _sectionTitle(AppConstants.stock),
-                            _sectionTitle(AppConstants.weight),
-                            _sectionTitle(AppConstants.tags),
-                            _sectionTitle(AppConstants.dimensions),
-                          ],
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _sectionDetail(product.category),
-                            _sectionDetail(product.brand),
-                            _sectionDetail(product.stock.toString()),
-                            _sectionDetail(product.weight.toString()),
-                            _sectionDetail(product.formattedTags()),
-                            SizedBox(
-                              width: 260,
-                              child: _sectionDetail(
-                                product.formattedDimensions(),
+                          SizedBox(width: 10),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _sectionDetail(product.category),
+                              _sectionDetail(product.brand),
+                              _sectionDetail(product.stock.toString()),
+                              _sectionDetail(product.weight.toString()),
+                              _sectionDetail(product.formattedTags()),
+                              SizedBox(
+                                width: 260,
+                                child: _sectionDetail(
+                                  product.formattedDimensions(),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -624,50 +635,78 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   // IMAGE PREVIEW
   // ----------------------------------------------------
 
-  void _openImagePreview(String imageUrl) {
+  void _openImagePreview(List<dynamic> images, int initialIndex) {
     Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false,
-        barrierColor: Theme.of(context).colorScheme.onPrimary,
-        transitionDuration: const Duration(milliseconds: 200),
-        pageBuilder: (_, __, ___) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            body: SafeArea(
-              child: Stack(
-                children: [
-                  /// IMAGE WITH PINCH ZOOM
-                  Center(
-                    child: PinchZoom(
-                      maxScale: 5,
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.contain,
-                        errorWidget: (_, __, ___) => Icon(
-                          Icons.image_not_supported,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                          size: 60,
+      MaterialPageRoute(
+        builder: (context) {
+          int currentIndex = initialIndex;
+          final PageController controller = PageController(
+            initialPage: initialIndex,
+          );
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                body: Stack(
+                  children: [
+                    /// SWIPE + PINCH ZOOM
+                    PhotoViewGallery.builder(
+                      pageController: controller,
+                      itemCount: images.length,
+                      onPageChanged: (index) {
+                        setState(() => currentIndex = index);
+                      },
+                      builder: (context, index) {
+                        return PhotoViewGalleryPageOptions(
+                          imageProvider: NetworkImage(images[index]),
+                          minScale: PhotoViewComputedScale.contained,
+                          maxScale: PhotoViewComputedScale.covered * 3,
+                        );
+                      },
+                      backgroundDecoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+
+                    /// CLOSE BUTTON
+                    SafeArea(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            size: 28,
+                          ),
+                          onPressed: () => Navigator.pop(context),
                         ),
                       ),
                     ),
-                  ),
 
-                  /// CLOSE BUTTON
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                        size: 28,
+                    /// IMAGE INDEX TEXT
+                    Positioned(
+                      bottom: 30,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: Text(
+                          "${currentIndex + 1} / ${images.length}",
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
-                      onPressed: () => Navigator.pop(context),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),

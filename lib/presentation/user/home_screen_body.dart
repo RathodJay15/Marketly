@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
@@ -273,15 +275,34 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
       height: 300,
       child: Consumer<ProductProvider>(
         builder: (context, productProvider, _) {
-          if (productProvider.isHomeLoading) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
-            );
-          }
+          // if (productProvider.isHomeLoading) {
+          //   return Center(
+          //     child: CircularProgressIndicator(
+          //       color: Theme.of(context).colorScheme.onInverseSurface,
+          //     ),
+          //   );
+          // }
 
-          if (productProvider.tenProducts.isEmpty) {
+          // if (productProvider.tenProducts.isEmpty) {
+          //   return Center(
+          //     child: Text(
+          //       AppConstants.noProductFound,
+          //       style: TextStyle(
+          //         fontSize: 18,
+          //         color: Theme.of(context).colorScheme.onPrimary,
+          //       ),
+          //     ),
+          //   );
+          // }
+
+          final isLoading = productProvider.isHomeLoading;
+
+          // Use fake list when loading
+          final products = isLoading
+              ? List.generate(5, (_) => ProductModel.skeleton())
+              : productProvider.tenProducts;
+
+          if (!isLoading && products.isEmpty) {
             return Center(
               child: Text(
                 AppConstants.noProductFound,
@@ -292,26 +313,29 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
               ),
             );
           }
+          // final products = productProvider.tenProducts;
 
-          final products = productProvider.tenProducts;
+          return Skeletonizer(
+            enabled: isLoading,
+            enableSwitchAnimation: true,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: products.length + 1, // +1 for See All
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                /// LAST CARD → SEE ALL
+                if (index == products.length) {
+                  return SizedBox(
+                    width: 100,
+                    child: SeeAllCard(onTap: () => onNavigation(1)),
+                  );
+                }
 
-          return ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: products.length + 1, // +1 for See All
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              /// LAST CARD → SEE ALL
-              if (index == products.length) {
-                return SizedBox(
-                  width: 100,
-                  child: SeeAllCard(onTap: () => onNavigation(1)),
-                );
-              }
-
-              /// NORMAL PRODUCT CARD
-              final product = products[index];
-              return ProductCard(product: product);
-            },
+                /// NORMAL PRODUCT CARD
+                final product = products[index];
+                return ProductCard(product: product);
+              },
+            ),
           );
         },
       ),

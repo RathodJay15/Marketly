@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/presentation/admin/dash_board_screen.dart';
 import 'package:marketly/data/services/notification_services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:marketly/presentation/auth/login_screen.dart';
 import 'package:marketly/presentation/user/home_screen.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -23,7 +24,7 @@ class _authGateState extends State<AuthGate> {
     return StreamBuilder(
       stream: authService.authStateChanges,
       builder: (context, snapshot) {
-        // 🔹 Loading state
+        // Loading state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.primary,
@@ -37,13 +38,13 @@ class _authGateState extends State<AuthGate> {
 
         final firebaseUser = snapshot.data;
 
-        // 🔹 Not logged in
+        // Not logged in
         if (firebaseUser == null) {
           context.read<UserProvider>().clearUser();
           return const LoginScreen();
         }
 
-        // 🔹 Logged in → fetch profile
+        // Logged in -> fetch profile
         return FutureBuilder(
           future: authService.getUserProfile(firebaseUser.uid),
           builder: (context, userSnapshot) {
@@ -51,8 +52,24 @@ class _authGateState extends State<AuthGate> {
               return Scaffold(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 body: Center(
-                  child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  child: SpinKitRotatingCircle(
+                    size: 100,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(130),
+                            bottomRight: Radius.circular(130),
+                            topRight: Radius.circular(15),
+                            bottomLeft: Radius.circular(15),
+                          ),
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          // safer than withValues
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
