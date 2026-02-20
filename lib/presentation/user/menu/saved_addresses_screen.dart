@@ -78,7 +78,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       itemCount: addresses.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
@@ -110,7 +110,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
                 : null,
             leading: Switch(
               value: isDefault,
-              activeColor: Theme.of(context).colorScheme.onInverseSurface,
+              activeThumbColor: Theme.of(context).colorScheme.onInverseSurface,
               inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
               inactiveTrackColor: Theme.of(
                 context,
@@ -120,18 +120,31 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
                 _setDefaultAddress(user: user, addressId: address.id);
               },
             ),
-            trailing: IconButton(
-              onPressed: () {
-                _confirmDeleteAddress(
-                  context: context,
-                  user: user,
-                  address: address,
-                );
-              },
-              icon: Icon(
-                Icons.delete,
-                color: Theme.of(context).colorScheme.onInverseSurface,
-              ),
+            trailing: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  iconSize: 20,
+                  onPressed: () {
+                    _showEditDialog(user: user, address: address);
+                  },
+                  icon: const Icon(Icons.edit),
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+                IconButton(
+                  iconSize: 20,
+                  onPressed: () {
+                    _confirmDeleteAddress(
+                      context: context,
+                      user: user,
+                      address: address,
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+              ],
             ),
           ),
         );
@@ -166,24 +179,46 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
             Icons.location_on_outlined,
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
-          suffixIcon: IconButton(
-            icon: Icon(_isAddingAddress ? Icons.check : Icons.add),
-            color: Theme.of(context).colorScheme.onInverseSurface,
-            onPressed: () async {
-              if (!_isAddingAddress) {
-                setState(() => _isAddingAddress = true);
-                return;
-              }
+          suffixIcon: _isAddingAddress
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      onPressed: () {
+                        _newAddressCtrl.clear();
+                        setState(() {
+                          _isAddingAddress = false;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.check),
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      onPressed: () async {
+                        final text = _newAddressCtrl.text.trim();
+                        if (text.isEmpty) return;
 
-              final text = _newAddressCtrl.text.trim();
-              if (text.isEmpty) return;
+                        await _addAddress(user: user, addressText: text);
 
-              await _addAddress(user: user, addressText: text);
-
-              _newAddressCtrl.clear();
-              setState(() => _isAddingAddress = false);
-            },
-          ),
+                        _newAddressCtrl.clear();
+                        setState(() {
+                          _isAddingAddress = false;
+                        });
+                      },
+                    ),
+                  ],
+                )
+              : IconButton(
+                  icon: const Icon(Icons.add),
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  onPressed: () {
+                    setState(() {
+                      _isAddingAddress = true;
+                    });
+                  },
+                ),
         ),
         onTap: () {
           if (!_isAddingAddress) {
@@ -215,6 +250,93 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
 
     context.read<UserProvider>().setUser(
       user.copyWith(addresses: updatedAddresses),
+    );
+  }
+
+  // ------------------------------------------------------------
+  // edit address logic
+  // ------------------------------------------------------------
+  Future<void> _editAddress({
+    required UserModel user,
+    required String addressId,
+    required String newAddressText,
+  }) async {
+    final updatedAddresses = user.addresses.map((addr) {
+      if (addr.id == addressId) {
+        return addr.copyWith(address: newAddressText);
+      }
+      return addr;
+    }).toList();
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      'addresses': updatedAddresses.map((e) => e.toMap()).toList(),
+    });
+
+    context.read<UserProvider>().setUser(
+      user.copyWith(addresses: updatedAddresses),
+    );
+  }
+
+  void _showEditDialog({
+    required UserModel user,
+    required AddressModel address,
+  }) {
+    final controller = TextEditingController(text: address.address);
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          AppConstants.editAdrs,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              AppConstants.cancel,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final newText = controller.text.trim();
+              if (newText.isEmpty) return;
+
+              Navigator.pop(context);
+
+              await _editAddress(
+                user: user,
+                addressId: address.id,
+                newAddressText: newText,
+              );
+            },
+            child: Text(
+              AppConstants.save,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

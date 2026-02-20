@@ -71,6 +71,7 @@ class AppConstants {
   static const String next = "Next";
   static const String exit = "Exit";
   static const String cancel = "Cancel";
+  static const String save = "Save";
   static const String delete = "Delete";
   static const String deleteAcc = "Delete Account";
   static const String removeItem = "Remove Item";
@@ -115,6 +116,7 @@ class AppConstants {
   static const String phone = "Phone number";
   static const String adrs = "Address";
   static const String selectAdrs = "Select Address";
+  static const String editAdrs = "Edit Address";
   static const String ct = "City";
   static const String state = "State";
   static const String cntry = "Country";
