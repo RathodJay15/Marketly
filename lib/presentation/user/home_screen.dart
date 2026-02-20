@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 // import 'package:marketly/data/migration/migrate_products.dart';
@@ -62,7 +63,7 @@ class _homeScreenState extends State<HomeScreen>
     context.read<CartProvider>().stopListening();
   }
 
-  Future<void> _confirmLeave({Object? result}) async {
+  Future<void> _confirmLeave() async {
     final shouldExit = await MarketlyDialog.showMyDialog(
       context: context,
       title: AppConstants.exit,
@@ -70,7 +71,7 @@ class _homeScreenState extends State<HomeScreen>
     );
 
     if (shouldExit == true) {
-      Navigator.of(context).pop(result);
+      SystemNavigator.pop();
     }
   }
 
@@ -82,7 +83,7 @@ class _homeScreenState extends State<HomeScreen>
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        await _confirmLeave(result: result);
+        await _confirmLeave();
       },
       child: Scaffold(
         extendBody: true,

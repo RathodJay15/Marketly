@@ -37,6 +37,8 @@ class NotificationServices {
       debugPrint("FCM TOKEN: $token");
       await authService.saveFcmToken(uid, token);
     }
+    await FirebaseMessaging.instance.subscribeToTopic("all_users");
+    print("Subscribed to topic all_users");
   }
 
   void listenToTokenRefresh(Function(String) onRefresh) {

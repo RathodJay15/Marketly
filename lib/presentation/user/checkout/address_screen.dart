@@ -246,7 +246,7 @@ class _addressScreenState extends State<AddressScreen> {
                   });
                 },
                 validator: (value) =>
-                    value == null ? 'Please select an address' : null,
+                    value == null ? AppConstants.selectAdrs : null,
               ),
 
               const SizedBox(height: 12),

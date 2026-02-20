@@ -29,8 +29,24 @@ class _authGateState extends State<AuthGate> {
           return Scaffold(
             backgroundColor: Theme.of(context).colorScheme.primary,
             body: Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onInverseSurface,
+              child: SpinKitRotatingCircle(
+                size: 100,
+                itemBuilder: (context, index) {
+                  return Container(
+                    height: 120,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(130),
+                        bottomRight: Radius.circular(130),
+                        topRight: Radius.circular(15),
+                        bottomLeft: Radius.circular(15),
+                      ),
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      // safer than withValues
+                    ),
+                  );
+                },
               ),
             ),
           );

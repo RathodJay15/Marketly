@@ -150,6 +150,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         readOnly: !_isAddingAddress,
         minLines: 1,
         maxLines: 3,
+        style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
         decoration: InputDecoration(
           hintText: AppConstants.addNewAdrs,
           hintStyle: TextStyle(
@@ -166,10 +167,8 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
           suffixIcon: IconButton(
-            icon: Icon(
-              _isAddingAddress ? Icons.check : Icons.add,
-              color: Theme.of(context).colorScheme.onInverseSurface,
-            ),
+            icon: Icon(_isAddingAddress ? Icons.check : Icons.add),
+            color: Theme.of(context).colorScheme.onInverseSurface,
             onPressed: () async {
               if (!_isAddingAddress) {
                 setState(() => _isAddingAddress = true);
@@ -211,7 +210,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
     final updatedAddresses = [...user.addresses, newAddress];
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-      'addresses': updatedAddresses,
+      'addresses': updatedAddresses.map((e) => e.toMap()).toList(),
     });
 
     context.read<UserProvider>().setUser(
@@ -235,7 +234,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
     }).toList();
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-      'addresses': updatedAddresses,
+      'addresses': updatedAddresses.map((e) => e.toMap()).toList(),
     });
 
     context.read<UserProvider>().setUser(
@@ -303,7 +302,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
 
     // Update Firestore
     await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-      'addresses': updatedAddresses,
+      'addresses': updatedAddresses.map((e) => e.toMap()).toList(),
     });
 
     // Update Provider
