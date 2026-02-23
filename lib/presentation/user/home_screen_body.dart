@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/models/category_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
@@ -52,7 +53,10 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        Padding(padding: const EdgeInsets.all(20), child: _buildProfileCard()),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+          child: _buildProfileCard(),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: _buildSearchSection(),
@@ -86,81 +90,94 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Widget _buildProfileCard() {
-    final user = context.watch<UserProvider>().user;
-    if (user == null) {
-      return const SizedBox();
-    }
-    final hasValidUrl = user.profilePic != null && user.profilePic!.isNotEmpty;
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.user;
+    final isLoading = userProvider.isLoading;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => MyAccountScreen()),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                AppConstants.welcomeMsg,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Theme.of(context).colorScheme.onPrimary,
+      child: Skeletonizer(
+        enabled: isLoading,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppConstants.welcomeMsg,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
-              ),
-              Text(
-                user.name.isEmpty ? AppConstants.username : user.name,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                Text(
+                  user?.name.isNotEmpty == true
+                      ? user!.name
+                      : AppConstants.username,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              ],
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
               ),
-            ],
-          ),
-          Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            clipBehavior: Clip.antiAlias,
-            child: hasValidUrl
-                ? CachedNetworkImage(
-                    imageUrl: user.profilePic!,
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
+              clipBehavior: Clip.antiAlias,
+              child:
+                  user?.profilePic != null &&
+                      user!.profilePic!.isNotEmpty &&
+                      !isLoading
+                  ? CachedNetworkImage(
+                      imageUrl: user.profilePic!,
                       height: 50,
                       width: 50,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      child: Center(
-                        child: SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onInverseSurface,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        height: 50,
+                        width: 50,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        child: Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
+                      errorWidget: (context, url, error) => Container(
+                        height: 50,
+                        width: 50,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        child: const Icon(Icons.person, size: 30),
+                      ),
+                    )
+                  : Container(
                       height: 50,
                       width: 50,
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
                       child: const Icon(Icons.person, size: 30),
                     ),
-                  )
-                : Container(
-                    height: 50,
-                    width: 50,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    child: const Icon(Icons.person, size: 30),
-                  ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -206,35 +223,47 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Widget _buildCategoryChips() {
+    // final products = productProvider.tenProducts;
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, _) {
-        if (categoryProvider.categories.isEmpty) {
+        final isLoading = categoryProvider.isLoading;
+
+        // Use fake list when loading
+        final categories = isLoading
+            ? List.generate(5, (_) => CategoryModel.skeleton())
+            : categoryProvider.categories;
+
+        if (!isLoading && categories.isEmpty) {
           return const SizedBox();
         }
 
         return SizedBox(
           height: 40,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: categoryProvider.categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemBuilder: (context, index) {
-              final category = categoryProvider.categories[index];
+          child: Skeletonizer(
+            enabled: isLoading,
+            enableSwitchAnimation: true,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final category = categories[index];
 
-              return CategoryChips(
-                category: category,
-                isSelected: categoryProvider.isSelected(category),
-                onTap: () {
-                  if (categoryProvider.isSelected(category)) {
-                    categoryProvider.clearSelection();
-                    return;
-                  }
-                  categoryProvider.selectCategory(category);
+                return CategoryChips(
+                  category: category,
+                  isSelected: categoryProvider.isSelected(category),
+                  onTap: () {
+                    if (categoryProvider.isSelected(category)) {
+                      categoryProvider.clearSelection();
+                      return;
+                    }
+                    categoryProvider.selectCategory(category);
 
-                  context.read<NavigationProvider>().setScreenIndex(1);
-                },
-              );
-            },
+                    context.read<NavigationProvider>().setScreenIndex(1);
+                  },
+                );
+              },
+            ),
           ),
         );
       },
@@ -275,26 +304,6 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
       height: 300,
       child: Consumer<ProductProvider>(
         builder: (context, productProvider, _) {
-          // if (productProvider.isHomeLoading) {
-          //   return Center(
-          //     child: CircularProgressIndicator(
-          //       color: Theme.of(context).colorScheme.onInverseSurface,
-          //     ),
-          //   );
-          // }
-
-          // if (productProvider.tenProducts.isEmpty) {
-          //   return Center(
-          //     child: Text(
-          //       AppConstants.noProductFound,
-          //       style: TextStyle(
-          //         fontSize: 18,
-          //         color: Theme.of(context).colorScheme.onPrimary,
-          //       ),
-          //     ),
-          //   );
-          // }
-
           final isLoading = productProvider.isHomeLoading;
 
           // Use fake list when loading

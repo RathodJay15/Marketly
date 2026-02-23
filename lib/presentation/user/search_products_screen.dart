@@ -133,7 +133,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
               child: _buildSearchSection(),
             ),
             Padding(

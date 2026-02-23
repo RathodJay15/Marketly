@@ -71,10 +71,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.logout,
-              color: Theme.of(context).colorScheme.onInverseSurface,
-            ),
+            icon: Icon(Icons.logout),
+            color: Theme.of(context).colorScheme.onInverseSurface,
             onPressed: onLogout,
           ),
         ],
@@ -160,17 +158,20 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _statbox(
-                  icon: Icons.person,
-                  label: AppConstants.users,
-                  value: dashboardProvider.totalUsers.toString(),
-                  width: 190,
+                Expanded(
+                  child: _statbox(
+                    icon: Icons.person,
+                    label: AppConstants.users,
+                    value: dashboardProvider.totalUsers.toString(),
+                  ),
                 ),
-                _statbox(
-                  icon: Icons.local_shipping_rounded,
-                  label: AppConstants.orders,
-                  value: dashboardProvider.totalOrders.toString(),
-                  width: 190,
+                SizedBox(width: 13),
+                Expanded(
+                  child: _statbox(
+                    icon: Icons.local_shipping_rounded,
+                    label: AppConstants.orders,
+                    value: dashboardProvider.totalOrders.toString(),
+                  ),
                 ),
               ],
             ),
@@ -189,11 +190,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     required IconData icon,
     required String label,
     required String value,
-    double? width,
   }) {
     return Container(
       height: 100,
-      width: width,
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSecondaryContainer,

@@ -18,6 +18,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:marketly/data/services/image_service.dart';
 
 class MyAccountScreen extends StatefulWidget {
+  const MyAccountScreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _myAccountScreenState();
 }

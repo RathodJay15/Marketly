@@ -5,7 +5,7 @@ import 'package:marketly/data/models/order_model.dart';
 class OrderDetailsScreen extends StatefulWidget {
   final OrderModel order;
 
-  OrderDetailsScreen({required this.order});
+  const OrderDetailsScreen({super.key, required this.order});
   @override
   State<StatefulWidget> createState() => _orderDetailsScreen();
 }
@@ -106,7 +106,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
 
         _sectionTitle(AppConstants.paymentDetails),
         _greyCard(
-          children: [_row("Method", "${order.paymentMethod}", isBold: true)],
+          children: [_row("Method", order.paymentMethod, isBold: true)],
         ),
         const SizedBox(height: 24),
       ],

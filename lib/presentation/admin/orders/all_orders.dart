@@ -5,6 +5,8 @@ import 'package:marketly/providers/admin/admin_order_provider.dart';
 import 'package:provider/provider.dart';
 
 class AllOrders extends StatefulWidget {
+  const AllOrders({super.key});
+
   @override
   State<StatefulWidget> createState() => _allOrdersState();
 }
@@ -57,11 +59,11 @@ class _allOrdersState extends State<AllOrders> {
               itemCount: provider.orders.length,
               itemBuilder: (context, index) {
                 final order = provider.orders[index];
-                late Set<String> _selectedStatuses;
-                _selectedStatuses = order.statusTimeline
+                late Set<String> selectedStatuses;
+                selectedStatuses = order.statusTimeline
                     .map((e) => e['status'] as String)
                     .toSet();
-                final isConfirmed = _selectedStatuses.contains(
+                final isConfirmed = selectedStatuses.contains(
                   "ORDER_CONFIRMED",
                 );
                 return Container(

@@ -5,7 +5,7 @@ import 'package:marketly/data/models/user_model.dart';
 class UserDetails extends StatefulWidget {
   final UserModel user;
 
-  UserDetails({required this.user});
+  const UserDetails({super.key, required this.user});
   @override
   State<StatefulWidget> createState() => _userDetailsScreen();
 }

@@ -1,10 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/data/models/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
   UserModel? _user;
+  bool _isLoading = true;
+
   UserModel? get user => _user;
+  bool get isLoading => _isLoading;
+
   ThemeMode get themeMode {
     switch (_user?.themeMode) {
       case 'light':
@@ -17,6 +20,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void setUser(UserModel user) {
+    _isLoading = false;
     _user = user;
     notifyListeners();
   }
@@ -24,6 +28,7 @@ class UserProvider extends ChangeNotifier {
   void clearUser() {
     if (_user == null) return;
     _user = null;
+    _isLoading = false;
     notifyListeners();
   }
 }

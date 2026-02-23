@@ -123,7 +123,9 @@ class _addCategoryState extends State<AddCategory> {
               ),
               Switch(
                 value: isActive,
-                activeColor: Theme.of(context).colorScheme.onInverseSurface,
+                activeThumbColor: Theme.of(
+                  context,
+                ).colorScheme.onInverseSurface,
                 inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
                 inactiveTrackColor: Theme.of(
                   context,

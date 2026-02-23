@@ -4,6 +4,7 @@ class MarketTheme {
   MarketTheme._();
   static ThemeData light = ThemeData(
     brightness: Brightness.light,
+
     textSelectionTheme: TextSelectionThemeData(
       selectionHandleColor: const Color.fromARGB(
         255,
@@ -12,6 +13,7 @@ class MarketTheme {
         0,
       ), // Your desired color
     ),
+
     colorScheme: ColorScheme.light(
       primary: const Color.fromARGB(255, 255, 255, 255), //BG
       onPrimary: const Color.fromARGB(255, 150, 150, 150), //Border
@@ -29,7 +31,9 @@ class MarketTheme {
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
       onTertiaryContainer: const Color.fromARGB(255, 255, 255, 255),
     ),
+
     splashColor: const Color.fromARGB(0, 0, 0, 0),
+
     inputDecorationTheme: const InputDecorationTheme(
       errorStyle: TextStyle(
         color: Color.fromARGB(255, 255, 0, 0),
@@ -37,6 +41,7 @@ class MarketTheme {
         fontWeight: FontWeight.w500,
       ),
     ),
+
     scrollbarTheme: ScrollbarThemeData(
       thumbColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
       trackColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
@@ -46,6 +51,7 @@ class MarketTheme {
   //-------------------------------------------------------------------------------------------
   static ThemeData dark = ThemeData(
     brightness: Brightness.dark,
+
     textSelectionTheme: TextSelectionThemeData(
       selectionHandleColor: const Color.fromARGB(
         255,
@@ -54,6 +60,7 @@ class MarketTheme {
         255,
       ), // Your desired color
     ),
+
     colorScheme: ColorScheme.dark(
       primary: const Color.fromARGB(255, 0, 0, 0), //BG
       onPrimary: const Color.fromARGB(255, 150, 150, 150), //Border
@@ -71,7 +78,9 @@ class MarketTheme {
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
       onTertiaryContainer: const Color.fromARGB(255, 255, 255, 255),
     ),
+
     splashColor: const Color.fromARGB(0, 0, 0, 0),
+
     inputDecorationTheme: const InputDecorationTheme(
       errorStyle: TextStyle(
         color: Color.fromARGB(255, 255, 0, 0),
@@ -79,6 +88,7 @@ class MarketTheme {
         fontWeight: FontWeight.w500,
       ),
     ),
+
     scrollbarTheme: ScrollbarThemeData(
       thumbColor: WidgetStateProperty.all(
         const Color.fromARGB(255, 255, 255, 255),

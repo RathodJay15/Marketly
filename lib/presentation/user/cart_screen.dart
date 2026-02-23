@@ -86,7 +86,7 @@ class _cartScreenState extends State<CartScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _headerSection(10, context, cartProvider),
+        _headerSection(0, context, cartProvider),
         _cartPoductList(context, cartProvider),
         _cartSummary(20, context, cartProvider),
       ],

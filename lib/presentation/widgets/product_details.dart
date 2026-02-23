@@ -177,7 +177,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
 
   Widget _topBar(ProductModel product) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -440,7 +440,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 _sectionDetail(product.weight.toString()),
                 _sectionDetail(product.formattedTags()),
                 SizedBox(
-                  width: 260,
+                  width: 250,
                   child: _sectionDetail(product.formattedDimensions()),
                 ),
               ],
@@ -600,7 +600,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                               _sectionDetail(product.weight.toString()),
                               _sectionDetail(product.formattedTags()),
                               SizedBox(
-                                width: 260,
+                                width: 250,
                                 child: _sectionDetail(
                                   product.formattedDimensions(),
                                 ),

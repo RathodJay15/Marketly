@@ -5,6 +5,7 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -51,8 +52,8 @@ class ProductCard extends StatelessWidget {
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            height: 150,
-                            width: 150,
+                            height: 130,
+                            width: 140,
                             decoration: BoxDecoration(
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(90),
@@ -65,14 +66,16 @@ class ProductCard extends StatelessWidget {
                               ).colorScheme.onPrimary.withValues(alpha: .30),
                             ),
                           ), // for grey background
-                          CachedNetworkImage(
-                            imageUrl: product.thumbnail,
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.fill,
-                            errorWidget: (_, __, ___) => Container(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              child: const Icon(Icons.image_not_supported),
+                          Skeleton.ignore(
+                            child: CachedNetworkImage(
+                              imageUrl: product.thumbnail,
+                              height: 100,
+                              width: 100,
+                              fit: BoxFit.fill,
+                              errorWidget: (_, __, ___) => Container(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                child: const Icon(Icons.image_not_supported),
+                              ),
                             ),
                           ),
                         ],

@@ -7,6 +7,7 @@ class CategoryProvider with ChangeNotifier {
 
   List<CategoryModel> _categories = [];
   CategoryModel? _selectedCategory;
+  bool _isLoading = true;
 
   // ---------------- GETTERS ----------------
 
@@ -16,11 +17,18 @@ class CategoryProvider with ChangeNotifier {
 
   String? get selectedCategorySlug => _selectedCategory?.slug;
 
+  bool get isLoading => _isLoading;
+
   // ---------------- LOAD ----------------
 
   Future<void> loadCategories() async {
-    _categories = await _service.getActiveCategories();
-    notifyListeners();
+    _isLoading = true;
+    try {
+      _categories = await _service.getActiveCategories();
+      notifyListeners();
+    } finally {
+      _isLoading = false;
+    }
   }
 
   // ---------------- UI calling ----------------

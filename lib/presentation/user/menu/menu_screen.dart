@@ -105,6 +105,7 @@ class _menuScreenState extends State<MenuScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: SizedBox(
           height: 50,

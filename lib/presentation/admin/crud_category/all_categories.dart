@@ -6,6 +6,8 @@ import 'package:marketly/providers/admin/admin_categories_provider.dart';
 import 'package:provider/provider.dart';
 
 class AllCategories extends StatefulWidget {
+  const AllCategories({super.key});
+
   @override
   State<StatefulWidget> createState() => _allCategoriesState();
 }

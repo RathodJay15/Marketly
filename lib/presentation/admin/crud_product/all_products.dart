@@ -6,6 +6,8 @@ import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 
 class AllProducts extends StatefulWidget {
+  const AllProducts({super.key});
+
   @override
   State<StatefulWidget> createState() => _allProductsState();
 }

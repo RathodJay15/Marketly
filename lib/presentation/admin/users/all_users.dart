@@ -6,6 +6,8 @@ import 'package:marketly/providers/admin/admin_user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AllUsers extends StatefulWidget {
+  const AllUsers({super.key});
+
   @override
   State<StatefulWidget> createState() => _allUsersState();
 }

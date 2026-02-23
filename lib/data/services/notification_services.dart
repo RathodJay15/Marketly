@@ -38,7 +38,7 @@ class NotificationServices {
       await authService.saveFcmToken(uid, token);
     }
     await FirebaseMessaging.instance.subscribeToTopic("all_users");
-    print("Subscribed to topic all_users");
+    debugPrint("Subscribed to topic all_users");
   }
 
   void listenToTokenRefresh(Function(String) onRefresh) {
@@ -121,15 +121,16 @@ class NotificationServices {
 
   void listenToForegroundMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        final productId = message.data['productid']; //'Hqp76dSEh6keEiIKEi1o'
-        // final productId = 'Hqp76dSEh6keEiIKEi1o';
-        showLocalNotification(
-          title: message.notification!.title,
-          body: message.notification!.body,
-          payload: productId,
-        );
-      }
+      final productId = message.data['productid'];
+
+      final title =
+          message.notification?.title ??
+          message.data['title'] ??
+          'New Notification';
+
+      final body = message.notification?.body ?? message.data['body'] ?? '';
+
+      showLocalNotification(title: title, body: body, payload: productId);
     });
   }
 
@@ -137,9 +138,8 @@ class NotificationServices {
   void handleBackgroundNavigation(GlobalKey<NavigatorState> navigatorKey) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final productId = message.data['productid'];
-      // final productId = 'Hqp76dSEh6keEiIKEi1o';
 
-      print("BACKGROUND DATA: ${message.data}");
+      debugPrint("BACKGROUND DATA: ${message.data}");
 
       if (productId != null) {
         _handleNavigation(productId, navigatorKey);
@@ -154,11 +154,11 @@ class NotificationServices {
 
     if (message == null) return;
 
-    print("TERMINATED MESSAGE DATA: ${message.data}");
+    debugPrint("TERMINATED MESSAGE DATA: ${message.data}");
 
     final productId = message.data['productid'];
-    // final productId = 'Hqp76dSEh6keEiIKEi1o';
-    print("TERMINATED DATA: ${message.data}");
+
+    debugPrint("TERMINATED DATA: ${message.data}");
 
     if (productId != null) {
       Future.delayed(const Duration(milliseconds: 500), () {

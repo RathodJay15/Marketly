@@ -4,7 +4,7 @@ import 'package:marketly/data/models/order_model.dart';
 import 'package:marketly/data/services/order_service.dart';
 
 class AdminOrderProvider extends ChangeNotifier {
-  OrderService _orderService = OrderService();
+  final OrderService _orderService = OrderService();
   OrderModel? _order;
   List<OrderModel> _orders = [];
   bool _isLoading = false;

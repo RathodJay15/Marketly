@@ -17,8 +17,12 @@ exports.sendNewProductNotification = onDocumentCreated(
       data: {
         type: "new_product",
         productid: productId,
-        title: "New Product Added 🛍",
+        title: "New Product Added!!",
         body: `${product.name} is now available!`,
+      },
+      data: {
+        type: "new_product",
+        productid: productId,
       },
     };
 

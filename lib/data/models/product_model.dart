@@ -95,7 +95,7 @@ class ProductModel {
   factory ProductModel.skeleton() {
     return ProductModel(
       id: '',
-      title: 'Product Title',
+      title: 'Product Title Product Title',
       price: 0,
       description: '',
       images: [''],

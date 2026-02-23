@@ -39,4 +39,8 @@ class CategoryModel {
       order: order ?? this.order,
     );
   }
+
+  factory CategoryModel.skeleton() {
+    return CategoryModel(slug: '', title: 'category', isActive: true, order: 0);
+  }
 }

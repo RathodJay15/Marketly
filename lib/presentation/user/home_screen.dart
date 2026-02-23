@@ -85,23 +85,25 @@ class _homeScreenState extends State<HomeScreen>
         if (didPop) return;
         await _confirmLeave();
       },
-      child: Scaffold(
-        extendBody: true,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        body: SafeArea(
-          child: IndexedStack(
-            index: context.select<NavigationProvider, int>(
-              (p) => p.screenIndex,
+      child: SafeArea(
+        child: Scaffold(
+          // extendBody: true,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          body: SafeArea(
+            child: IndexedStack(
+              index: context.select<NavigationProvider, int>(
+                (p) => p.screenIndex,
+              ),
+              children: [
+                HomeScreenBody(),
+                SearchProductsScreen(),
+                CartScreen(),
+                MenuScreen(),
+              ],
             ),
-            children: [
-              HomeScreenBody(),
-              SearchProductsScreen(),
-              CartScreen(),
-              MenuScreen(),
-            ],
           ),
+          bottomNavigationBar: _navBar(),
         ),
-        bottomNavigationBar: _navBar(),
       ),
     );
   }
@@ -111,7 +113,7 @@ class _homeScreenState extends State<HomeScreen>
       builder: (context, navProvider, child) {
         final currentIndex = navProvider.screenIndex;
         return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Container(
             height: 65,
             clipBehavior: Clip.antiAlias,
@@ -128,50 +130,53 @@ class _homeScreenState extends State<HomeScreen>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: SizedBox(
-                height: 40,
-                child: BottomNavigationBar(
-                  currentIndex: currentIndex,
-                  onTap: (index) {
-                    onNavigation(index);
-                  },
-                  backgroundColor: Colors.transparent,
-                  selectedItemColor: Theme.of(context).colorScheme.primary,
-                  unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
-                  selectedLabelStyle: TextStyle(fontWeight: FontWeight.w900),
-                  type: BottomNavigationBarType.fixed,
-                  elevation: 0,
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Icon(Icons.home, size: 20),
-                      ),
-                      label: AppConstants.home,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Icon(Icons.search, size: 20),
-                      ),
-                      label: AppConstants.search,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Icon(Icons.shopping_cart_outlined, size: 20),
-                      ),
-                      label: AppConstants.cart,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Padding(
-                        padding: EdgeInsets.only(top: 2, bottom: 2),
-                        child: Icon(Icons.menu_rounded, size: 20),
-                      ),
-                      label: AppConstants.menu,
-                    ),
-                  ],
+              child: BottomNavigationBar(
+                currentIndex: currentIndex,
+                onTap: (index) {
+                  onNavigation(index);
+                },
+                selectedFontSize: 12,
+                unselectedFontSize: 12,
+                unselectedLabelStyle: const TextStyle(height: 1),
+                backgroundColor: Colors.transparent,
+                selectedItemColor: Theme.of(context).colorScheme.primary,
+                unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
+                selectedLabelStyle: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  height: 1,
                 ),
+                type: BottomNavigationBarType.fixed,
+                elevation: 0,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.only(top: 2, bottom: 2),
+                      child: Icon(Icons.home, size: 20),
+                    ),
+                    label: AppConstants.home,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.only(top: 2, bottom: 2),
+                      child: Icon(Icons.search, size: 20),
+                    ),
+                    label: AppConstants.search,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.only(top: 2, bottom: 2),
+                      child: Icon(Icons.shopping_cart_outlined, size: 20),
+                    ),
+                    label: AppConstants.cart,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: EdgeInsets.only(top: 2, bottom: 2),
+                      child: Icon(Icons.menu_rounded, size: 20),
+                    ),
+                    label: AppConstants.menu,
+                  ),
+                ],
               ),
             ),
           ),

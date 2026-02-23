@@ -18,8 +18,8 @@ class ProductProvider extends ChangeNotifier {
   // State
   List<ProductModel> get tenProducts => _homeProducts;
 
-  bool _isHomeLoading = false;
-  bool _isSearchLoading = false;
+  bool _isHomeLoading = true;
+  bool _isSearchLoading = true;
 
   bool get isHomeLoading => _isHomeLoading;
   bool get isSearchLoading => _isSearchLoading;

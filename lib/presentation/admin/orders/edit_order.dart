@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class EditOrder extends StatefulWidget {
   final OrderModel order;
 
-  EditOrder({required this.order});
+  const EditOrder({super.key, required this.order});
   @override
   State<StatefulWidget> createState() => _editOrderScreen();
 }
@@ -159,7 +159,7 @@ class _editOrderScreen extends State<EditOrder> {
 
         _sectionTitle(AppConstants.paymentDetails),
         _greyCard(
-          children: [_row("Method", "${order.paymentMethod}", isBold: true)],
+          children: [_row("Method", order.paymentMethod, isBold: true)],
         ),
         const SizedBox(height: 24),
         _sectionTitle(AppConstants.usrDetails),

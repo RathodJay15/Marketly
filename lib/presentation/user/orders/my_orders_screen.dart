@@ -8,6 +8,8 @@ import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class MyOrdersScreen extends StatefulWidget {
+  const MyOrdersScreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _myOrdersScreenState();
 }
@@ -267,7 +269,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
   }
 
   Widget _orderStatusTimeline(BuildContext context, OrderModel item) {
-    const List<String> _orderSteps = [
+    const List<String> orderSteps = [
       'ORDER_PLACED',
       'ORDER_CONFIRMED',
       'ORDER_SHIPPED',
@@ -278,10 +280,10 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
       for (var e in item.statusTimeline) e['status']: e['time'] as Timestamp,
     };
     return Column(
-      children: List.generate(_orderSteps.length, (index) {
-        final status = _orderSteps[index];
+      children: List.generate(orderSteps.length, (index) {
+        final status = orderSteps[index];
         final isCompleted = completedStatuses.containsKey(status);
-        final isLast = index == _orderSteps.length - 1;
+        final isLast = index == orderSteps.length - 1;
 
         return _timelineRow(
           context: context,
@@ -305,7 +307,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
     final inactiveColor = Theme.of(context).colorScheme.onPrimary;
     final activeIcon = Icons.check_box_rounded;
     final inactiveIcon = Icons.check_box_outline_blank_rounded;
-    String _formatStatus(String status) {
+    String formatStatus(String status) {
       return status
           .replaceAll('_', ' ')
           .toLowerCase()
@@ -331,7 +333,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
         // MIDDLE: Status text
         Expanded(
           child: Text(
-            _formatStatus(status),
+            formatStatus(status),
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: isCompleted

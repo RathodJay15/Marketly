@@ -35,6 +35,7 @@ class AuthService {
     } catch (e) {
       throw Exception('Failed to load user profile');
     }
+    return null;
   }
 
   //--------------------------------------------------------------
@@ -238,8 +239,6 @@ class AuthService {
   // ------------------------------------------------------------
 
   Future<void> saveFcmToken(String uid, String token) async {
-    if (token == null) return;
-
     await FirebaseFirestore.instance.collection('users').doc(uid).update({
       'fcmToken': FieldValue.arrayUnion([token]),
     });

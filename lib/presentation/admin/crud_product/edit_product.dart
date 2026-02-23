@@ -440,7 +440,7 @@ class _editProductState extends State<EditProduct> {
               ),
             ),
             SizedBox(
-              width: 120,
+              width: 100,
               child: _field(
                 heightCtrl,
                 AppConstants.height,
@@ -463,7 +463,7 @@ class _editProductState extends State<EditProduct> {
               ),
             ),
             SizedBox(
-              width: 120,
+              width: 100,
               child: _field(
                 widthCtrl,
                 AppConstants.width,
@@ -486,7 +486,7 @@ class _editProductState extends State<EditProduct> {
               ),
             ),
             SizedBox(
-              width: 120,
+              width: 100,
               child: _field(
                 depthCtrl,
                 AppConstants.depth,
@@ -555,7 +555,7 @@ class _editProductState extends State<EditProduct> {
           child: DropdownButtonFormField<String>(
             isExpanded: true,
             validator: Validators.category,
-            value: categoryCtrl.text.isEmpty ? null : categoryCtrl.text,
+            initialValue: categoryCtrl.text.isEmpty ? null : categoryCtrl.text,
             decoration: InputDecoration(
               filled: true,
               fillColor: Theme.of(context).colorScheme.onSecondaryContainer,

@@ -151,7 +151,9 @@ class _editCategoryState extends State<EditCategory> {
               ),
               Switch(
                 value: isActive,
-                activeColor: Theme.of(context).colorScheme.onInverseSurface,
+                activeThumbColor: Theme.of(
+                  context,
+                ).colorScheme.onInverseSurface,
                 inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
                 inactiveTrackColor: Theme.of(
                   context,
