@@ -106,6 +106,8 @@ class AppConstants {
   static const String addNewAdrs = "Add new address";
   static const String dialogEmptyCart = "Empty cart?";
   static const String yesEmptyCart = "Yes, empty cart";
+  static const String notifications = "Notifications";
+  static const String noNotifications = "No notifications yet";
 
   // User Constants
   static const String usrDetails = "User Details";

@@ -87,7 +87,7 @@ class OrderProvider extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  //  FETCH ORDERS (this is what you asked for)
+  //  FETCH ORDERS
   // ---------------------------------------------------------------------------
 
   Future<void> fetchOrders(String userId) async {
@@ -103,6 +103,23 @@ class OrderProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  // ---------------------------------------------------------------------------
+  //  FETCH ORDER BY ID
+  // ---------------------------------------------------------------------------
+
+  Future<OrderModel?> fetchOrderById(String orderId) async {
+    try {
+      final order = await _orderService.fetchOrderById(orderId);
+      return order;
+    } catch (e) {
+      debugPrint('Error fetching single order: $e');
+      return null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   // ---------------------------------------------------------------------------

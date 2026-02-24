@@ -1,25 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/order_model.dart';
+import 'package:marketly/providers/order_provider.dart';
+import 'package:provider/provider.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
-  final OrderModel order;
+  final String orderId;
 
-  const OrderDetailsScreen({super.key, required this.order});
+  const OrderDetailsScreen({super.key, required this.orderId});
   @override
   State<StatefulWidget> createState() => _orderDetailsScreen();
 }
 
 class _orderDetailsScreen extends State<OrderDetailsScreen> {
+  OrderModel? _order;
+  String? _error;
+
+  @override
+  void initState() {
+    _loadOrder();
+    super.initState();
+  }
+
+  Future<void> _loadOrder() async {
+    try {
+      final orderProvider = context.read<OrderProvider>();
+      final order = await orderProvider.fetchOrderById(widget.orderId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _order = order;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = "Order not found";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final OrderModel order = widget.order;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(
         child: ListView(
           scrollDirection: Axis.vertical,
-          children: [_titleSection(), _orderDetails(order)],
+          children: [
+            _titleSection(),
+            if (_error != null)
+              Center(
+                child: Text(
+                  _error!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 20,
+                  ),
+                ),
+              )
+            else if (_order == null)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else
+              _orderDetails(_order!),
+          ],
         ),
       ),
     );

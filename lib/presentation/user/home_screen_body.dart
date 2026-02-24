@@ -4,6 +4,7 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/category_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';
+import 'package:marketly/presentation/user/notification_screen.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/providers/notification_provider.dart';
@@ -204,13 +205,13 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                   child: IconButton(
                     icon: Icon(Icons.notifications),
                     iconSize: 28,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (_) => NotificationScreen()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => NotificationScreen()),
+                      );
                     },
+                    color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
                 ),
 

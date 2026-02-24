@@ -20,9 +20,11 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userId = context.read<UserProvider>().user!.uid;
+      final userId = context.read<UserProvider>().user?.uid;
 
-      context.read<OrderProvider>().fetchOrders(userId);
+      if (userId != null) {
+        context.read<OrderProvider>().fetchOrders(userId);
+      }
     });
   }
 
@@ -99,7 +101,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
             itemCount: orderProvider.orders.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
-              final item = orderProvider.orders[index];
+              final order = orderProvider.orders[index];
               return Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -119,9 +121,9 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
                   ),
                   iconColor: Theme.of(context).colorScheme.onInverseSurface,
                   collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
-                  title: _collapsedHeader(context, item),
+                  title: _collapsedHeader(context, order),
                   children: [
-                    _orderStatusTimeline(context, item),
+                    _orderStatusTimeline(context, order),
                     SizedBox(
                       width: 160,
                       height: 40,
@@ -130,7 +132,8 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => OrderDetailsScreen(order: item),
+                              builder: (_) =>
+                                  OrderDetailsScreen(orderId: order.id),
                             ),
                           );
                         },
@@ -163,12 +166,12 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
 
-  Widget _collapsedHeader(BuildContext context, OrderModel item) {
+  Widget _collapsedHeader(BuildContext context, OrderModel order) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _orderItemThumbnails(item.items),
+        _orderItemThumbnails(order.items),
 
         const SizedBox(width: 12),
         Expanded(
@@ -177,7 +180,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Order No. : ${item.orderNumber}',
+                'Order No. : ${order.orderNumber}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -187,7 +190,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                "Placed on : ${AppConstants.formatedDate(item.statusTimeline[0]['time'])}",
+                "Placed on : ${AppConstants.formatedDate(order.statusTimeline[0]['time'])}",
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -199,7 +202,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
               Row(
                 children: [
                   Text(
-                    "Items : ${item.items.length}",
+                    "Items : ${order.items.length}",
                     style: TextStyle(
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.onPrimary,
@@ -207,7 +210,7 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
                   ),
                   const SizedBox(width: 20),
                   Text(
-                    "Totel : ${item.pricing['total'].toStringAsFixed(2)} \$",
+                    "Totel : ${order.pricing['total'].toStringAsFixed(2)} \$",
                     style: TextStyle(
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.onPrimary,

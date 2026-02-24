@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
+import 'package:marketly/presentation/user/orders/order_details_screen.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
 
 class NotificationServices {
@@ -121,11 +122,20 @@ class NotificationServices {
 
   void listenToForegroundMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final productId = message.data['productid'];
-      debugPrint("-----Product ID received: $productId");
       debugPrint("-----FOREGROUND MESSAGE RECEIVED");
       debugPrint("-----Notification: ${message.notification}");
       debugPrint("-----Data: ${message.data}");
+
+      final type = message.data['type'];
+
+      String? payload;
+
+      if (type == "new_product") {
+        payload = message.data['productid'];
+      } else if (type == "order_update") {
+        payload = message.data['orderId'];
+      }
+
       final title =
           message.notification?.title ??
           message.data['title'] ??
@@ -133,20 +143,31 @@ class NotificationServices {
 
       final body = message.notification?.body ?? message.data['body'] ?? '';
 
-      showLocalNotification(title: title, body: body, payload: productId);
+      showLocalNotification(title: title, body: body, payload: payload);
     });
   }
 
   //----------------------------------------------------------------------------
   void handleBackgroundNavigation(GlobalKey<NavigatorState> navigatorKey) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final productId = message.data['productid'];
+      final type = message.data['type'];
 
-      debugPrint("BACKGROUND DATA: ${message.data}");
-
-      if (productId != null) {
+      if (type == "new_product") {
+        final productId = message.data['productid'];
         _handleNavigation(productId, navigatorKey);
       }
+
+      if (type == "order_update") {
+        final orderId = message.data['orderId'];
+
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => OrderDetailsScreen(orderId: orderId),
+          ),
+        );
+      }
+
+      debugPrint("BACKGROUND DATA: ${message.data}");
     });
   }
 
@@ -157,16 +178,32 @@ class NotificationServices {
 
     if (message == null) return;
 
-    final productId = message.data['productid'];
+    debugPrint("TERMINATED MESSAGE DATA: ${message.data}");
 
-    if (productId != null) {
-      Future.delayed(const Duration(milliseconds: 500), () {
+    final type = message.data['type'];
+
+    if (type == "new_product") {
+      final productId = message.data['productid'];
+
+      if (productId != null) {
         navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder: (_) => ProductDetailsScreen(productId: productId),
           ),
         );
-      });
+      }
+    }
+
+    if (type == "order_update") {
+      final orderId = message.data['orderId'];
+
+      if (orderId != null) {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (_) => OrderDetailsScreen(orderId: orderId),
+          ),
+        );
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:marketly/data/models/order_model.dart';
 
 class OrderService {
@@ -26,6 +27,22 @@ class OrderService {
     return snap.docs
         .map((d) => OrderModel.fromFirestore(d.data(), d.id))
         .toList();
+  }
+
+  Future<OrderModel?> fetchOrderById(String orderId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(orderId)
+          .get();
+
+      if (!doc.exists || doc.data() == null) return null;
+
+      return OrderModel.fromFirestore(doc.data()!, doc.id);
+    } catch (e) {
+      debugPrint("Error fetching order: $e");
+      return null;
+    }
   }
 
   // For admin
