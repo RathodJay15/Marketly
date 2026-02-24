@@ -143,7 +143,6 @@ class _menuScreenState extends State<MenuScreen> {
 
   Widget _buildProfileCard() {
     final user = context.watch<UserProvider>().user;
-    debugPrint(user?.profilePic);
     final hasValidUrl =
         user?.profilePic != null && user!.profilePic!.isNotEmpty;
     return GestureDetector(

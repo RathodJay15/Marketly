@@ -6,6 +6,7 @@ import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
+import 'package:marketly/providers/notification_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
@@ -33,6 +34,16 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductProvider>().fetchHomeProducts(limit: 10);
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final user = context.read<UserProvider>().user;
+    if (user != null) {
+      context.read<NotificationProvider>().listenToNotifications(user.uid);
+    }
   }
 
   void onNavigation(index) {
@@ -93,6 +104,9 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
     final userProvider = context.watch<UserProvider>();
     final user = userProvider.user;
     final isLoading = userProvider.isLoading;
+
+    final notificationProvider = context.watch<NotificationProvider>();
+    final hasUnread = notificationProvider.unreadCount > 0;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.push(
@@ -102,31 +116,9 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
       child: Skeletonizer(
         enabled: isLoading,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppConstants.welcomeMsg,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                ),
-                Text(
-                  user?.name.isNotEmpty == true
-                      ? user!.name
-                      : AppConstants.username,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -175,6 +167,68 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
                       child: const Icon(Icons.person, size: 30),
                     ),
+            ),
+            SizedBox(width: 13),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppConstants.welcomeMsg,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+                Text(
+                  user?.name.isNotEmpty == true
+                      ? user!.name
+                      : AppConstants.username,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Spacer(),
+            Stack(
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.notifications),
+                    iconSize: 28,
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    onPressed: () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (_) => NotificationScreen()),
+                      // );
+                    },
+                  ),
+                ),
+
+                //  Red Dot Indicator
+                if (hasUnread)
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: Container(
+                      height: 10,
+                      width: 10,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ],
         ),

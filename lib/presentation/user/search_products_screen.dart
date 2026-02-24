@@ -128,37 +128,47 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ListView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-              child: _buildSearchSection(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildCategoryChips(),
-            ),
-            const SizedBox(height: 20),
+        RefreshIndicator(
+          color: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+          onRefresh: () async {
+            _closeOrClearSearch();
+          },
+          child: ListView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 13,
+                ),
+                child: _buildSearchSection(),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildCategoryChips(),
+              ),
+              const SizedBox(height: 20),
 
-            Consumer<CategoryProvider>(
-              builder: (context, categoryProvider, child) {
-                final productProvider = context.read<ProductProvider>();
-                final slug = categoryProvider.selectedCategorySlug;
+              Consumer<CategoryProvider>(
+                builder: (context, categoryProvider, child) {
+                  final productProvider = context.read<ProductProvider>();
+                  final slug = categoryProvider.selectedCategorySlug;
 
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (slug != null) {
-                    productProvider.fetchProductsByCategory(slug);
-                  } else {
-                    productProvider.fetchAllProducts();
-                  }
-                });
-                return _buildProductCardGride();
-              },
-            ),
-            SizedBox(height: 10),
-          ],
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (slug != null) {
+                      productProvider.fetchProductsByCategory(slug);
+                    } else {
+                      productProvider.fetchAllProducts();
+                    }
+                  });
+                  return _buildProductCardGride();
+                },
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
         ),
         Positioned(
           right: 20,

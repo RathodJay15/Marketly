@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/presentation/admin/dash_board_screen.dart';
-import 'package:marketly/data/services/notification_services.dart';
+import 'package:marketly/data/services/Notifications/notification_services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:marketly/presentation/auth/login_screen.dart';
 import 'package:marketly/presentation/user/home_screen.dart';

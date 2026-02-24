@@ -674,13 +674,8 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                       child: Align(
                         alignment: Alignment.topRight,
                         child: IconButton(
-                          icon: Icon(
-                            Icons.close,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onInverseSurface,
-                            size: 28,
-                          ),
+                          icon: Icon(Icons.close, size: 28),
+                          color: Theme.of(context).colorScheme.onInverseSurface,
                           onPressed: () => Navigator.pop(context),
                         ),
                       ),

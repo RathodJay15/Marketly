@@ -122,7 +122,10 @@ class NotificationServices {
   void listenToForegroundMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final productId = message.data['productid'];
-
+      debugPrint("-----Product ID received: $productId");
+      debugPrint("-----FOREGROUND MESSAGE RECEIVED");
+      debugPrint("-----Notification: ${message.notification}");
+      debugPrint("-----Data: ${message.data}");
       final title =
           message.notification?.title ??
           message.data['title'] ??
@@ -154,11 +157,7 @@ class NotificationServices {
 
     if (message == null) return;
 
-    debugPrint("TERMINATED MESSAGE DATA: ${message.data}");
-
     final productId = message.data['productid'];
-
-    debugPrint("TERMINATED DATA: ${message.data}");
 
     if (productId != null) {
       Future.delayed(const Duration(milliseconds: 500), () {

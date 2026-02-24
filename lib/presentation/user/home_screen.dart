@@ -85,25 +85,23 @@ class _homeScreenState extends State<HomeScreen>
         if (didPop) return;
         await _confirmLeave();
       },
-      child: SafeArea(
-        child: Scaffold(
-          // extendBody: true,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          body: SafeArea(
-            child: IndexedStack(
-              index: context.select<NavigationProvider, int>(
-                (p) => p.screenIndex,
-              ),
-              children: [
-                HomeScreenBody(),
-                SearchProductsScreen(),
-                CartScreen(),
-                MenuScreen(),
-              ],
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        body: SafeArea(
+          child: IndexedStack(
+            index: context.select<NavigationProvider, int>(
+              (p) => p.screenIndex,
             ),
+            children: [
+              HomeScreenBody(),
+              SearchProductsScreen(),
+              CartScreen(),
+              MenuScreen(),
+            ],
           ),
-          bottomNavigationBar: _navBar(),
         ),
+        bottomNavigationBar: SafeArea(top: false, child: _navBar()),
       ),
     );
   }

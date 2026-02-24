@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/auth_gate.dart';
-import 'package:marketly/data/services/notification_services.dart';
+import 'package:marketly/data/services/Notifications/notification_services.dart';
 import 'package:marketly/firebase_options.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/admin/admin_order_provider.dart';
@@ -11,6 +13,7 @@ import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/admin/admin_categories_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
+import 'package:marketly/providers/notification_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
@@ -89,6 +92,7 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider(create: (_) => AdminDashboardProvider()),
         ChangeNotifierProvider(create: (_) => AdminOrderProvider()),
         ChangeNotifierProvider(create: (_) => AdminUserProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userProvider, _) {
