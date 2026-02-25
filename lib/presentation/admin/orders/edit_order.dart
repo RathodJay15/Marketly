@@ -16,6 +16,7 @@ class EditOrder extends StatefulWidget {
 class _editOrderScreen extends State<EditOrder> {
   late Set<String> _selectedStatuses;
   bool isEditing = false;
+  late Set<String> _lockedStatuses;
 
   static const List<String> _orderSteps = [
     'ORDER_PLACED',
@@ -28,9 +29,11 @@ class _editOrderScreen extends State<EditOrder> {
   void initState() {
     super.initState();
 
-    _selectedStatuses = widget.order.statusTimeline
+    _lockedStatuses = widget.order.statusTimeline
         .map((e) => e['status'] as String)
         .toSet();
+
+    _selectedStatuses = Set.from(_lockedStatuses);
   }
 
   Future<void> _saveOrderStatus() async {
@@ -222,7 +225,6 @@ class _editOrderScreen extends State<EditOrder> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ListView.builder(
@@ -231,7 +233,9 @@ class _editOrderScreen extends State<EditOrder> {
             itemCount: _orderSteps.length,
             itemBuilder: (context, index) {
               final status = _orderSteps[index];
+
               final isChecked = _selectedStatuses.contains(status);
+              final isLocked = _lockedStatuses.contains(status);
 
               String formattedStatus = status
                   .replaceAll('_', ' ')
@@ -242,8 +246,7 @@ class _editOrderScreen extends State<EditOrder> {
 
               return CheckboxListTile(
                 value: isChecked,
-                // enabled: !isChecked,
-                dense: true, // reduces vertical height
+                dense: true,
                 visualDensity: const VisualDensity(vertical: -4),
                 activeColor: Theme.of(context).colorScheme.onSecondary,
                 side: BorderSide(
@@ -253,19 +256,23 @@ class _editOrderScreen extends State<EditOrder> {
                 title: Text(
                   formattedStatus,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    color: isLocked
+                        ? Colors.grey
+                        : Theme.of(context).colorScheme.onInverseSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedStatuses.add(status);
-                    } else {
-                      _selectedStatuses.remove(status);
-                    }
-                  });
-                },
+                onChanged: isLocked
+                    ? null // 🔒 disabled if from Firebase
+                    : (value) {
+                        setState(() {
+                          if (value == true) {
+                            _selectedStatuses.add(status);
+                          } else {
+                            _selectedStatuses.remove(status);
+                          }
+                        });
+                      },
               );
             },
           ),

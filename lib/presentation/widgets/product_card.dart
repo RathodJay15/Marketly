@@ -52,8 +52,8 @@ class ProductCard extends StatelessWidget {
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            height: 130,
-                            width: 140,
+                            height: 135,
+                            width: 155,
                             decoration: BoxDecoration(
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(90),

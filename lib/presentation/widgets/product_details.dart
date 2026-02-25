@@ -5,7 +5,6 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/product_service.dart';
-import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -58,6 +57,69 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  void _addToCart(ProductModel product) async {
+    final cartProvider = context.read<CartProvider>();
+
+    final cartItem = CartItemModel(
+      id: '',
+      productId: product.id,
+      title: product.title,
+      price: product.price,
+      quantity: 1,
+      total: product.price,
+      discountedTotal:
+          product.price - (product.price * product.discountPercentage / 100),
+      discountPercentage: product.discountPercentage,
+      thumbnail: product.thumbnail,
+    );
+
+    cartProvider.addToCart(cartItem);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+        content: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            Provider.of<NavigationProvider>(
+              context,
+              listen: false,
+            ).setScreenIndex(2);
+            Navigator.pop(context);
+          },
+          child: SizedBox(
+            height: 20,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppConstants.addedToCart,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                Text(
+                  AppConstants.goToCart,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    super.didChangeDependencies();
   }
 
   @override
@@ -195,7 +257,9 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 size: 28,
               ),
               color: Theme.of(context).colorScheme.onSecondaryContainer,
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
           ),
           Container(
@@ -212,40 +276,8 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                 size: 28,
               ),
               color: Theme.of(context).colorScheme.onSecondaryContainer,
-              onPressed: () async {
-                final cartProvider = context.read<CartProvider>();
-
-                final cartItem = CartItemModel(
-                  id: '',
-                  productId: product.id,
-                  title: product.title,
-                  price: product.price,
-                  quantity: 1,
-                  total: product.price,
-                  discountedTotal:
-                      product.price -
-                      (product.price * product.discountPercentage / 100),
-                  discountPercentage: product.discountPercentage,
-                  thumbnail: product.thumbnail,
-                );
-
-                cartProvider.addToCart(cartItem);
-
-                final confirm = await MarketlyDialog.showMyDialog(
-                  context: context,
-                  actionN: AppConstants.no,
-                  actionY: AppConstants.yes,
-                  title: AppConstants.addedToCart,
-                  content: AppConstants.goToCart,
-                  actionYColor: Theme.of(context).colorScheme.onSecondary,
-                );
-                if (confirm == true) {
-                  Provider.of<NavigationProvider>(
-                    context,
-                    listen: false,
-                  ).setScreenIndex(2);
-                  Navigator.pop(context);
-                }
+              onPressed: () {
+                _addToCart(product);
               },
             ),
           ),

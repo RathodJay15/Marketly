@@ -108,6 +108,8 @@ class AppConstants {
   static const String yesEmptyCart = "Yes, empty cart";
   static const String notifications = "Notifications";
   static const String noNotifications = "No notifications yet";
+  static const String checkForMail =
+      "Check your email inbox or spam for change / forgot password mail from marketly";
 
   // User Constants
   static const String usrDetails = "User Details";
@@ -123,6 +125,9 @@ class AppConstants {
   static const String state = "State";
   static const String cntry = "Country";
   static const String pincode = "Pincode";
+  static const String changePass = "Change Password";
+  static const String errorInChangePass =
+      "Somthing went wrong while changing password. Try again. ";
 
   // Product Constants
   static const String description = "Description";

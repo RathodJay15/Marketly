@@ -33,8 +33,8 @@ class _authGateState extends State<AuthGate> {
                 size: 100,
                 itemBuilder: (context, index) {
                   return Container(
-                    height: 120,
-                    width: 120,
+                    height: 200,
+                    width: 300,
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(130),

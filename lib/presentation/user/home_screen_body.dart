@@ -80,7 +80,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildTitleSection(AppConstants.ourProducts, 1),
+          child: _buildTitleSection(AppConstants.ourProducts, 1, true),
         ),
         // const SizedBox(height: 12),
         Padding(
@@ -90,7 +90,11 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildTitleSection(AppConstants.cartProducts, 2),
+          child: _buildTitleSection(
+            AppConstants.cartProducts,
+            2,
+            context.watch<CartProvider>().items.isNotEmpty,
+          ),
         ),
         Padding(
           padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
@@ -325,7 +329,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
     );
   }
 
-  Widget _buildTitleSection(String title, int index) {
+  Widget _buildTitleSection(String title, int index, bool isNotEmpty) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -338,18 +342,19 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
         ),
-        TextButton(
-          onPressed: () => onNavigation(index),
-          child: Text(
-            AppConstants.seeAll,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimary,
-              fontSize: 18,
-              decoration: TextDecoration.underline,
-              decorationColor: Theme.of(context).colorScheme.onPrimary,
+        if (isNotEmpty)
+          TextButton(
+            onPressed: () => onNavigation(index),
+            child: Text(
+              AppConstants.seeAll,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 18,
+                decoration: TextDecoration.underline,
+                decorationColor: Theme.of(context).colorScheme.onPrimary,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

@@ -28,7 +28,6 @@ class _myAccountScreenState extends State<MyAccountScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final nameCtrl = TextEditingController();
-  final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
   final addressCtrl = TextEditingController();
   final cityCtrl = TextEditingController();
@@ -164,7 +163,6 @@ class _myAccountScreenState extends State<MyAccountScreen> {
     if (_initialized) return;
 
     nameCtrl.text = user.name;
-    emailCtrl.text = user.email;
     phoneCtrl.text = user.phone;
     cityCtrl.text = user.city;
     stateCtrl.text = user.state;
@@ -187,7 +185,6 @@ class _myAccountScreenState extends State<MyAccountScreen> {
   @override
   void dispose() {
     nameCtrl.dispose();
-    emailCtrl.dispose();
     phoneCtrl.dispose();
     addressCtrl.dispose();
     cityCtrl.dispose();
@@ -397,7 +394,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                     color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
                   suffixIcon: Icon(
-                    Icons.chevron_right,
+                    Icons.chevron_right_rounded,
+                    size: 30,
                     color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
                 ),
@@ -433,6 +431,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             icon: Icons.pin_outlined,
             validator: Validators.city,
           ),
+          _resetPass(user),
           SizedBox(height: 30),
           _deleteAccountBTN(user.uid),
         ],
@@ -497,6 +496,73 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         ),
       ),
     );
+  }
+
+  Widget _resetPass(UserModel user) {
+    return Container(
+      height: 55,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(13),
+            child: Icon(
+              Icons.password_rounded,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          Text(
+            AppConstants.changePass,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Spacer(),
+          IconButton(
+            onPressed: () => changePass(user.email),
+            icon: Icon(Icons.chevron_right_rounded),
+            iconSize: 30,
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void changePass(String email) async {
+    final confirm = await MarketlyDialog.showMyDialog(
+      context: context,
+      title: AppConstants.changePass,
+      content: AppConstants.checkForMail,
+      actionN: AppConstants.cancel,
+      actionY: AppConstants.yes,
+    );
+    if (confirm == true) {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      try {
+        await _auth.sendPasswordResetEmail(email: email.trim());
+        return null; // success
+      } on FirebaseAuthException catch (e) {
+        debugPrint("Change Pass Error : ${e.message}");
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+            content: Text(
+              AppConstants.errorInChangePass,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Widget _deleteAccountBTN(String uid) {

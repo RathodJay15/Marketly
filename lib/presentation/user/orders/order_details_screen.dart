@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/order_model.dart';
@@ -107,25 +108,17 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       shrinkWrap: true,
       children: [
-        _sectionTitle(AppConstants.usrDetails),
-        _greyCard(
-          children: [
-            _row(AppConstants.username, order.userInfo['name']),
-            _row(AppConstants.email, order.userInfo['email']),
-            _row(AppConstants.phone, order.userInfo['phone']),
-            _row(AppConstants.adrs, order.address['address']),
-            _row(AppConstants.ct, order.address['city']),
-            _row(AppConstants.state, order.address['state']),
-            _row(AppConstants.cntry, order.address['country']),
-            _row(AppConstants.pincode, order.address['pincode']),
-          ],
-        ),
+        _sectionTitle(AppConstants.orderStatus),
+        _greyCard(children: [_orderStatusTimeline(context, order)]),
 
         const SizedBox(height: 24),
 
         _sectionTitle(AppConstants.orderSummary),
         _greyCard(
           children: [
+            _row(AppConstants.orderNo, order.orderNumber),
+            Divider(color: Theme.of(context).colorScheme.onPrimary),
+
             ...order.items.map(
               (item) => _row(
                 "${item['title']} x ${item['quantity']}",
@@ -156,6 +149,22 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
         _greyCard(
           children: [_row("Method", order.paymentMethod, isBold: true)],
         ),
+        const SizedBox(height: 24),
+
+        _sectionTitle(AppConstants.usrDetails),
+        _greyCard(
+          children: [
+            _row(AppConstants.username, order.userInfo['name']),
+            _row(AppConstants.email, order.userInfo['email']),
+            _row(AppConstants.phone, order.userInfo['phone']),
+            _row(AppConstants.adrs, order.address['address']),
+            _row(AppConstants.ct, order.address['city']),
+            _row(AppConstants.state, order.address['state']),
+            _row(AppConstants.cntry, order.address['country']),
+            _row(AppConstants.pincode, order.address['pincode']),
+          ],
+        ),
+
         const SizedBox(height: 24),
       ],
     );
@@ -230,6 +239,94 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _orderStatusTimeline(BuildContext context, OrderModel item) {
+    const List<String> orderSteps = [
+      'ORDER_PLACED',
+      'ORDER_CONFIRMED',
+      'ORDER_SHIPPED',
+      'OUT_FOR_DELIVERY',
+      'ORDER_DELIVERED',
+    ];
+    final completedStatuses = {
+      for (var e in item.statusTimeline) e['status']: e['time'] as Timestamp,
+    };
+    return Column(
+      children: List.generate(orderSteps.length, (index) {
+        final status = orderSteps[index];
+        final isCompleted = completedStatuses.containsKey(status);
+        final isLast = index == orderSteps.length - 1;
+
+        return _timelineRow(
+          context: context,
+          status: status,
+          time: isCompleted ? completedStatuses[status] : null,
+          isCompleted: isCompleted,
+          showLine: !isLast,
+        );
+      }),
+    );
+  }
+
+  Widget _timelineRow({
+    required BuildContext context,
+    required String status,
+    required Timestamp? time,
+    required bool isCompleted,
+    required bool showLine,
+  }) {
+    final activeColor = Theme.of(context).colorScheme.onSecondary;
+    final inactiveColor = Theme.of(context).colorScheme.onPrimary;
+    final activeIcon = Icons.check_box_rounded;
+    final inactiveIcon = Icons.check_box_outline_blank_rounded;
+    String formatStatus(String status) {
+      return status
+          .replaceAll('_', ' ')
+          .toLowerCase()
+          .split(' ')
+          .map((w) => w[0].toUpperCase() + w.substring(1))
+          .join(' ');
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(5),
+          child: Icon(
+            isCompleted ? activeIcon : inactiveIcon,
+            size: 30,
+            color: isCompleted ? activeColor : inactiveColor,
+          ),
+        ),
+
+        const SizedBox(width: 12),
+
+        // MIDDLE: Status text
+        Expanded(
+          child: Text(
+            formatStatus(status),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isCompleted
+                  ? Theme.of(context).colorScheme.onInverseSurface
+                  : Theme.of(context).colorScheme.onPrimary,
+            ),
+          ),
+        ),
+
+        Text(
+          time != null ? AppConstants.formatedDate(time) : 'pending',
+          style: TextStyle(
+            fontSize: 13,
+            color: isCompleted
+                ? Theme.of(context).colorScheme.onPrimary
+                : Theme.of(context).colorScheme.onPrimary,
+          ),
+        ),
+      ],
     );
   }
 }

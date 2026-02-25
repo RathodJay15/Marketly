@@ -29,6 +29,10 @@ class NotificationProvider extends ChangeNotifier {
     await _notificationService.markAsRead(notificationId);
   }
 
+  void stopListening() {
+    _subscription?.cancel();
+  }
+
   @override
   void dispose() {
     _subscription?.cancel();

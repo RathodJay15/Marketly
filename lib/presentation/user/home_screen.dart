@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 // import 'package:marketly/data/migration/migrate_products.dart';
 // import 'package:marketly/data/migration/migrate_category.dart';
-import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
 import 'package:marketly/presentation/user/menu/menu_screen.dart';
@@ -11,7 +10,6 @@ import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
-import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -55,12 +53,6 @@ class _homeScreenState extends State<HomeScreen>
       context,
       listen: false,
     ).setScreenIndex(index);
-  }
-
-  Future<void> onLogout() async {
-    await AuthService().logout(); // Ends Firebase session
-    context.read<UserProvider>().clearUser(); // Clears App state
-    context.read<CartProvider>().stopListening();
   }
 
   Future<void> _confirmLeave() async {
