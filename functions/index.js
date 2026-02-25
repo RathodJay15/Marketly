@@ -4,33 +4,53 @@ const admin = require("firebase-admin");
 
 admin.initializeApp();
 
-exports.sendNewProductNotification = onDocumentCreated(
+exports.sendNewProductNotification = onDocumentUpdated(
   "products/{productId}",
   async (event) => {
-    const snap = event.data;
-    if (!snap) return;
 
-    const product = snap.data();
-    const productId = event.params.productId;
+    const before = event.data.before.data();
+    const after = event.data.after.data();
 
-    const message = {
-      topic: "all_users",
-      // token:"fB2VOMe2TOW5XgfS1e21Fj:APA91bGLK591T7ZPZ93b91wVpY90fH2UN9Dz9vGrqI3P4YzW4OWeTCqSd_i6AJXc3JaRqa5Vnkf4e-qx7Ked6FpeJ6r1f5C32WNyeOOpIK-3j-MWaQUuFFw",
-      notification: {
-        title: "New Product Added!!",
-        body: `${product.name} is now available!`,
-       },
-      data: {
-        type: "new_product",
-        productid: productId.toString(),
-      },  
-    };
+    if (!before || !after) {
+      console.log("Missing before/after data.");
+      return;
+    }
 
-    try {
-      await admin.messaging().send(message);
-      console.log("Notification sent successfully!");
-    } catch (error) {
-      console.error("Error sending notification:", error);
+    // 🔥 Trigger ONLY when thumbnail is added for the first time
+    if (!before.thumbnail && after.thumbnail) {
+
+      const productId = event.params.productId;
+      const productName = after.title || after.name || "New Product";
+      const productImg = after.thumbnail || "";
+
+      console.log("Thumbnail detected. Sending notification for:", productName);
+
+      const message = {
+        topic: "all_users",
+
+        // ✅ For background & terminated state
+        notification: {
+          title: "New Product Added!!",
+          body: `${productName} is now available!`,
+          image: productImg,   // 🔥 correct key
+        },
+
+        // ✅ For foreground BigPicture handling in Flutter
+        data: {
+          type: "new_product",
+          productid: String(productId),
+          imageUrl: String(productImg),
+        },
+      };
+
+      try {
+        await admin.messaging().send(message);
+        console.log("Notification sent successfully!");
+      } catch (error) {
+        console.error("Error sending notification:", error);
+      }
+    } else {
+      console.log("No new thumbnail detected. No notification sent.");
     }
   }
 );

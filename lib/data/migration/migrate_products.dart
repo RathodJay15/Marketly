@@ -19,7 +19,7 @@
 //     final List products = decoded['products'];
 
 //     for (final item in products) {
-//       final product = ProductModel.fromJson(item,);
+//       final product = ProductModel.fromFirestore(item, '');
 
 //       await _firestore.collection('products').add(product.toFirestore());
 //     }

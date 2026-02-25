@@ -5,6 +5,8 @@ import 'package:marketly/data/services/Notifications/notification_services.dart'
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:marketly/presentation/auth/login_screen.dart';
 import 'package:marketly/presentation/user/home_screen.dart';
+import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/notification_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -98,8 +100,12 @@ class _authGateState extends State<AuthGate> {
             }
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
+              final notificationProvider = context.read<NotificationProvider>();
+              final cartProvider = context.read<CartProvider>();
               if (context.mounted) {
                 context.read<UserProvider>().setUser(userModel);
+                notificationProvider.listenToNotifications(firebaseUser.uid);
+                cartProvider.startListening();
               }
             });
 

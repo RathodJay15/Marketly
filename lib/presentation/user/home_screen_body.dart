@@ -37,16 +37,6 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final user = context.read<UserProvider>().user;
-    if (user != null) {
-      context.read<NotificationProvider>().listenToNotifications(user.uid);
-    }
-  }
-
   void onNavigation(index) {
     Provider.of<NavigationProvider>(
       context,

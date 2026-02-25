@@ -4,6 +4,20 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
+Future<String> _downloadAndSaveFile(String url, String fileName) async {
+  final directory = await getTemporaryDirectory();
+  final filePath = '${directory.path}/$fileName';
+
+  final response = await http.get(Uri.parse(url));
+  final file = File(filePath);
+  await file.writeAsBytes(response.bodyBytes);
+
+  return filePath;
+}
 
 class NotificationServices {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -120,13 +134,52 @@ class NotificationServices {
     );
   }
 
+  Future<void> showBigPictureNotification({
+    required String title,
+    required String body,
+    required String imageUrl,
+    String? payload,
+  }) async {
+    final largeIconPath = await _downloadAndSaveFile(imageUrl, 'largeIcon');
+    final bigPicturePath = await _downloadAndSaveFile(imageUrl, 'bigPicture');
+
+    final BigPictureStyleInformation bigPictureStyle =
+        BigPictureStyleInformation(
+          FilePathAndroidBitmap(bigPicturePath),
+          largeIcon: FilePathAndroidBitmap(largeIconPath),
+          contentTitle: title,
+          summaryText: body,
+        );
+
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'product_channel',
+          'Product Notifications',
+          channelDescription: 'Product alerts with image',
+          importance: Importance.high,
+          priority: Priority.high,
+          styleInformation: bigPictureStyle,
+        );
+
+    final NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await _localNotifications.show(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: title,
+      body: body,
+      notificationDetails: platformDetails,
+      payload: payload,
+    );
+  }
+
   void listenToForegroundMessages() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint("-----FOREGROUND MESSAGE RECEIVED");
-      debugPrint("-----Notification: ${message.notification}");
-      debugPrint("-----Data: ${message.data}");
 
       final type = message.data['type'];
+      final imageUrl = message.data['imageUrl'];
 
       String? payload;
 
@@ -143,7 +196,16 @@ class NotificationServices {
 
       final body = message.notification?.body ?? message.data['body'] ?? '';
 
-      showLocalNotification(title: title, body: body, payload: payload);
+      if (imageUrl != null && imageUrl.isNotEmpty) {
+        await showBigPictureNotification(
+          title: title,
+          body: body,
+          imageUrl: imageUrl,
+          payload: payload,
+        );
+      } else {
+        await showLocalNotification(title: title, body: body, payload: payload);
+      }
     });
   }
 
