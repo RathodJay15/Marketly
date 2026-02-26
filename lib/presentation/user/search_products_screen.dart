@@ -168,7 +168,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
               const SizedBox(height: 20),
 
               _buildProductCardGride(),
-              SizedBox(height: 10),
+              SizedBox(height: 85),
             ],
           ),
         ),

@@ -29,6 +29,5 @@ class UserProvider extends ChangeNotifier {
     if (_user == null) return;
     _user = null;
     _isLoading = false;
-    notifyListeners();
   }
 }

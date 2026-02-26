@@ -90,7 +90,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
           child: _buildCartList(),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 85),
       ],
     );
   }

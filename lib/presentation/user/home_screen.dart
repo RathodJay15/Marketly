@@ -80,11 +80,12 @@ class _homeScreenState extends State<HomeScreen>
       },
       child: Scaffold(
         extendBody: true,
+        resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         body: BottomBar(
           barColor: Colors.transparent,
           width: MediaQuery.of(context).size.width - 40,
-          fit: StackFit.expand,
+          // fit: StackFit.expand,
           body: (context, controller) {
             return SafeArea(
               child: IndexedStack(

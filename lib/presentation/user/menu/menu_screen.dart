@@ -97,6 +97,7 @@ class _menuScreenState extends State<MenuScreen> {
         ),
 
         _buildTile(logout, Icons.logout_outlined, AppConstants.logout),
+        SizedBox(height: 75),
       ],
     );
   }

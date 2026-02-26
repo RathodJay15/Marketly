@@ -69,6 +69,7 @@ class _cartScreenState extends State<CartScreen> {
             children: [
               _headerSection(0, context, cartProvider),
               _cartPoductList(context, cartProvider),
+              SizedBox(height: 75),
             ],
           ),
         ),
@@ -89,6 +90,7 @@ class _cartScreenState extends State<CartScreen> {
         _headerSection(0, context, cartProvider),
         _cartPoductList(context, cartProvider),
         _cartSummary(20, context, cartProvider),
+        SizedBox(height: 75),
       ],
     );
   }
