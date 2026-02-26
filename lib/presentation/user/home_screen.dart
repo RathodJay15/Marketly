@@ -11,6 +11,7 @@ import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -80,98 +81,75 @@ class _homeScreenState extends State<HomeScreen>
       child: Scaffold(
         extendBody: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
-        body: SafeArea(
-          child: IndexedStack(
-            index: context.select<NavigationProvider, int>(
-              (p) => p.screenIndex,
-            ),
-            children: [
-              HomeScreenBody(),
-              SearchProductsScreen(),
-              CartScreen(),
-              MenuScreen(),
-            ],
-          ),
-        ),
-        bottomNavigationBar: SafeArea(top: false, child: _navBar()),
-      ),
-    );
-  }
-
-  Widget _navBar() {
-    return Consumer<NavigationProvider>(
-      builder: (context, navProvider, child) {
-        final currentIndex = navProvider.screenIndex;
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          child: Container(
-            height: 65,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onInverseSurface,
-              borderRadius: BorderRadius.circular(35),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 8,
-                  offset: Offset(0, 3),
+        body: BottomBar(
+          barColor: Colors.transparent,
+          width: MediaQuery.of(context).size.width - 40,
+          fit: StackFit.expand,
+          body: (context, controller) {
+            return SafeArea(
+              child: IndexedStack(
+                index: context.select<NavigationProvider, int>(
+                  (p) => p.screenIndex,
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (index) {
-                  onNavigation(index);
-                },
-                selectedFontSize: 12,
-                unselectedFontSize: 12,
-                unselectedLabelStyle: const TextStyle(height: 1),
-                backgroundColor: Colors.transparent,
-                selectedItemColor: Theme.of(context).colorScheme.primary,
-                unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
-                selectedLabelStyle: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  height: 1,
-                ),
-                type: BottomNavigationBarType.fixed,
-                elevation: 0,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: EdgeInsets.only(top: 2, bottom: 2),
-                      child: Icon(Icons.home, size: 20),
-                    ),
-                    label: AppConstants.home,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: EdgeInsets.only(top: 2, bottom: 2),
-                      child: Icon(Icons.search, size: 20),
-                    ),
-                    label: AppConstants.search,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: EdgeInsets.only(top: 2, bottom: 2),
-                      child: Icon(Icons.shopping_cart_outlined, size: 20),
-                    ),
-                    label: AppConstants.cart,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: EdgeInsets.only(top: 2, bottom: 2),
-                      child: Icon(Icons.menu_rounded, size: 20),
-                    ),
-                    label: AppConstants.menu,
-                  ),
+                children: const [
+                  HomeScreenBody(),
+                  SearchProductsScreen(),
+                  CartScreen(),
+                  MenuScreen(),
                 ],
               ),
-            ),
+            );
+          },
+
+          child: Consumer<NavigationProvider>(
+            builder: (context, navProvider, child) {
+              return Container(
+                height: 65,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  borderRadius: BorderRadius.circular(35),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 12,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: BottomNavigationBar(
+                  currentIndex: navProvider.screenIndex,
+                  onTap: (index) {
+                    navProvider.setScreenIndex(index);
+                  },
+                  type: BottomNavigationBarType.fixed,
+                  backgroundColor: Colors.transparent,
+                  selectedItemColor: Theme.of(context).colorScheme.primary,
+                  unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
+                  elevation: 0,
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home, size: 20),
+                      label: AppConstants.home,
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.search, size: 20),
+                      label: AppConstants.search,
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.shopping_cart_outlined, size: 20),
+                      label: AppConstants.cart,
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.menu_rounded, size: 20),
+                      label: AppConstants.menu,
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

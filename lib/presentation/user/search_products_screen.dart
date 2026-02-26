@@ -174,7 +174,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
         ),
         Positioned(
           right: 20,
-          bottom: 20,
+          bottom: 85,
           child: FloatingActionButton(
             backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
             foregroundColor: Theme.of(context).colorScheme.primary,
