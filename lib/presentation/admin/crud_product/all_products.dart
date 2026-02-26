@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/admin/crud_product/add_product.dart';
 import 'package:marketly/presentation/admin/crud_product/edit_product.dart';
+import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -74,7 +75,8 @@ class _allProductsState extends State<AllProducts> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           color: Theme.of(context).colorScheme.onInverseSurface,
-          onPressed: () {
+          onPressed: () async {
+            await context.read<AdminDashboardProvider>().refreshDashboard();
             Navigator.of(context).pop();
           },
         ),
@@ -184,6 +186,7 @@ class _allProductsState extends State<AllProducts> {
                     ),
                     trailing: IconButton(
                       onPressed: () {
+                        _searchFocusNode.unfocus();
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -55,7 +55,7 @@ class _addCategoryState extends State<AddCategory> {
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
-      debugPrint("Error Uploading CAtegory");
+      debugPrint("Error Uploading Category");
     } finally {
       if (mounted) {
         setState(() => isAdding = false);

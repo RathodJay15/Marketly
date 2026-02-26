@@ -20,54 +20,64 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  bool _isSearching = false;
-
+  late CategoryProvider _categoryProvider;
   String? _lastCategorySlug;
-  bool _fetchScheduled = false;
+
+  late NavigationProvider _navigationProvider;
+
+  bool _isSearching = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _searchFocusNode.addListener(_onFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductProvider>().fetchAllProducts();
+      _navigationProvider.addListener(_handleNavigationChange);
+      _categoryProvider.addListener(_handleCategoryChange);
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _categoryProvider = context.read<CategoryProvider>();
+    _navigationProvider = context.read<NavigationProvider>();
+  }
 
-    final categoryProvider = context.read<CategoryProvider>();
+  void _handleCategoryChange() {
+    final slug = _categoryProvider.selectedCategorySlug;
+
+    if (slug != _lastCategorySlug) {
+      _lastCategorySlug = slug;
+
+      //  Clear search text
+      _textSearchController.clear();
+      _searchFocusNode.unfocus();
+      _isSearching = false;
+
+      final productProvider = context.read<ProductProvider>();
+
+      if (slug != null) {
+        productProvider.fetchProductsByCategory(slug);
+      } else {
+        productProvider.fetchAllProducts();
+      }
+    }
+  }
+
+  void _handleNavigationChange() {
     final navProvider = context.read<NavigationProvider>();
 
-    final slug = categoryProvider.selectedCategorySlug;
+    if (navProvider.requestSearchFocus && navProvider.screenIndex == 1) {
+      _isSearching = true;
 
-    // Handle search focus safely
-    if (navProvider.requestSearchFocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _isSearching = true;
+
         _searchFocusNode.requestFocus();
         navProvider.clearSearchFocusRequest();
-      });
-    }
-
-    // Detect category change ONLY
-    if (slug != _lastCategorySlug && !_fetchScheduled) {
-      _lastCategorySlug = slug;
-      _fetchScheduled = true;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-
-        final productProvider = context.read<ProductProvider>();
-
-        if (slug != null) {
-          productProvider.fetchProductsByCategory(slug);
-        } else {
-          productProvider.fetchAllProducts();
-        }
-
-        _fetchScheduled = false;
       });
     }
   }
@@ -95,11 +105,16 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
   }
 
   void _closeOrClearSearch() {
-    if (_textSearchController.text.isNotEmpty) {
-      _textSearchController.clear();
-      _onSearchPressed('');
-    } else {
+    if (_searchFocusNode.hasFocus) {
+      // First press → just hide keyboard
       _searchFocusNode.unfocus();
+    } else {
+      // Second press → clear search completely
+      _textSearchController.clear();
+
+      context.read<ProductProvider>().clearSearchResult();
+      // 👆 You must implement this in provider
+
       setState(() => _isSearching = false);
     }
   }
@@ -116,12 +131,13 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _textSearchController.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
     _searchFocusNode.removeListener(_onFocusChange);
+    _navigationProvider.removeListener(_handleNavigationChange);
+    _categoryProvider.removeListener(_handleCategoryChange);
+    super.dispose();
   }
 
   @override
@@ -151,21 +167,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
               ),
               const SizedBox(height: 20),
 
-              Consumer<CategoryProvider>(
-                builder: (context, categoryProvider, child) {
-                  final productProvider = context.read<ProductProvider>();
-                  final slug = categoryProvider.selectedCategorySlug;
-
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (slug != null) {
-                      productProvider.fetchProductsByCategory(slug);
-                    } else {
-                      productProvider.fetchAllProducts();
-                    }
-                  });
-                  return _buildProductCardGride();
-                },
-              ),
+              _buildProductCardGride(),
               SizedBox(height: 10),
             ],
           ),

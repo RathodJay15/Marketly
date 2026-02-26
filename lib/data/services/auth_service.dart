@@ -133,7 +133,7 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message);
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint('Error in registration : $e.toString()');
       throw Exception('Registration failed');
     }
   }

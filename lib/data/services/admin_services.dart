@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
 
 class AdminService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -20,8 +19,6 @@ class AdminService {
         .collection('users')
         .where('isDeleted', isEqualTo: false)
         .get();
-
-    debugPrint(snapshot.size.toString());
 
     return snapshot.size;
   }

@@ -109,38 +109,3 @@ class _MainAppState extends State<MainApp> {
     );
   }
 }
-// class MainApp extends StatelessWidget {
-//   final GlobalKey<NavigatorState> navigatorKey;
-
-//   MainApp({super.key, required this.navigatorKey});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (_) => UserProvider()),
-//         ChangeNotifierProvider(create: (_) => CategoryProvider()),
-//         ChangeNotifierProvider(create: (_) => ProductProvider()),
-//         ChangeNotifierProvider(create: (_) => NavigationProvider()),
-//         ChangeNotifierProvider(create: (_) => CartProvider()),
-//         ChangeNotifierProvider(create: (_) => OrderProvider()),
-//         ChangeNotifierProvider(create: (_) => AdminCategoryProvider()),
-//         ChangeNotifierProvider(create: (_) => AdminDashboardProvider()),
-//         ChangeNotifierProvider(create: (_) => AdminOrderProvider()),
-//         ChangeNotifierProvider(create: (_) => AdminUserProvider()),
-//       ],
-//       child: Consumer<UserProvider>(
-//         builder: (context, userProvider, _) {
-//           return MaterialApp(
-//             navigatorKey: navigatorKey,
-//             debugShowCheckedModeBanner: false,
-//             themeMode: userProvider.themeMode,
-//             theme: MarketTheme.light,
-//             darkTheme: MarketTheme.dark,
-//             home: const AuthGate(),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

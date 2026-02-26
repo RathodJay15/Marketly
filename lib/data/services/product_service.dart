@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../models/product_model.dart';
 
 class ProductService {
@@ -102,6 +103,30 @@ class ProductService {
   // Delete product
   Future<void> deleteProduct(String productId) async {
     await _firestore.collection(_collection).doc(productId).delete();
+    deleteProductFolder(productId);
+  }
+
+  // to delete images of the product from storage
+  Future<void> deleteProductFolder(String productId) async {
+    try {
+      final ListResult result = await FirebaseStorage.instance
+          .ref()
+          .child('products/$productId')
+          .listAll();
+
+      for (final Reference file in result.items) {
+        await file.delete();
+      }
+
+      for (final Reference folder in result.prefixes) {
+        final ListResult subResult = await folder.listAll();
+        for (final Reference file in subResult.items) {
+          await file.delete();
+        }
+      }
+    } catch (e) {
+      throw Exception("Failed to delete product images: $e");
+    }
   }
 
   // Stream all products (real-time)

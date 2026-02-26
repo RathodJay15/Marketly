@@ -155,6 +155,7 @@ class ProductProvider extends ChangeNotifier {
     try {
       await _productService.deleteProduct(productId);
       _allProducts.removeWhere((p) => p == productId);
+      _visibleProducts.removeWhere((p) => p.id == productId);
       notifyListeners();
     } catch (e) {
       _error = e.toString();

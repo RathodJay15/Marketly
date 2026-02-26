@@ -633,7 +633,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
     if (user == null) return;
 
     try {
-      // 🔥 Only delete if URL exists
+      // Only delete if URL exists
       if (user.profilePic != null && user.profilePic!.isNotEmpty) {
         final ref = FirebaseStorage.instance.refFromURL(user.profilePic!);
         await ref.delete();
