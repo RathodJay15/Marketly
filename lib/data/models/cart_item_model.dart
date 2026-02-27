@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CartItemModel {
   final String id; // Firestore document ID (cartItemId)
   final String productId;
@@ -8,6 +10,7 @@ class CartItemModel {
   final double discountPercentage;
   final double discountedTotal;
   final String thumbnail;
+  final DateTime? addedAt;
 
   CartItemModel({
     required this.id,
@@ -19,6 +22,7 @@ class CartItemModel {
     required this.discountPercentage,
     required this.discountedTotal,
     required this.thumbnail,
+    this.addedAt,
   });
 
   // 🔽 Firestore → Model
@@ -33,6 +37,9 @@ class CartItemModel {
       discountPercentage: (map['discountPercentage'] as num).toDouble(),
       discountedTotal: (map['discountedTotal'] as num).toDouble(),
       thumbnail: map['thumbnail'],
+      addedAt: map['addedAt'] != null
+          ? (map['addedAt'] as Timestamp).toDate()
+          : null,
     );
   }
 
@@ -47,6 +54,7 @@ class CartItemModel {
       'discountPercentage': discountPercentage,
       'discountedTotal': discountedTotal,
       'thumbnail': thumbnail,
+      'addedAt': FieldValue.serverTimestamp(),
     };
   }
 
@@ -65,6 +73,7 @@ class CartItemModel {
       discountPercentage: discountPercentage,
       discountedTotal: newDiscountedTotal,
       thumbnail: thumbnail,
+      addedAt: addedAt,
     );
   }
 }

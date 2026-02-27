@@ -3,16 +3,27 @@ import '../models/cart_item_model.dart';
 
 class CartService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static const int _cartExpiryMinutes = 30;
 
-  CollectionReference<Map<String, dynamic>> _cartRef(String uid) {
-    return _firestore.collection('users').doc(uid).collection('cart');
+  // ─────────────────────────────────────────────
+  // CART DOCUMENT REFERENCE (metadata)
+  // ─────────────────────────────────────────────
+  DocumentReference<Map<String, dynamic>> _cartDocRef(String uid) {
+    return _firestore.collection('cart').doc(uid);
   }
 
   // ─────────────────────────────────────────────
-  // REALTIME CART STREAM
+  // CART ITEMS SUBCOLLECTION
+  // ─────────────────────────────────────────────
+  CollectionReference<Map<String, dynamic>> _cartItemsRef(String uid) {
+    return _cartDocRef(uid).collection('cartItems');
+  }
+
+  // ─────────────────────────────────────────────
+  // REALTIME CART STREAM (Items Only For Now)
   // ─────────────────────────────────────────────
   Stream<List<CartItemModel>> cartStream(String uid) {
-    return _cartRef(uid).snapshots().map(
+    return _cartItemsRef(uid).snapshots().map(
       (snapshot) => snapshot.docs
           .map((doc) => CartItemModel.fromFirestore(doc.data(), doc.id))
           .toList(),
@@ -20,46 +31,45 @@ class CartService {
   }
 
   // ─────────────────────────────────────────────
-  // ADD TO CART (SAFE TOTAL CALCULATION)
+  // ADD TO CART
   // ─────────────────────────────────────────────
   Future<void> addToCart({
     required String uid,
     required CartItemModel item,
   }) async {
-    final query = await _cartRef(uid)
-        .where('title', isEqualTo: item.title) // or productId if you add it
-        .limit(1)
-        .get();
+    await _ensureCartDocument(uid);
 
-    // If item already exists → increase quantity
+    final query = await _cartItemsRef(
+      uid,
+    ).where('productId', isEqualTo: item.productId).limit(1).get();
+
     if (query.docs.isNotEmpty) {
       final doc = query.docs.first;
       final existing = CartItemModel.fromFirestore(doc.data(), doc.id);
-
       final updated = existing.copyWithQuantity(existing.quantity + 1);
-
       await doc.reference.update(updated.toFirestore());
     } else {
-      // Fresh item → ensure totals are correct
       final safeItem = item.copyWithQuantity(item.quantity);
-      await _cartRef(uid).add(safeItem.toFirestore());
+      await _cartItemsRef(uid).add(safeItem.toFirestore());
     }
   }
 
   // ─────────────────────────────────────────────
-  // UPDATE QUANTITY (SAFE)
+  // UPDATE QUANTITY
   // ─────────────────────────────────────────────
   Future<void> updateQuantity({
     required String uid,
     required String cartItemId,
     required int quantity,
   }) async {
+    await _ensureCartDocument(uid);
+
     if (quantity <= 0) {
       await removeItem(uid, cartItemId);
       return;
     }
 
-    final docRef = _cartRef(uid).doc(cartItemId);
+    final docRef = _cartItemsRef(uid).doc(cartItemId);
     final snapshot = await docRef.get();
     if (!snapshot.exists) return;
 
@@ -73,16 +83,47 @@ class CartService {
   // REMOVE ITEM
   // ─────────────────────────────────────────────
   Future<void> removeItem(String uid, String cartItemId) async {
-    await _cartRef(uid).doc(cartItemId).delete();
+    await _ensureCartDocument(uid);
+    await _cartItemsRef(uid).doc(cartItemId).delete();
   }
 
   // ─────────────────────────────────────────────
   // CLEAR CART
   // ─────────────────────────────────────────────
   Future<void> clearCart(String uid) async {
-    final snapshot = await _cartRef(uid).get();
+    await _ensureCartDocument(uid);
+    final snapshot = await _cartItemsRef(uid).get();
     for (final doc in snapshot.docs) {
       await doc.reference.delete();
+    }
+    await _cartDocRef(uid).delete();
+  }
+
+  //─────────────────────────────────────────────
+  //
+  //─────────────────────────────────────────────
+  Future<void> _ensureCartDocument(String uid) async {
+    final docRef = _cartDocRef(uid);
+    final snapshot = await docRef.get();
+
+    final now = Timestamp.now();
+    final expiresAt = Timestamp.fromDate(
+      DateTime.now().add(const Duration(minutes: 30)),
+    );
+
+    if (!snapshot.exists) {
+      await docRef.set({
+        'createdAt': now,
+        'updatedAt': now,
+        'expiresAt': expiresAt,
+        'isExpired': false,
+      });
+    } else {
+      await docRef.update({
+        'updatedAt': now,
+        'expiresAt': expiresAt,
+        'isExpired': false,
+      });
     }
   }
 }

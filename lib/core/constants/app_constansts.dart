@@ -188,4 +188,8 @@ class AppConstants {
     final time = DateFormat('HH:mm').format(dateTime);
     return time;
   }
+
+  static double roundToTwo(double value) {
+    return double.parse(value.toStringAsFixed(2));
+  }
 }

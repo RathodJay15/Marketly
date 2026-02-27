@@ -149,6 +149,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
           backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
           onRefresh: () async {
             _closeOrClearSearch();
+            _categoryProvider.clearSelection();
           },
           child: ListView(
             controller: _scrollController,

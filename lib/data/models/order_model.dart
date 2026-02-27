@@ -10,6 +10,7 @@ class OrderModel {
 
   final Map<String, dynamic> pricing;
   final String paymentMethod;
+  final String paymentStatus;
   final List<Map<String, dynamic>> statusTimeline;
 
   OrderModel({
@@ -20,6 +21,7 @@ class OrderModel {
     required this.items,
     required this.pricing,
     required this.paymentMethod,
+    required this.paymentStatus,
     required this.statusTimeline,
     required this.orderNumber,
     required this.sequence,
@@ -38,6 +40,7 @@ class OrderModel {
     List<Map<String, dynamic>>? items,
     Map<String, dynamic>? pricing,
     String? paymentMethod,
+    String? paymentStatus,
     List<Map<String, dynamic>>? statusTimeline,
   }) {
     return OrderModel(
@@ -50,6 +53,7 @@ class OrderModel {
       items: items ?? this.items,
       pricing: pricing ?? this.pricing,
       paymentMethod: paymentMethod ?? this.paymentMethod,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
       statusTimeline: statusTimeline ?? this.statusTimeline,
     );
   }
@@ -68,6 +72,7 @@ class OrderModel {
       "items": items,
       "pricing": pricing,
       "paymentMethod": paymentMethod,
+      'paymentStatus': paymentStatus,
       "statusTimeline": statusTimeline,
     };
   }
@@ -85,6 +90,7 @@ class OrderModel {
       ),
       pricing: Map<String, dynamic>.from(data['pricing'] ?? {}),
       paymentMethod: data['paymentMethod'] ?? '',
+      paymentStatus: data['paymentStatus'] ?? '',
       statusTimeline: List<Map<String, dynamic>>.from(
         (data['statusTimeline'] ?? []).map((e) => Map<String, dynamic>.from(e)),
       ),

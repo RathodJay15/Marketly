@@ -22,10 +22,17 @@ class CartProvider extends ChangeNotifier {
     if (_uid == null) return;
 
     _subscription?.cancel();
-    _subscription = _cartService.cartStream(_uid!).listen((items) {
-      _items = items;
-      notifyListeners();
-    });
+    _subscription = _cartService
+        .cartStream(_uid!)
+        .listen(
+          (items) {
+            _items = items;
+            notifyListeners();
+          },
+          onError: (error) {
+            debugPrint("Cart Stream Error: $error");
+          },
+        );
   }
 
   // ─────────────────────────────────────────────

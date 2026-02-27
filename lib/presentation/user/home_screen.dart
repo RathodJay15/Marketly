@@ -1,8 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
-// import 'package:marketly/data/migration/migrate_products.dart';
-// import 'package:marketly/data/migration/migrate_category.dart';
 import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
 import 'package:marketly/presentation/user/menu/menu_screen.dart';
@@ -29,10 +27,10 @@ class _homeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     context.read<CartProvider>().startListening();
-
-    // migrateCategories();
-    // migrateProducts();
   }
+  // migrateCategories();
+  // migrateProducts();
+  // }
   // Migration Code-----------------------------------------------------
   // void migrateCategories() async {
   //   await CategoryMigrationService().migrateCategoriesToFirebase();
@@ -125,6 +123,7 @@ class _homeScreenState extends State<HomeScreen>
                   type: BottomNavigationBarType.fixed,
                   backgroundColor: Colors.transparent,
                   selectedItemColor: Theme.of(context).colorScheme.primary,
+                  selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
                   unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
                   elevation: 0,
                   items: const [

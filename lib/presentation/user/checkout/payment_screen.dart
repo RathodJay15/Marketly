@@ -164,7 +164,11 @@ class _paymentScreenState extends State<PaymentScreen> {
     orderProvider.setPaymentMethod(_paymentMethod);
 
     // Place order via PROVIDER
-    await orderProvider.placeOrder();
+    await orderProvider.placeOrder(
+      discount: cartProvider.totalDiscount,
+      grandTotal: cartProvider.finalTotal,
+      subTotal: cartProvider.subTotal,
+    );
 
     // Clear states
     cartProvider.unlockCart();

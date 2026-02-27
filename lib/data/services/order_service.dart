@@ -15,7 +15,10 @@ class OrderService {
       sequence: orderMeta['sequence'],
     );
 
-    await doc.set(finalOrder.toFirestore());
+    final data = finalOrder.toFirestore();
+    data['updatedAt'] = FieldValue.serverTimestamp();
+
+    await doc.set(data);
   }
 
   Future<List<OrderModel>> getOrders(String userId) async {

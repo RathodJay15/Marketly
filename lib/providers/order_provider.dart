@@ -30,6 +30,7 @@ class OrderProvider extends ChangeNotifier {
       items: [],
       pricing: {},
       paymentMethod: '',
+      paymentStatus: 'PENDING',
       statusTimeline: [
         {"status": "ORDER_PLACED", "time": Timestamp.now()},
       ],
@@ -61,7 +62,17 @@ class OrderProvider extends ChangeNotifier {
 
   void setPaymentMethod(String method) {
     if (_order == null) return;
-    _order = _order!.copyWith(paymentMethod: method);
+
+    String status;
+
+    if (method == 'COD') {
+      status = 'PENDING';
+    } else {
+      status = 'INITIATED';
+    }
+
+    _order = _order!.copyWith(paymentMethod: method, paymentStatus: status);
+
     notifyListeners();
   }
 
@@ -69,13 +80,36 @@ class OrderProvider extends ChangeNotifier {
   // PLACE ORDER
   // ---------------------------------------------------------------------------
 
-  Future<void> placeOrder() async {
+  Future<void> placeOrder({
+    required double subTotal,
+    required double discount,
+    required double grandTotal,
+  }) async {
     if (_order == null) return;
 
     _isLoading = true;
     notifyListeners();
 
     try {
+      final roundedSubTotal = double.parse(subTotal.toStringAsFixed(2));
+      final roundedDiscount = double.parse(discount.toStringAsFixed(2));
+      final roundedGrandTotal = double.parse(grandTotal.toStringAsFixed(2));
+
+      final discountPercentage = roundedSubTotal == 0
+          ? 0.0
+          : double.parse(
+              ((roundedDiscount / roundedSubTotal) * 100).toStringAsFixed(2),
+            );
+
+      _order = _order!.copyWith(
+        pricing: {
+          "subtotal": roundedSubTotal,
+          "discount": roundedDiscount,
+          "discountPercentage": discountPercentage,
+          "total": roundedGrandTotal,
+        },
+      );
+
       await _orderService.placeOrder(_order!);
       _order = null;
     } catch (e) {
