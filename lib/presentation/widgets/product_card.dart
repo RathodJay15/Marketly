@@ -5,12 +5,14 @@ import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
+import 'package:marketly/providers/favorites_provider.dart';
+import 'package:marketly/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
   // final VoidCallback? onTap;
-
   const ProductCard({super.key, required this.product /*this.onTap*/});
 
   @override
@@ -40,6 +42,34 @@ class ProductCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
+              Positioned(
+                top: 5,
+                left: 5,
+                child: Consumer<FavoritesProvider>(
+                  builder: (context, provider, _) {
+                    final isLiked = provider.isLiked(product.id);
+
+                    return IconButton(
+                      icon: Icon(
+                        isLiked
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                      ),
+                      color: isLiked
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onPrimary,
+                      onPressed: () {
+                        final userId = context.read<UserProvider>().user?.uid;
+
+                        if (userId == null) return;
+
+                        provider.toggleLike(userId, product.id);
+                      },
+                      iconSize: 28,
+                    );
+                  },
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(15),
                 child: Column(

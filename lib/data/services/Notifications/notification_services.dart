@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
+import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
 import 'dart:io';
@@ -187,6 +188,8 @@ class NotificationServices {
         payload = message.data['productid'];
       } else if (type == "order_update") {
         payload = message.data['orderId'];
+      } else if (type == "cart_expiry") {
+        payload = "cart";
       }
 
       final title =
@@ -229,6 +232,12 @@ class NotificationServices {
         );
       }
 
+      if (type == "cart_expiry") {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(builder: (_) => CartScreen()),
+        );
+      }
+
       debugPrint("BACKGROUND DATA: ${message.data}");
     });
   }
@@ -254,6 +263,11 @@ class NotificationServices {
           ),
         );
       }
+    }
+    if (type == "cart_expiry") {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (_) => CartScreen()),
+      );
     }
 
     if (type == "order_update") {

@@ -1,5 +1,5 @@
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -130,3 +130,88 @@ exports.sendOrderStatusNotification = onDocumentUpdated(
     }
   }
 );
+exports.notifyExpiringCarts = onSchedule("every 5 minutes", async () => {
+  const db = admin.firestore();
+
+  const now = admin.firestore.Timestamp.now();
+  const tenMinutesLater = admin.firestore.Timestamp.fromDate(
+    new Date(Date.now() + 10 * 60 * 1000)
+  );
+
+  const snapshot = await db
+    .collection("cart")
+    .where("expiresAt", "<=", tenMinutesLater)
+    .where("expiresAt", ">", now)
+    .where("notificationSent", "==", false) // Prevent duplicates
+    .get();
+
+
+    
+  for (const doc of snapshot.docs) {
+    const userId = doc.id;
+
+    try {
+      const userDoc = await db.collection("users").doc(userId).get();
+      if (!userDoc.exists) continue;
+
+      console.log("User data:", userDoc.data());  
+      console.log("User data:", userDoc.data());
+
+      const tokens = userDoc.data().fcmToken;
+      
+      if (!tokens || tokens.length === 0) {
+        console.log("No FCM tokens found");
+        continue;
+      }
+
+      // Send FCM
+      await admin.messaging().sendEachForMulticast({
+        tokens: tokens,
+        notification: {
+          title: "Your cart is about to expire ⏳",
+          body: "Only 10 minutes left! Complete your purchase now.",
+        },
+        data: {
+          type: "cart_expiry",
+        },
+      });
+
+      // Save notification in collection
+      await db.collection("notifications").add({
+        userId: userId,
+        title: "Cart Expiring Soon",
+        body: "Only 10 minutes left! Complete your purchase now.",
+        type: "cart_expiry",
+        isRead: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Mark notification as sent
+      await doc.ref.update({
+        notificationSent: true,
+      });
+
+      console.log(`Cart expiry notification sent to: ${userId}`);
+
+    } catch (error) {
+      console.error("Error sending cart expiry notification:", error);
+    }
+  }
+});
+
+exports.cleanExpiredCarts = onSchedule("every 10 minutes", async () => {
+  const now = admin.firestore.Timestamp.now();
+
+  const snapshot = await admin.firestore()
+    .collection("cart")
+    .where("expiresAt", "<=", now)
+    .get();
+
+  const batch = admin.firestore().batch();
+
+  for (const doc of snapshot.docs) {
+    batch.delete(doc.ref);
+  }
+
+  await batch.commit();
+});

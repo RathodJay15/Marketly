@@ -101,6 +101,7 @@ class AppConstants {
   static const String savedAdrs = "Saved Addresses";
   static const String myOrders = "My Orders";
   static const String myCart = "My Cart";
+  static const String favorites = "Favorites";
   static const String logout = "Logout";
   static const String defaultAdrs = "Default address";
   static const String addNewAdrs = "Add new address";
@@ -108,6 +109,7 @@ class AppConstants {
   static const String yesEmptyCart = "Yes, empty cart";
   static const String notifications = "Notifications";
   static const String noNotifications = "No notifications yet";
+  static const String noFavorites = "No favorite products yet ❤️";
   static const String checkForMail =
       "Check your email inbox or spam for change / forgot password mail from marketly";
 

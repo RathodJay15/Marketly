@@ -7,6 +7,7 @@ class CartModel {
   final DateTime? updatedAt;
   final DateTime? expiresAt;
   final bool isExpired;
+  final bool notificationSent;
   final List<CartItemModel> items;
 
   CartModel({
@@ -16,6 +17,7 @@ class CartModel {
     this.expiresAt,
     required this.isExpired,
     required this.items,
+    required this.notificationSent,
   });
 
   factory CartModel.fromFirestore(
@@ -29,6 +31,7 @@ class CartModel {
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate(),
       expiresAt: (map['expiresAt'] as Timestamp?)?.toDate(),
       isExpired: map['isExpired'] ?? false,
+      notificationSent: map['notificationSent'] ?? false,
       items: items,
     );
   }

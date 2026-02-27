@@ -6,7 +6,9 @@ import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/product_service.dart';
 import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/favorites_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
+import 'package:marketly/providers/user_provider.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -383,14 +385,45 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// TITLE + PRICE
-        Text(
-          product.title,
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                product.title,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+              ),
+            ),
+            Consumer<FavoritesProvider>(
+              builder: (context, provider, _) {
+                final isLiked = provider.isLiked(product.id);
+
+                return IconButton(
+                  icon: Icon(
+                    isLiked
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                  ),
+                  color: isLiked
+                      ? Theme.of(context).colorScheme.onSurface
+                      : Theme.of(context).colorScheme.onPrimary,
+                  onPressed: () {
+                    final userId = context.read<UserProvider>().user?.uid;
+
+                    if (userId == null) return;
+
+                    provider.toggleLike(userId, product.id);
+                  },
+                  iconSize: 35,
+                );
+              },
+            ),
+          ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -536,13 +569,50 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                     padding: const EdgeInsets.all(20),
                     children: [
                       /// TITLE + PRICE
-                      Text(
-                        product.title,
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              product.title,
+                              style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onInverseSurface,
+                              ),
+                            ),
+                          ),
+                          Consumer<FavoritesProvider>(
+                            builder: (context, provider, _) {
+                              final isLiked = provider.isLiked(product.id);
+
+                              return IconButton(
+                                icon: Icon(
+                                  isLiked
+                                      ? Icons.favorite_rounded
+                                      : Icons.favorite_border_rounded,
+                                ),
+                                color: isLiked
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Theme.of(context).colorScheme.onPrimary,
+                                onPressed: () {
+                                  final userId = context
+                                      .read<UserProvider>()
+                                      .user
+                                      ?.uid;
+
+                                  if (userId == null) return;
+
+                                  provider.toggleLike(userId, product.id);
+                                },
+                                iconSize: 35,
+                              );
+                            },
+                          ),
+                        ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

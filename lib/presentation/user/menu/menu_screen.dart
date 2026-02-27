@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
+import 'package:marketly/presentation/user/menu/favorites_screen.dart';
 import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
+import 'package:marketly/presentation/user/notification_screen.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
@@ -18,6 +20,20 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _menuScreenState extends State<MenuScreen> {
+  void goToNotifications() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => NotificationScreen()),
+    );
+  }
+
+  void goToFavorites() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => FavoritesScreen()),
+    );
+  }
+
   void goToMyOrders() {
     Navigator.push(
       context,
@@ -72,14 +88,31 @@ class _menuScreenState extends State<MenuScreen> {
         SizedBox(height: 20),
 
         _buildProfileCard(),
+
         SizedBox(height: 20),
+
         _buildTile(goToMyAccount, Icons.person, AppConstants.myAccount),
+
         _buildTile(goToMyAddresses, Icons.location_on, AppConstants.savedAdrs),
+
+        _buildTile(
+          goToNotifications,
+          Icons.notifications_rounded,
+          AppConstants.notifications,
+        ),
+
+        _buildTile(
+          goToFavorites,
+          Icons.favorite_rounded,
+          AppConstants.favorites,
+        ),
+
         _buildTile(
           goToMyOrders,
           Icons.format_list_bulleted_rounded,
           AppConstants.myOrders,
         ),
+
         _buildTile(goToCart, Icons.shopping_cart, AppConstants.myCart),
 
         _themeTile(

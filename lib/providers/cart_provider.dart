@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../data/models/cart_item_model.dart';
@@ -16,12 +17,39 @@ class CartProvider extends ChangeNotifier {
   bool get isCartLocked => _isCartLocked;
 
   // ─────────────────────────────────────────────
+  // Timer
+  // ─────────────────────────────────────────────
+
+  Timer? _timer;
+  Duration _remainingTime = Duration.zero;
+
+  Duration get remainingTime => _remainingTime;
+
+  void _startCountdown(DateTime expiresAt) {
+    _timer?.cancel();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final difference = expiresAt.difference(DateTime.now());
+
+      if (difference.isNegative) {
+        timer.cancel();
+        clearCart();
+      } else {
+        _remainingTime = difference;
+        notifyListeners();
+      }
+    });
+  }
+
+  // ─────────────────────────────────────────────
   // START LISTENING (call after login)
   // ─────────────────────────────────────────────
   void startListening() {
     if (_uid == null) return;
 
     _subscription?.cancel();
+
+    // Listen to items
     _subscription = _cartService
         .cartStream(_uid!)
         .listen(
@@ -33,6 +61,26 @@ class CartProvider extends ChangeNotifier {
             debugPrint("Cart Stream Error: $error");
           },
         );
+
+    // Listen to cart metadata for expiration
+    _cartService.cartMetaStream(_uid!).listen((snapshot) {
+      // If cart document is deleted
+      if (!snapshot.exists) {
+        _timer?.cancel();
+        _remainingTime = Duration.zero;
+        _items = [];
+        notifyListeners();
+        return;
+      }
+
+      final data = snapshot.data();
+      if (data == null) return;
+
+      final expiresAt = data['expiresAt'] as Timestamp?;
+      if (expiresAt == null) return;
+
+      _startCountdown(expiresAt.toDate());
+    });
   }
 
   // ─────────────────────────────────────────────

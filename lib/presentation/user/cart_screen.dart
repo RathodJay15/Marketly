@@ -105,6 +105,8 @@ class _cartScreenState extends State<CartScreen> {
     CartProvider cartProvider,
   ) {
     final isEmpty = cartProvider.items.isEmpty;
+    final remaining = cartProvider.remainingTime;
+    final shouldShowTimer = !isEmpty && remaining.inSeconds > 0;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: paddingV),
       child: Row(
@@ -118,6 +120,18 @@ class _cartScreenState extends State<CartScreen> {
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
           ),
+          if (shouldShowTimer)
+            Text(
+              "${remaining.inMinutes.remainder(60).toString().padLeft(2, '0')}:"
+              "${remaining.inSeconds.remainder(60).toString().padLeft(2, '0')}",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: remaining.inMinutes <= 10
+                    ? Theme.of(context).colorScheme.onSurface
+                    : Theme.of(context).colorScheme.onSecondary,
+              ),
+            ),
           if (!isEmpty)
             IconButton(
               onPressed: () async {

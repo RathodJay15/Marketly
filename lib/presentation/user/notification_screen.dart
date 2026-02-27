@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/notification_model.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
+import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/notification_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:provider/provider.dart';
@@ -102,13 +103,17 @@ class _notificationScreenState extends State<NotificationScreen> {
         if (!notification.isRead) {
           await provider.markAsRead(notification.id);
         }
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OrderDetailsScreen(orderId: notification.orderId),
-          ),
-        );
+        if (notification.title == 'Order Update') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OrderDetailsScreen(orderId: notification.orderId),
+            ),
+          );
+        } else if (notification.title == 'Cart Expiring Soon') {
+          context.read<NavigationProvider>().setScreenIndex(2);
+          Navigator.pop(context);
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -119,21 +124,22 @@ class _notificationScreenState extends State<NotificationScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FutureBuilder(
-              future: orderProvider.fetchOrderById(notification.orderId),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Container(
-                    width: 72,
-                    height: 72,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  );
-                }
+            if (notification.title == 'Order Update')
+              FutureBuilder(
+                future: orderProvider.fetchOrderById(notification.orderId),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container(
+                      width: 72,
+                      height: 72,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    );
+                  }
 
-                final order = snapshot.data!;
-                return _orderItemThumbnails(order.items);
-              },
-            ),
+                  final order = snapshot.data!;
+                  return _orderItemThumbnails(order.items);
+                },
+              ),
 
             const SizedBox(width: 12),
             Expanded(

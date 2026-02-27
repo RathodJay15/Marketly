@@ -3,7 +3,7 @@ import '../models/cart_item_model.dart';
 
 class CartService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static const int _cartExpiryMinutes = 30;
+  static const int _cartExpiryMinutes = 60;
 
   // ─────────────────────────────────────────────
   // CART DOCUMENT REFERENCE (metadata)
@@ -17,6 +17,10 @@ class CartService {
   // ─────────────────────────────────────────────
   CollectionReference<Map<String, dynamic>> _cartItemsRef(String uid) {
     return _cartDocRef(uid).collection('cartItems');
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> cartMetaStream(String uid) {
+    return _cartDocRef(uid).snapshots();
   }
 
   // ─────────────────────────────────────────────
@@ -83,19 +87,26 @@ class CartService {
   // REMOVE ITEM
   // ─────────────────────────────────────────────
   Future<void> removeItem(String uid, String cartItemId) async {
-    await _ensureCartDocument(uid);
     await _cartItemsRef(uid).doc(cartItemId).delete();
+
+    // Check if cart is now empty
+    final remainingItems = await _cartItemsRef(uid).limit(1).get();
+
+    if (remainingItems.docs.isEmpty) {
+      await _cartDocRef(uid).delete();
+    }
   }
 
   // ─────────────────────────────────────────────
   // CLEAR CART
   // ─────────────────────────────────────────────
   Future<void> clearCart(String uid) async {
-    await _ensureCartDocument(uid);
-    final snapshot = await _cartItemsRef(uid).get();
-    for (final doc in snapshot.docs) {
+    final itemsSnapshot = await _cartItemsRef(uid).get();
+
+    for (final doc in itemsSnapshot.docs) {
       await doc.reference.delete();
     }
+
     await _cartDocRef(uid).delete();
   }
 
@@ -108,7 +119,7 @@ class CartService {
 
     final now = Timestamp.now();
     final expiresAt = Timestamp.fromDate(
-      DateTime.now().add(const Duration(minutes: 30)),
+      DateTime.now().add(Duration(minutes: _cartExpiryMinutes)),
     );
 
     if (!snapshot.exists) {
@@ -117,12 +128,14 @@ class CartService {
         'updatedAt': now,
         'expiresAt': expiresAt,
         'isExpired': false,
+        'notificationSent': false,
       });
     } else {
       await docRef.update({
         'updatedAt': now,
         'expiresAt': expiresAt,
         'isExpired': false,
+        'notificationSent': false,
       });
     }
   }

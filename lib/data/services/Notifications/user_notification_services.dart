@@ -6,6 +6,7 @@ class UserNotificationServices {
     return FirebaseFirestore.instance
         .collection('notifications')
         .where('userId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
           return snapshot.docs.map((doc) {
