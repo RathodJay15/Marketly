@@ -126,9 +126,10 @@ class _authGateState extends State<AuthGate> {
             }
 
             if (userModel.role == 'admin') {
+              notificationServices.subscribeToAdminOnly();
               return const DashBoardScreen();
             }
-
+            notificationServices.subscribeToAllUser();
             return const HomeScreen();
           },
         );

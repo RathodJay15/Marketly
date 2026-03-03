@@ -35,6 +35,8 @@ class _addProductState extends State<AddProduct> {
   TextEditingController depthCtrl = TextEditingController();
 
   bool isAdding = false;
+  bool boolthumbnailError = false;
+  bool boolimagesError = false;
 
   File? _selectedThumbnail;
   List<File>? _selectedImages;
@@ -111,9 +113,22 @@ class _addProductState extends State<AddProduct> {
 
   // ---------------- Add ----------------
   Future<void> _onAdd() async {
+    final thumbnailError = Validators.thumbnail(_selectedThumbnail);
+    final imagesError = Validators.productImages(_selectedImages);
+
+    if (thumbnailError != null) {
+      setState(() {
+        boolthumbnailError = true;
+      });
+    }
+    if (imagesError != null) {
+      setState(() {
+        boolimagesError = true;
+      });
+    }
+
     if (!_formKey.currentState!.validate()) return;
 
-    final thumbnailError = Validators.thumbnail(_selectedThumbnail);
     if (thumbnailError != null) {
       ScaffoldMessenger.of(
         context,
@@ -121,7 +136,6 @@ class _addProductState extends State<AddProduct> {
       return;
     }
 
-    final imagesError = Validators.productImages(_selectedImages);
     if (imagesError != null) {
       ScaffoldMessenger.of(
         context,
@@ -129,7 +143,6 @@ class _addProductState extends State<AddProduct> {
       return;
     }
     FocusScope.of(context).unfocus();
-
     setState(() => isAdding = true);
     try {
       final docRef = await context.read<ProductProvider>().createProduct(
@@ -180,7 +193,11 @@ class _addProductState extends State<AddProduct> {
       debugPrint("Error Uploading Product");
     } finally {
       if (mounted) {
-        setState(() => isAdding = false);
+        setState(() {
+          isAdding = false;
+          boolimagesError = false;
+          boolthumbnailError = false;
+        });
       }
     }
   }
@@ -213,133 +230,138 @@ class _addProductState extends State<AddProduct> {
   Widget _detailsForm() {
     return Form(
       key: _formKey,
-      child: ListView(
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          _label(AppConstants.title),
-          _field(
-            titleCtrl,
-            AppConstants.title,
-            Validators.title,
-            keyboardType: TextInputType.text,
-          ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _label(AppConstants.title),
+              _field(
+                titleCtrl,
+                AppConstants.title,
+                Validators.title,
+                keyboardType: TextInputType.text,
+              ),
+              _label(AppConstants.description),
+              _field(
+                descriptionCtrl,
+                AppConstants.description,
+                Validators.requiredField,
+                keyboardType: TextInputType.text,
+              ),
+              _label(AppConstants.category),
+              _categoryDropdown(),
 
-          _label(AppConstants.description),
-          _field(
-            descriptionCtrl,
-            AppConstants.description,
-            Validators.requiredField,
-            keyboardType: TextInputType.text,
-          ),
+              _label(AppConstants.price),
+              _field(
+                priceCtrl,
+                AppConstants.price,
+                Validators.price,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.category),
-          _categoryDropdown(),
+              _label(AppConstants.discount),
+              _field(
+                discountCtrl,
+                AppConstants.discount,
+                Validators.discount,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.price),
-          _field(
-            priceCtrl,
-            AppConstants.price,
-            Validators.price,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.rating),
+              _field(
+                ratingCtrl,
+                AppConstants.rating,
+                Validators.rating,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.discount),
-          _field(
-            discountCtrl,
-            AppConstants.discount,
-            Validators.discount,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.stock),
+              _field(
+                stockCtrl,
+                AppConstants.stock,
+                Validators.stock,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.rating),
-          _field(
-            ratingCtrl,
-            AppConstants.rating,
-            Validators.rating,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.tags),
+              _field(
+                tagsCtrl,
+                AppConstants.tagsFieldHint,
+                Validators.requiredField,
+                keyboardType: TextInputType.text,
+              ),
 
-          _label(AppConstants.stock),
-          _field(
-            stockCtrl,
-            AppConstants.stock,
-            Validators.stock,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.brand),
+              _field(
+                brandCtrl,
+                AppConstants.brand,
+                Validators.requiredField,
+                keyboardType: TextInputType.text,
+              ),
 
-          _label(AppConstants.tags),
-          _field(
-            tagsCtrl,
-            AppConstants.tagsFieldHint,
-            Validators.requiredField,
-            keyboardType: TextInputType.text,
-          ),
+              _label(AppConstants.weight),
+              _field(
+                weightCtrl,
+                AppConstants.weight,
+                Validators.requiredDouble,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.brand),
-          _field(
-            brandCtrl,
-            AppConstants.brand,
-            Validators.requiredField,
-            keyboardType: TextInputType.text,
-          ),
+              _label(AppConstants.dimensions),
+              _dimensions(),
 
-          _label(AppConstants.weight),
-          _field(
-            weightCtrl,
-            AppConstants.weight,
-            Validators.requiredField,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.thubnailImg),
 
-          _label(AppConstants.dimensions),
-          _dimensions(),
+              if (_selectedThumbnail != null)
+                _thumbnailPreview(imageFile: _selectedThumbnail),
+              _thumbnailImageFormField(
+                imageFile: _selectedThumbnail,
+                onTap: _pickThumbnail,
+              ),
 
-          _label(AppConstants.thubnailImg),
+              _label(AppConstants.images),
+              if (_selectedImages != null)
+                _imagesPreview(imageFiles: _selectedImages),
+              _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
+              const SizedBox(height: 30),
 
-          if (_selectedThumbnail != null)
-            _thumbnailPreview(imageFile: _selectedThumbnail),
-          _thumbnailImageFormField(
-            imageFile: _selectedThumbnail,
-            onTap: _pickThumbnail,
-          ),
-
-          _label(AppConstants.images),
-          if (_selectedImages != null)
-            _imagesPreview(imageFiles: _selectedImages),
-          _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
-
-          const SizedBox(height: 30),
-
-          SizedBox(
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: _onAdd,
+                  child: isAdding
+                      ? SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        )
+                      : Text(
+                          AppConstants.addProduct,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                 ),
               ),
-              onPressed: _onAdd,
-              child: isAdding
-                  ? SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
-                  : Text(
-                      AppConstants.addProduct,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-            ),
+              const SizedBox(height: 30),
+            ],
           ),
-          const SizedBox(height: 30),
-        ],
+        ),
       ),
     );
   }
@@ -365,7 +387,7 @@ class _addProductState extends State<AddProduct> {
               child: _field(
                 heightCtrl,
                 AppConstants.height,
-                Validators.requiredField,
+                Validators.requiredDouble,
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -388,7 +410,7 @@ class _addProductState extends State<AddProduct> {
               child: _field(
                 widthCtrl,
                 AppConstants.width,
-                Validators.requiredField,
+                Validators.requiredDouble,
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -411,7 +433,7 @@ class _addProductState extends State<AddProduct> {
               child: _field(
                 depthCtrl,
                 AppConstants.depth,
-                Validators.requiredField,
+                Validators.requiredDouble,
                 keyboardType: TextInputType.number,
               ),
             ),
@@ -461,6 +483,14 @@ class _addProductState extends State<AddProduct> {
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
+          errorStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface,
+              width: 1,
+            ),
+          ),
         ),
         validator: validator,
       ),
@@ -483,6 +513,16 @@ class _addProductState extends State<AddProduct> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
+              ),
+              errorStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  width: 1,
+                ),
               ),
             ),
             dropdownColor: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -566,6 +606,11 @@ class _addProductState extends State<AddProduct> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.onSecondaryContainer,
             borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: boolthumbnailError
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
           ),
           child: Row(
             children: [
@@ -627,6 +672,11 @@ class _addProductState extends State<AddProduct> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.onSecondaryContainer,
             borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: boolimagesError
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
           ),
           child: Row(
             children: [

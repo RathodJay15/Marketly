@@ -28,14 +28,14 @@ exports.sendNewProductNotification = onDocumentUpdated(
       const message = {
         topic: "all_users",
 
-        // ✅ For background & terminated state
+        // For background & terminated state
         notification: {
           title: "New Product Added!!",
           body: `${productName} is now available!`,
-          image: productImg,   // 🔥 correct key
+          image: productImg,   //  correct key
         },
 
-        // ✅ For foreground BigPicture handling in Flutter
+        // For foreground BigPicture handling in Flutter
         data: {
           type: "new_product",
           productid: String(productId),
@@ -209,9 +209,23 @@ exports.cleanExpiredCarts = onSchedule("every 10 minutes", async () => {
 
   const batch = admin.firestore().batch();
 
-  for (const doc of snapshot.docs) {
-    batch.delete(doc.ref);
-  }
+   for (const doc of snapshot.docs) {
+    const cartRef = doc.ref;
 
-  await batch.commit();
+    // Delete cartItems subcollection first
+    const itemsSnapshot = await cartRef.collection("cartItems").get();
+
+    const batch = db.batch();
+
+    itemsSnapshot.docs.forEach((itemDoc) => {
+      batch.delete(itemDoc.ref);
+    });
+
+    // Delete cart document itself
+    batch.delete(cartRef);
+
+    await batch.commit();
+
+    console.log(`Deleted expired cart for user: ${doc.id}`);
+  }
 });

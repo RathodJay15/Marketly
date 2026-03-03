@@ -229,6 +229,14 @@ class _editCategoryState extends State<EditCategory> {
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
+          errorStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface,
+              width: 1,
+            ),
+          ),
           prefixIcon: Icon(
             icon,
             color: Theme.of(context).colorScheme.onInverseSurface,

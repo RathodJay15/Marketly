@@ -9,6 +9,8 @@ import 'package:marketly/providers/order_provider.dart';
 import 'package:provider/provider.dart';
 
 class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _notificationScreenState();
 }

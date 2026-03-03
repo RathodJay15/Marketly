@@ -271,10 +271,34 @@ class _menuScreenState extends State<MenuScreen> {
                   Icons.arrow_drop_down,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'system', child: Text('System')),
-                  DropdownMenuItem(value: 'light', child: Text('Light')),
-                  DropdownMenuItem(value: 'dark', child: Text('Dark')),
+                items: [
+                  DropdownMenuItem(
+                    value: 'system',
+                    child: Text(
+                      'System',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: 'light',
+                    child: Text(
+                      'Light',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: 'dark',
+                    child: Text(
+                      'Dark',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                  ),
                 ],
                 onChanged: (value) {
                   if (value == null) return;

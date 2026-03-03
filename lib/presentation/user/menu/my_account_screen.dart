@@ -545,9 +545,9 @@ class _myAccountScreenState extends State<MyAccountScreen> {
       actionY: AppConstants.yes,
     );
     if (confirm == true) {
-      final FirebaseAuth _auth = FirebaseAuth.instance;
+      final FirebaseAuth auth = FirebaseAuth.instance;
       try {
-        await _auth.sendPasswordResetEmail(email: email.trim());
+        await auth.sendPasswordResetEmail(email: email.trim());
         return null; // success
       } on FirebaseAuthException catch (e) {
         debugPrint("Change Pass Error : ${e.message}");

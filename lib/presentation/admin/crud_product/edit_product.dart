@@ -540,6 +540,14 @@ class _editProductState extends State<EditProduct> {
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
+          errorStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.onSurface,
+              width: 1,
+            ),
+          ),
         ),
         validator: validator,
       ),
@@ -562,6 +570,16 @@ class _editProductState extends State<EditProduct> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
+              ),
+              errorStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  width: 1,
+                ),
               ),
             ),
             dropdownColor: Theme.of(context).colorScheme.onSecondaryContainer,

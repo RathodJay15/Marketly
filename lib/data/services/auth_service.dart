@@ -77,6 +77,38 @@ class AuthService {
     }
   }
 
+  // Future<UserModel?> login({
+  //   required String email,
+  //   required String password,
+  // }) async {
+  //   try {
+  //     email = email.trim();
+
+  //     // Check if account exists
+  //     final snapshot = await _firestore
+  //         .collection('users')
+  //         .where('email', isEqualTo: email)
+  //         .limit(1)
+  //         .get();
+
+  //     if (snapshot.docs.isEmpty) {
+  //       throw Exception("Couldn't find your account. Please register.");
+  //     }
+
+  //     final result = await _firebaseAuth.signInWithEmailAndPassword(
+  //       email: email,
+  //       password: password.trim(),
+  //     );
+
+  //     final user = result.user;
+  //     if (user == null) return null;
+
+  //     return await getUserProfile(user.uid);
+  //   } on FirebaseAuthException catch (_) {
+  //     throw Exception('Wrong password. Try again.');
+  //   }
+  // }
+
   // ------------------------------------------------------------
   // Register
   // ------------------------------------------------------------

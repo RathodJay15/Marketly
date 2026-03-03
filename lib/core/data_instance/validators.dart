@@ -159,6 +159,20 @@ class Validators {
     return null;
   }
 
+  // --------------- REQUIRED DOUBLE -------------------------
+  static String? requiredDouble(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Required";
+    }
+
+    final number = double.tryParse(value.trim());
+    if (number == null) {
+      return "Enter valid number";
+    }
+
+    return null;
+  }
+
   // ---------------- PRICE ----------------
   static String? price(String? value) {
     if (value == null || value.trim().isEmpty) {

@@ -53,20 +53,20 @@ class ProductModel {
       title: doc['title'] as String? ?? 'NAN',
       description: doc['description'] as String? ?? 'NAN',
       category: doc['category'] as String? ?? 'NAN',
-      price: (doc['price'] as num?)?.toDouble() ?? 0.0,
+      price: (doc['price'] as double?)?.toDouble() ?? 0.0,
       discountPercentage:
           (doc['discountPercentage'] as num?)?.toDouble() ?? 0.0,
-      rating: (doc['rating'] as num?)?.toDouble() ?? 0.0,
+      rating: (doc['rating'] as double?)?.toDouble() ?? 0.0,
       stock: doc['stock'] as int?,
       tags: (doc['tags'] as List?)?.map((e) => e.toString()).toList(),
       brand: (doc['brand'] as String?)?.trim().isNotEmpty == true
           ? doc['brand'].toString()
           : 'NaN',
-      weight: (doc['weight'] as num?)?.toDouble() ?? 0.0,
+      weight: (doc['weight'] as double?)?.toDouble() ?? 0.0,
       dimensions: {
-        'width': (dimensionsJson?['width'] as num?)?.toDouble() ?? 0.0,
-        'height': (dimensionsJson?['height'] as num?)?.toDouble() ?? 0.0,
-        'depth': (dimensionsJson?['depth'] as num?)?.toDouble() ?? 0.0,
+        'width': (dimensionsJson?['width'] as double?)?.toDouble() ?? 0.0,
+        'height': (dimensionsJson?['height'] as double?)?.toDouble() ?? 0.0,
+        'depth': (dimensionsJson?['depth'] as double?)?.toDouble() ?? 0.0,
       },
       images: (doc['images'] as List?)?.map((e) => e.toString()).toList() ?? [],
       thumbnail: doc['thumbnail'] as String? ?? 'NAN',

@@ -9,21 +9,15 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-Future<String> _downloadAndSaveFile(String url, String fileName) async {
-  final directory = await getTemporaryDirectory();
-  final filePath = '${directory.path}/$fileName';
-
-  final response = await http.get(Uri.parse(url));
-  final file = File(filePath);
-  await file.writeAsBytes(response.bodyBytes);
-
-  return filePath;
-}
-
 class NotificationServices {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
+
+  //----------------------------------------------------------------------------
+  // Notification Permission Request
+  //----------------------------------------------------------------------------
 
   void requestNotificationPermission() async {
     NotificationSettings settings = await _messaging.requestPermission(
@@ -46,6 +40,10 @@ class NotificationServices {
     }
   }
 
+  //----------------------------------------------------------------------------
+  // FCM token initialization / token refresh and topic subscription
+  //----------------------------------------------------------------------------
+
   Future<void> initFCM(String uid) async {
     String? token = await _messaging.getToken();
 
@@ -53,13 +51,25 @@ class NotificationServices {
       debugPrint("FCM TOKEN: $token");
       await authService.saveFcmToken(uid, token);
     }
+  }
+
+  Future<void> subscribeToAllUser() async {
     await FirebaseMessaging.instance.subscribeToTopic("all_users");
     debugPrint("Subscribed to topic all_users");
+  }
+
+  Future<void> subscribeToAdminOnly() async {
+    await FirebaseMessaging.instance.subscribeToTopic("admin_only");
+    debugPrint("Subscribed to topic admin_only");
   }
 
   void listenToTokenRefresh(Function(String) onRefresh) {
     _messaging.onTokenRefresh.listen(onRefresh);
   }
+
+  //----------------------------------------------------------------------------
+  // initialize localnotification
+  //----------------------------------------------------------------------------
 
   Future<void> initLocalNotifications(
     GlobalKey<NavigatorState> navigatorKey,
@@ -83,6 +93,10 @@ class NotificationServices {
     );
   }
 
+  //----------------------------------------------------------------------------
+  // navigation handler
+  //----------------------------------------------------------------------------
+
   void _handleNavigation(
     String productId,
     GlobalKey<NavigatorState> navigatorKey,
@@ -93,6 +107,10 @@ class NotificationServices {
       ),
     );
   }
+
+  //----------------------------------------------------------------------------
+  // notification channel creation
+  //----------------------------------------------------------------------------
 
   Future<void> createNotificationChannel() async {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -108,6 +126,10 @@ class NotificationServices {
         >()
         ?.createNotificationChannel(channel);
   }
+
+  //----------------------------------------------------------------------------
+  // Display localnotification
+  //----------------------------------------------------------------------------
 
   Future<void> showLocalNotification({
     required String? title,
@@ -133,6 +155,21 @@ class NotificationServices {
       notificationDetails: notificationDetails,
       payload: payload,
     );
+  }
+
+  //----------------------------------------------------------------------------
+  // Display image in notification
+  //----------------------------------------------------------------------------
+
+  Future<String> _downloadAndSaveFile(String url, String fileName) async {
+    final directory = await getTemporaryDirectory();
+    final filePath = '${directory.path}/$fileName';
+
+    final response = await http.get(Uri.parse(url));
+    final file = File(filePath);
+    await file.writeAsBytes(response.bodyBytes);
+
+    return filePath;
   }
 
   Future<void> showBigPictureNotification({
@@ -175,6 +212,10 @@ class NotificationServices {
     );
   }
 
+  //----------------------------------------------------------------------------
+  // Foreground notification listener
+  //----------------------------------------------------------------------------
+
   void listenToForegroundMessages() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint("-----FOREGROUND MESSAGE RECEIVED");
@@ -213,6 +254,8 @@ class NotificationServices {
   }
 
   //----------------------------------------------------------------------------
+  // Background(App State) notification navigation handler
+  //----------------------------------------------------------------------------
   void handleBackgroundNavigation(GlobalKey<NavigatorState> navigatorKey) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final type = message.data['type'];
@@ -241,6 +284,10 @@ class NotificationServices {
       debugPrint("BACKGROUND DATA: ${message.data}");
     });
   }
+
+  //----------------------------------------------------------------------------
+  // Terminated(App State) notification navigation handler
+  //----------------------------------------------------------------------------
 
   Future<void> handleTerminatedNavigation(
     GlobalKey<NavigatorState> navigatorKey,
