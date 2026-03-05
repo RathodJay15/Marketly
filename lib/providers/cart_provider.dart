@@ -114,6 +114,15 @@ class CartProvider extends ChangeNotifier {
   // ─────────────────────────────────────────────
   // ACTIONS
   // ─────────────────────────────────────────────
+
+  CartItemModel? getItemByProductId(String productId) {
+    try {
+      return _items.firstWhere((item) => item.productId == productId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> addToCart(CartItemModel item) async {
     if (_isCartLocked) return;
     if (_uid == null) return;

@@ -2,12 +2,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
-import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:marketly/providers/navigation_provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 class NotificationServices {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -276,9 +277,11 @@ class NotificationServices {
       }
 
       if (type == "cart_expiry") {
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(builder: (_) => CartScreen()),
-        );
+        final context = navigatorKey.currentContext;
+
+        if (context != null) {
+          context.read<NavigationProvider>().setScreenIndex(2);
+        }
       }
 
       debugPrint("BACKGROUND DATA: ${message.data}");
@@ -312,9 +315,11 @@ class NotificationServices {
       }
     }
     if (type == "cart_expiry") {
-      navigatorKey.currentState?.push(
-        MaterialPageRoute(builder: (_) => CartScreen()),
-      );
+      final context = navigatorKey.currentContext;
+
+      if (context != null) {
+        context.read<NavigationProvider>().setScreenIndex(2);
+      }
     }
 
     if (type == "order_update") {

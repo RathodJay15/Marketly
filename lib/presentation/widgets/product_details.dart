@@ -162,7 +162,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(
         child: isLandscape
-            ? _landscapeLayout(product, images)
+            ? _landscapeLayout(context, product, images)
             : _portraitLayout(product, images),
       ),
     );
@@ -177,7 +177,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
       children: [
         Column(
           children: [
-            _topBar(product),
+            _topBar(context, product),
             const SizedBox(height: 16),
             _carousel(images, height: 350),
             const SizedBox(height: 12),
@@ -193,7 +193,11 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   // LANDSCAPE LAYOUT
   // ----------------------------------------------------
 
-  Widget _landscapeLayout(ProductModel product, List images) {
+  Widget _landscapeLayout(
+    BuildContext context,
+    ProductModel product,
+    List images,
+  ) {
     return Row(
       children: [
         /// LEFT — CAROUSEL
@@ -203,7 +207,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _topBar(product),
+              _topBar(context, product),
               Expanded(child: _carousel(images)),
               const SizedBox(height: 12),
               _thumbnails(images),
@@ -239,52 +243,115 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
   // TOP BAR
   // ----------------------------------------------------
 
-  Widget _topBar(ProductModel product) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            height: 55,
-            width: 55,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onInverseSurface,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Theme.of(context).colorScheme.primary,
-                size: 28,
+  Widget _topBar(BuildContext conext, ProductModel product) {
+    return Consumer<CartProvider>(
+      builder: (context, cartProvider, _) {
+        final cartItem = cartProvider.getItemByProductId(product.id);
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 55,
+                width: 55,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 28,
+                  ),
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+              cartItem == null
+                  ? Container(
+                      height: 55,
+                      width: 55,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.add_shopping_cart_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 28,
+                        ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        onPressed: () {
+                          _addToCart(product);
+                        },
+                      ),
+                    )
+                  : Container(
+                      height: 55,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              cartProvider.updateQuantity(
+                                cartItem.id,
+                                cartItem.quantity + 1,
+                              );
+                            },
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(Icons.add_rounded),
+                            iconSize: 25,
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                          Text(
+                            '${cartItem.quantity}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              cartProvider.updateQuantity(
+                                cartItem.id,
+                                cartItem.quantity - 1,
+                              );
+                            },
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(Icons.remove_rounded),
+                            iconSize: 25,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ],
+                      ),
+                    ),
+            ],
           ),
-          Container(
-            height: 55,
-            width: 55,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onInverseSurface,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.add_shopping_cart_outlined,
-                color: Theme.of(context).colorScheme.primary,
-                size: 28,
-              ),
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-              onPressed: () {
-                _addToCart(product);
-              },
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
   // ----------------------------------------------------
