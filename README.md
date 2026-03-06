@@ -195,25 +195,24 @@ Firestore collections:
 ## Screenshots
 
 ### Home Screen
-![Home Screen Light](screenshots/home_screen_light.png)
-![Home Screen Dark](screenshots/home_screen_dark.png)
+<img src="screenshots/home_screen_light.png" width="250">
+<img src="screenshots/home_screen_dark.png" width="250">
 
 ### Product Details
-![Product Details Light](screenshots/product_details_light.png)
-![Product Details Dark](screenshots/product_details_dark.png)
+<img src="screenshots/product_details_light.png" width="250">
+<img src="screenshots/product_details_dark.png" width="250">
 
 ### Cart
-![Cart Light](screenshots/cart_screen_light.png)
-![Cart Dark](screenshots/cart_screen_dark.png)
+<img src="screenshots/cart_screen_light.png" width="250">
+<img src="screenshots/cart_screen_dark.png" width="250">
 
 ### Check Out
-![Check Out Light](screenshots/checkout_screen_light.png)
-![Chect Out Dark](screenshots/checkout_screen_dark.png)
+<img src="screenshots/checkout_screen_light.png" width="250">
+<img src="screenshots/checkout_screen_dark.png" width="250">
 
 ### Admin Dashboard
-![Admin Dashboard Light](screenshots/admin_dashboard_light.png)
-![Admin Dashboard Dark](screenshots/admin_dashboard_dark.png)
-
+<img src="screenshots/admin_dashboard_light.png" width="250">
+<img src="screenshots/admin_dashboard_dark.png" width="250">
 ------------------------------------------------------------------------
 
 ## Upcoming Features
