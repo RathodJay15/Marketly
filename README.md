@@ -186,8 +186,7 @@ Firestore collections:
 3.  Download **google-services.json**
 4.  Place it inside:
 
-```{=html}
-
+```
 ```
     android/app/
 
