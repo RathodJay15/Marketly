@@ -178,7 +178,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             _statbox(
               icon: Icons.attach_money_rounded,
               label: AppConstants.revenue,
-              value: AppConstants.dolrAmount(dashboardProvider.totalRevenue),
+              value: AppConstants.inrAmount(dashboardProvider.totalRevenue),
             ),
           ],
         ),

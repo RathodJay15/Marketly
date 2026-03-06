@@ -13,6 +13,10 @@ class OrderModel {
   final String paymentStatus;
   final List<Map<String, dynamic>> statusTimeline;
 
+  final String? razorpayOrderId;
+  final String? razorpayPaymentId;
+  final String? razorpaySignature;
+
   OrderModel({
     required this.id,
     required this.userId,
@@ -25,6 +29,9 @@ class OrderModel {
     required this.statusTimeline,
     required this.orderNumber,
     required this.sequence,
+    this.razorpayOrderId,
+    this.razorpayPaymentId,
+    this.razorpaySignature,
   });
   // ---------------------------------------------------------------------------
   // copyWith
@@ -42,6 +49,9 @@ class OrderModel {
     String? paymentMethod,
     String? paymentStatus,
     List<Map<String, dynamic>>? statusTimeline,
+    String? razorpayOrderId,
+    String? razorpayPaymentId,
+    String? razorpaySignature,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -55,6 +65,9 @@ class OrderModel {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentStatus: paymentStatus ?? this.paymentStatus,
       statusTimeline: statusTimeline ?? this.statusTimeline,
+      razorpayOrderId: razorpayOrderId ?? this.razorpayOrderId,
+      razorpayPaymentId: razorpayPaymentId ?? this.razorpayPaymentId,
+      razorpaySignature: razorpaySignature ?? this.razorpaySignature,
     );
   }
 
@@ -74,6 +87,9 @@ class OrderModel {
       "paymentMethod": paymentMethod,
       'paymentStatus': paymentStatus,
       "statusTimeline": statusTimeline,
+      "razorpayOrderId": razorpayOrderId,
+      "razorpayPaymentId": razorpayPaymentId,
+      "razorpaySignature": razorpaySignature,
     };
   }
 
@@ -94,6 +110,9 @@ class OrderModel {
       statusTimeline: List<Map<String, dynamic>>.from(
         (data['statusTimeline'] ?? []).map((e) => Map<String, dynamic>.from(e)),
       ),
+      razorpayOrderId: data['razorpayOrderId'] ?? '',
+      razorpayPaymentId: data['razorpayPaymentId'] ?? '',
+      razorpaySignature: data['razorpaySignature'] ?? '',
     );
   }
 }

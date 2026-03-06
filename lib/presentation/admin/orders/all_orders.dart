@@ -118,7 +118,7 @@ class _allOrdersState extends State<AllOrders> {
                           ),
                         ),
                         Text(
-                          AppConstants.dolrAmount(order.pricing['total']),
+                          AppConstants.inrAmount(order.pricing['total']),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
                             fontSize: 15,

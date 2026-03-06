@@ -144,7 +144,7 @@ class FavoritesScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    AppConstants.dolrAmount(product.price),
+                    AppConstants.inrAmount(product.price),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 18,

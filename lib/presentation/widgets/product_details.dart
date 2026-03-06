@@ -497,7 +497,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
           children: [
             Expanded(
               child: Text(
-                AppConstants.dolrAmount(product.price),
+                AppConstants.inrAmount(product.price),
                 style: TextStyle(
                   fontSize: 30,
                   color: Theme.of(context).colorScheme.onInverseSurface,
@@ -686,7 +686,7 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              AppConstants.dolrAmount(product.price),
+                              AppConstants.inrAmount(product.price),
                               style: TextStyle(
                                 fontSize: 30,
                                 color: Theme.of(

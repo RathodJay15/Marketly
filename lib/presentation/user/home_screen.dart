@@ -27,9 +27,9 @@ class _homeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     context.read<CartProvider>().startListening();
+    // migrateProducts();
   }
   // migrateCategories();
-  // migrateProducts();
   // }
   // Migration Code-----------------------------------------------------
   // void migrateCategories() async {

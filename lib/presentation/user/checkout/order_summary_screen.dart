@@ -187,7 +187,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                "${AppConstants.basePrice}: ${AppConstants.dolrAmount(item.price)}",
+                "${AppConstants.basePrice}: ${AppConstants.inrAmount(item.price)}",
                 style: TextStyle(
                   fontSize: 14,
                   color: Theme.of(context).colorScheme.onPrimary,
@@ -205,7 +205,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
         ),
         const SizedBox(width: 15),
         Text(
-          AppConstants.dolrAmount(item.discountedTotal),
+          AppConstants.inrAmount(item.discountedTotal),
           style: TextStyle(
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onInverseSurface,
@@ -236,7 +236,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
           ),
           Text(
-            "${value < 0 ? "-" : ""}\$${AppConstants.dolrAmount(value.abs())}",
+            "${value < 0 ? "-" : ""}\$${AppConstants.inrAmount(value.abs())}",
             style: TextStyle(
               fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
               color: isDiscount
@@ -280,7 +280,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                AppConstants.dolrAmount(cartProvider.subTotal),
+                AppConstants.inrAmount(cartProvider.subTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -301,7 +301,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                '- ${AppConstants.dolrAmount(cartProvider.totalDiscount)}',
+                '- ${AppConstants.inrAmount(cartProvider.totalDiscount)}',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -328,7 +328,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                AppConstants.dolrAmount(cartProvider.finalTotal),
+                AppConstants.inrAmount(cartProvider.finalTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 25,

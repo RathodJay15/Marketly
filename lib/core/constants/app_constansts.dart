@@ -169,8 +169,12 @@ class AppConstants {
   static const String totalQuantity = "Total of Quantity";
   static const String goTocheckOut = "Go to Check Out!";
 
-  static String dolrAmount(double amount) {
-    return "\$ ${amount.toStringAsFixed(2)}";
+  static String orderOf(int items) {
+    return 'Order of $items items';
+  }
+
+  static String inrAmount(double amount) {
+    return "\₹ ${amount.toStringAsFixed(2)}";
   }
 
   static String discountOff(double discount) {

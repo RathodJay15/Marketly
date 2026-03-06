@@ -373,7 +373,7 @@ class _cartScreenState extends State<CartScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                AppConstants.dolrAmount(cartProvider.subTotal),
+                AppConstants.inrAmount(cartProvider.subTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: 20,
@@ -421,7 +421,7 @@ class _cartScreenState extends State<CartScreen> {
               ),
               SizedBox(width: 5),
               Text(
-                AppConstants.dolrAmount(cartProvider.finalTotal),
+                AppConstants.inrAmount(cartProvider.finalTotal),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 25,

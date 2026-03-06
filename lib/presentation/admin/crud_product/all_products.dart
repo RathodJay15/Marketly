@@ -173,7 +173,7 @@ class _allProductsState extends State<AllProducts> {
                           ),
                         ),
                         Text(
-                          AppConstants.dolrAmount(product.price),
+                          AppConstants.inrAmount(product.price),
                           style: TextStyle(
                             color: Theme.of(
                               context,

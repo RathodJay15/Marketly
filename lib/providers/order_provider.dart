@@ -76,6 +76,23 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setRazorpayPayment({
+    required String orderId,
+    required String paymentId,
+    required String signature,
+  }) {
+    if (_order == null) return;
+
+    _order = _order!.copyWith(
+      razorpayOrderId: orderId,
+      razorpayPaymentId: paymentId,
+      razorpaySignature: signature,
+      paymentStatus: 'PAID',
+    );
+
+    notifyListeners();
+  }
+
   // ---------------------------------------------------------------------------
   // PLACE ORDER
   // ---------------------------------------------------------------------------

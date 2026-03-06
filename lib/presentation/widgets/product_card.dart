@@ -139,7 +139,7 @@ class ProductCard extends StatelessWidget {
 
                     /// PRICE
                     Text(
-                      AppConstants.dolrAmount(product.price),
+                      AppConstants.inrAmount(product.price),
                       style: TextStyle(
                         fontSize: 22,
 
@@ -239,7 +239,7 @@ class CartProductCard extends StatelessWidget {
 
                       /// PRICE
                       Text(
-                        AppConstants.dolrAmount(product.price),
+                        AppConstants.inrAmount(product.price),
                         style: TextStyle(
                           fontSize: 16,
 

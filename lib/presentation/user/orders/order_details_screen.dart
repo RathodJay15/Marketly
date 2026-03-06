@@ -128,16 +128,16 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
               AppConstants.subtotal,
-              AppConstants.dolrAmount(order.pricing['subtotal']),
+              AppConstants.inrAmount(order.pricing['subtotal']),
             ),
             _row(
               AppConstants.discount,
-              "-${AppConstants.dolrAmount(order.pricing['discount'])}",
+              "-${AppConstants.inrAmount(order.pricing['discount'])}",
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
               AppConstants.total,
-              AppConstants.dolrAmount(order.pricing['total']),
+              AppConstants.inrAmount(order.pricing['total']),
               isBold: true,
             ),
           ],

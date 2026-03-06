@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/services/razorpay_services.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -16,6 +18,46 @@ class PaymentScreen extends StatefulWidget {
 
 class _paymentScreenState extends State<PaymentScreen> {
   String _paymentMethod = 'Cash on Delivery';
+
+  late RazorpayServices razorpayService;
+
+  @override
+  void initState() {
+    super.initState();
+
+    razorpayService = RazorpayServices();
+
+    razorpayService.initialize(
+      onSuccess: _handlePaymentSuccess,
+      onFailur: _handlePaymentError,
+      onExternalWallet: _handleExternalWallet,
+    );
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    final orderProvider = context.read<OrderProvider>();
+
+    orderProvider.setRazorpayPayment(
+      orderId: response.orderId ?? '',
+      paymentId: response.paymentId ?? '',
+      signature: response.signature ?? '',
+    );
+    debugPrint("Payment Success : ${response.paymentId}");
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    debugPrint("Payment Success : ${response.message}");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    debugPrint("Payment Success : ${response.walletName}");
+  }
+
+  @override
+  void dispose() {
+    razorpayService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,22 +159,22 @@ class _paymentScreenState extends State<PaymentScreen> {
             ...order.items.map(
               (item) => _row(
                 "${item['title']} x ${item['quantity']}",
-                AppConstants.dolrAmount(item['finalPrice']),
+                AppConstants.inrAmount(item['finalPrice']),
               ),
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
               AppConstants.subtotal,
-              AppConstants.dolrAmount(order.pricing['subtotal']),
+              AppConstants.inrAmount(order.pricing['subtotal']),
             ),
             _row(
               AppConstants.discount,
-              "-${AppConstants.dolrAmount(order.pricing['discount'])}",
+              "-${AppConstants.inrAmount(order.pricing['discount'])}",
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
               AppConstants.total,
-              AppConstants.dolrAmount(order.pricing['total']),
+              AppConstants.inrAmount(order.pricing['total']),
               isBold: true,
             ),
           ],
@@ -160,6 +202,14 @@ class _paymentScreenState extends State<PaymentScreen> {
     final orderProvider = context.read<OrderProvider>();
     final cartProvider = context.read<CartProvider>();
     final navigationProvider = context.read<NavigationProvider>();
+
+    razorpayService.openCheckOut(
+      amount: orderProvider.order!.pricing["total"],
+      description: AppConstants.orderOf(orderProvider.order!.items.length),
+      email: orderProvider.order!.userInfo['email'],
+      name: orderProvider.order!.userInfo['name'],
+      phoneNo: orderProvider.order!.userInfo['phone'],
+    );
 
     orderProvider.setPaymentMethod(_paymentMethod);
 
