@@ -184,11 +184,7 @@ Firestore collections:
 1.  Create a Firebase project
 2.  Add Android app
 3.  Download **google-services.json**
-4.  Place it inside:
-
-```
-```
-    android/app/
+4.  Place it inside: android/app/
 
 ### 5. Run the Application
 
