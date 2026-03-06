@@ -169,7 +169,7 @@ Firestore collections:
 
 ### 1. Clone Repository
 
-    git clone https://github.com/yourusername/marketly.git
+    git clone https://github.com/RathodJay15/marketly.git
 
 ### 2. Navigate to Project
 
