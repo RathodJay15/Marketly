@@ -195,24 +195,34 @@ Firestore collections:
 ## Screenshots
 
 ### Home Screen
-<img src="screenshots/home_screen_light.png" width="250">
-<img src="screenshots/home_screen_dark.png" width="250">
+<p align="center">
+  <img src="screenshots/home_screen_light.png" width="250">
+  <img src="screenshots/home_screen_dark.png" width="250">
+</p>
 
 ### Product Details
-<img src="screenshots/product_details_light.png" width="250">
-<img src="screenshots/product_details_dark.png" width="250">
+<p align="center">
+  <img src="screenshots/product_details_light.png" width="250">
+  <img src="screenshots/product_details_dark.png" width="250">
+</p>
 
 ### Cart
-<img src="screenshots/cart_screen_light.png" width="250">
-<img src="screenshots/cart_screen_dark.png" width="250">
+<p align="center">
+  <img src="screenshots/cart_screen_light.png" width="250">
+  <img src="screenshots/cart_screen_dark.png" width="250">
+</p>
 
 ### Check Out
-<img src="screenshots/checkout_screen_light.png" width="250">
-<img src="screenshots/checkout_screen_dark.png" width="250">
+<p align="center">
+  <img src="screenshots/checkout_screen_light.png" width="250">
+  <img src="screenshots/checkout_screen_dark.png" width="250">
+</p>
 
 ### Admin Dashboard
-<img src="screenshots/admin_dashboard_light.png" width="250">
-<img src="screenshots/admin_dashboard_dark.png" width="250">
+<p align="center">
+  <img src="screenshots/admin_dashboard_light.png" width="250">
+  <img src="screenshots/admin_dashboard_dark.png" width="250">
+</p>
 ------------------------------------------------------------------------
 
 ## Upcoming Features
