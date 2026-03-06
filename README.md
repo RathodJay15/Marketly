@@ -187,7 +187,7 @@ Firestore collections:
 4.  Place it inside:
 
 ```{=html}
-<!-- -->
+
 ```
     android/app/
 
