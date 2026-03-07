@@ -208,7 +208,6 @@ class _addressScreenState extends State<AddressScreen> {
                   DropdownButtonFormField<String>(
                     isExpanded: true,
                     initialValue: selectedAddressId,
-                    dropdownColor: Theme.of(context).colorScheme.onPrimary,
                     hint: Text(
                       AppConstants.selectAdrs,
                       style: TextStyle(

@@ -222,10 +222,15 @@ class _paymentScreenState extends State<PaymentScreen> {
             _row(AppConstants.pincode, order.address['pincode']),
           ],
         ),
+        const SizedBox(height: 24),
+
+        _sectionTitle(AppConstants.couponCode),
+
+        _couponCodeSection(context),
 
         const SizedBox(height: 24),
 
-        _sectionTitle(AppConstants.fonalOrderSummary),
+        _sectionTitle(AppConstants.finalOrderSummary),
         _greyCard(
           children: [
             ...order.items.map(
@@ -324,6 +329,63 @@ class _paymentScreenState extends State<PaymentScreen> {
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: isBold ? FontWeight.w900 : FontWeight.w600,
                 ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _couponCodeSection(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        iconColor: Theme.of(context).colorScheme.onInverseSurface,
+        collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
+        title: Text(
+          AppConstants.couponCode,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+          ),
+        ),
+        children: [_couponRow()],
+      ),
+    );
+  }
+
+  Widget _couponRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: AppConstants.enterCouponCode,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text(
+              AppConstants.apply,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
               ),
             ),
           ),

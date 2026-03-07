@@ -104,6 +104,9 @@ class AppConstants {
   static const String favorites = "Favorites";
   static const String logout = "Logout";
   static const String defaultAdrs = "Default address";
+  static const String couponCode = "Coupon Code";
+  static const String enterCouponCode = "Enter Coupon Code";
+  static const String apply = "Apply";
   static const String addNewAdrs = "Add new address";
   static const String dialogEmptyCart = "Empty cart?";
   static const String yesEmptyCart = "Yes, empty cart";
@@ -162,7 +165,7 @@ class AppConstants {
   static const String noOrder = "No Order History!";
   static const String viewOrderDetails = "View Order details";
   static const String orderDetails = "Order details";
-  static const String fonalOrderSummary = "Final Order Summary";
+  static const String finalOrderSummary = "Final Order Summary";
   static const String paymentMethod = "Payment Method";
   static const String upi = "UPI";
   static const String card = "Card";
