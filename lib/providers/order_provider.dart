@@ -68,7 +68,7 @@ class OrderProvider extends ChangeNotifier {
     if (method == 'COD') {
       status = 'PENDING';
     } else {
-      status = 'INITIATED';
+      status = 'PAID';
     }
 
     _order = _order!.copyWith(paymentMethod: method, paymentStatus: status);
@@ -83,12 +83,7 @@ class OrderProvider extends ChangeNotifier {
   }) {
     if (_order == null) return;
 
-    _order = _order!.copyWith(
-      razorpayOrderId: orderId,
-      razorpayPaymentId: paymentId,
-      razorpaySignature: signature,
-      paymentStatus: 'PAID',
-    );
+    _order = _order!.copyWith(razorpayPaymentId: paymentId);
 
     notifyListeners();
   }

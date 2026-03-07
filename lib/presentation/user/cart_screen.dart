@@ -252,7 +252,7 @@ class _cartScreenState extends State<CartScreen> {
                     ),
                   ),
                   Text(
-                    '\$${item.price} x ${item.quantity}',
+                    AppConstants.priceXquantity(item.price, item.quantity),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

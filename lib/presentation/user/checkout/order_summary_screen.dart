@@ -236,7 +236,7 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
             ),
           ),
           Text(
-            "${value < 0 ? "-" : ""}\$${AppConstants.inrAmount(value.abs())}",
+            "${value < 0 ? "-" : ""} ${AppConstants.inrAmount(value.abs())}",
             style: TextStyle(
               fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
               color: isDiscount

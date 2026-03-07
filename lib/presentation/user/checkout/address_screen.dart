@@ -173,113 +173,123 @@ class _addressScreenState extends State<AddressScreen> {
 
         return Form(
           key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              const SizedBox(height: 12),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 12),
 
-              _field(
-                nameCtrl,
-                AppConstants.username,
-                Validators.username,
-                icon: Icons.person_outline,
-              ),
-
-              _field(
-                emailCtrl,
-                AppConstants.email,
-                Validators.email,
-                icon: Icons.email_outlined,
-                readOnly: true,
-              ),
-
-              _field(
-                phoneCtrl,
-                AppConstants.phone,
-                Validators.phone,
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-              ),
-
-              DropdownButtonFormField<String>(
-                isExpanded: true,
-                initialValue: selectedAddressId,
-                dropdownColor: Theme.of(context).colorScheme.onPrimary,
-                hint: Text(
-                  AppConstants.selectAdrs,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  _field(
+                    nameCtrl,
+                    AppConstants.username,
+                    Validators.username,
+                    icon: Icons.person_outline,
                   ),
-                ),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
+
+                  _field(
+                    emailCtrl,
+                    AppConstants.email,
+                    Validators.email,
+                    icon: Icons.email_outlined,
+                    readOnly: true,
                   ),
-                  prefixIcon: Icon(
-                    Icons.location_on_outlined,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
+
+                  _field(
+                    phoneCtrl,
+                    AppConstants.phone,
+                    Validators.phone,
+                    icon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
                   ),
-                ),
-                items: user.addresses.map((addr) {
-                  return DropdownMenuItem<String>(
-                    value: addr.id,
-                    child: Text(
-                      addr.address,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    initialValue: selectedAddressId,
+                    dropdownColor: Theme.of(context).colorScheme.onPrimary,
+                    hint: Text(
+                      AppConstants.selectAdrs,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
                     ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  final selected = user.addresses.firstWhere(
-                    (a) => a.id == value,
-                  );
-                  setState(() {
-                    selectedAddressId = value;
-                    addressCtrl.text = selected.address;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? AppConstants.selectAdrs : null,
-              ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Theme.of(
+                        context,
+                      ).colorScheme.onSecondaryContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.location_on_outlined,
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                    items: user.addresses.map((addr) {
+                      return DropdownMenuItem<String>(
+                        value: addr.id,
+                        child: Text(
+                          addr.address,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      final selected = user.addresses.firstWhere(
+                        (a) => a.id == value,
+                      );
+                      setState(() {
+                        selectedAddressId = value;
+                        addressCtrl.text = selected.address;
+                      });
+                    },
+                    validator: (value) =>
+                        value == null ? AppConstants.selectAdrs : null,
+                  ),
 
-              const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-              _field(
-                cityCtrl,
-                AppConstants.ct,
-                Validators.city,
-                icon: Icons.location_city_outlined,
-              ),
+                  _field(
+                    cityCtrl,
+                    AppConstants.ct,
+                    Validators.city,
+                    icon: Icons.location_city_outlined,
+                  ),
 
-              _field(
-                stateCtrl,
-                AppConstants.state,
-                Validators.state,
-                icon: Icons.map_outlined,
-              ),
+                  _field(
+                    stateCtrl,
+                    AppConstants.state,
+                    Validators.state,
+                    icon: Icons.map_outlined,
+                  ),
 
-              _field(
-                countryCtrl,
-                AppConstants.cntry,
-                Validators.country,
-                icon: Icons.public_outlined,
-              ),
+                  _field(
+                    countryCtrl,
+                    AppConstants.cntry,
+                    Validators.country,
+                    icon: Icons.public_outlined,
+                  ),
 
-              _field(
-                pincodeCtrl,
-                AppConstants.pincode,
-                Validators.pincode,
-                icon: Icons.pin_outlined,
-                keyboardType: TextInputType.number,
+                  _field(
+                    pincodeCtrl,
+                    AppConstants.pincode,
+                    Validators.pincode,
+                    icon: Icons.pin_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },

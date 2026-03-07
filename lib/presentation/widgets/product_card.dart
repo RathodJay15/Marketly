@@ -28,7 +28,10 @@ class ProductCard extends StatelessWidget {
       ),
 
       transitionDuration: const Duration(milliseconds: 200),
-      openBuilder: (context, _) => ProductDetailsScreen(productId: product.id),
+      openBuilder: (context, _) {
+        FocusManager.instance.primaryFocus?.unfocus();
+        return ProductDetailsScreen(productId: product.id);
+      },
       closedBuilder: (context, openContainer) => GestureDetector(
         onTap: openContainer,
         child: Container(
@@ -242,7 +245,7 @@ class CartProductCard extends StatelessWidget {
                         AppConstants.inrAmount(product.price),
                         style: TextStyle(
                           fontSize: 16,
-
+                          overflow: TextOverflow.ellipsis,
                           fontWeight: FontWeight.w900,
                           color: Theme.of(context).colorScheme.onInverseSurface,
                         ),

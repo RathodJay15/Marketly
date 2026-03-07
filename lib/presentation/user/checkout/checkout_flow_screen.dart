@@ -65,6 +65,7 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
             children: [

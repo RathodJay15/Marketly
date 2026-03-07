@@ -113,6 +113,10 @@ class AppConstants {
   static const String checkForMail =
       "Check your email inbox or spam for change / forgot password mail from marketly";
 
+  static const String confirmCod = "Confirm Cash on Delivery";
+  static const String codOrderMsg =
+      "You have selected Cash on Delivery as your payment method.\nPlease ensure you have the exact amount ready at the time of delivery.\n\nDo you want to place this order?";
+
   // User Constants
   static const String usrDetails = "User Details";
   static const String username = "Username";
@@ -162,6 +166,9 @@ class AppConstants {
   static const String paymentMethod = "Payment Method";
   static const String upi = "UPI";
   static const String card = "Card";
+  static const String netBanking = "Net Banking";
+  static const String upiUnavailable =
+      "UPI is available only for payments up to ₹1,00,000";
   static const String cod = "Cash on Delivery";
   static const String orderSummary = "Order Summary";
   static const String paymentDetails = "Payment Details";
@@ -174,7 +181,11 @@ class AppConstants {
   }
 
   static String inrAmount(double amount) {
-    return "\₹ ${amount.toStringAsFixed(2)}";
+    return "₹ ${amount.toStringAsFixed(2)}";
+  }
+
+  static String priceXquantity(double price, int quantity) {
+    return "₹${price.toStringAsFixed(2)} x $quantity";
   }
 
   static String discountOff(double discount) {

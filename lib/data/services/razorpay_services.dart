@@ -21,14 +21,32 @@ class RazorpayServices {
     required String email,
     required String phoneNo,
     required String description,
+    required String paymentMethod,
   }) {
+    Map<String, bool> methodOptions = {
+      'upi': false,
+      'card': false,
+      'netbanking': false,
+      'wallet': false,
+      'emi': false,
+      'paylater': false,
+    };
+
+    if (paymentMethod == 'UPI') {
+      methodOptions['upi'] = true;
+    } else if (paymentMethod == 'Card') {
+      methodOptions['card'] = true;
+    } else if (paymentMethod == 'Net Banking') {
+      methodOptions['netbanking'] = true;
+    }
+
     var options = {
       'key': 'rzp_test_SNq2skq6gT54PO',
       'amount': (amount * 100).toInt(),
       'name': name,
       'description': description,
       'prefill': {'contact': phoneNo, 'email': email},
-      'method': {'upi': true},
+      'method': methodOptions,
     };
 
     _razorpay.open(options);
