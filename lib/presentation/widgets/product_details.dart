@@ -114,13 +114,14 @@ class _roductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ),
         ),
+        duration: Duration(seconds: 3),
       ),
     );
   }
 
   @override
   void didChangeDependencies() {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).clearSnackBars();
     super.didChangeDependencies();
   }
 

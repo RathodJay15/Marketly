@@ -431,10 +431,14 @@ class _orderSummaryScreenState extends State<OrderSummaryScreen> {
 
     // Pricing
     final pricing = {
-      "subtotal": cartProvider.subTotal,
-      "discount": cartProvider.totalDiscount,
-      "discountPercentage": cartProvider.totalDiscountPercentage,
-      "total": cartProvider.finalTotal,
+      "subtotal": double.tryParse(cartProvider.subTotal.toStringAsFixed(2)),
+      "discount": double.tryParse(
+        cartProvider.totalDiscount.toStringAsFixed(2),
+      ),
+      "discountPercentage": double.tryParse(
+        cartProvider.totalDiscountPercentage.toStringAsFixed(2),
+      ),
+      "total": double.tryParse(cartProvider.finalTotal.toStringAsFixed(2)),
     };
 
     orderProvider.setItems(items);

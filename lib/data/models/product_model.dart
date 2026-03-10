@@ -32,6 +32,7 @@ class ProductModel {
     required this.images,
     required this.thumbnail,
   });
+
   String get searchableText {
     final tagText = (tags ?? []).join(' ');
     return '$title $tagText'.toLowerCase();

@@ -5,7 +5,7 @@ import 'package:marketly/data/models/order_model.dart';
 class OrderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> placeOrder(OrderModel order) async {
+  Future<OrderModel> placeOrder(OrderModel order) async {
     final doc = _firestore.collection('orders').doc();
     final orderMeta = await generateOrderNumber();
 
@@ -19,6 +19,18 @@ class OrderService {
     data['updatedAt'] = FieldValue.serverTimestamp();
 
     await doc.set(data);
+
+    return finalOrder;
+  }
+
+  Future<bool> hasUserPlacedOrder(String userId) async {
+    final snap = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('userId', isEqualTo: userId)
+        .limit(1)
+        .get();
+
+    return snap.docs.isNotEmpty;
   }
 
   Future<List<OrderModel>> getOrders(String userId) async {

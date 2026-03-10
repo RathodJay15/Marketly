@@ -6,7 +6,6 @@ import 'package:marketly/presentation/user/home_screen_body.dart';
 import 'package:marketly/presentation/user/menu/menu_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
-import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
@@ -26,11 +25,11 @@ class _homeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    context.read<CartProvider>().startListening();
-    // migrateProducts();
+    // context.read<CartProvider>().startListening();
   }
+  // migrateProducts();
   // migrateCategories();
-  // }
+
   // Migration Code-----------------------------------------------------
   // void migrateCategories() async {
   //   await CategoryMigrationService().migrateCategoriesToFirebase();
@@ -78,7 +77,7 @@ class _homeScreenState extends State<HomeScreen>
       },
       child: Scaffold(
         extendBody: true,
-        resizeToAvoidBottomInset: false,
+        // resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         body: BottomBar(
           barColor: Colors.transparent,

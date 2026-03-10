@@ -103,7 +103,6 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
     final notificationProvider = context.watch<NotificationProvider>();
     final hasUnread = notificationProvider.unreadCount > 0;
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => MyAccountScreen()),
@@ -165,6 +164,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             ),
             SizedBox(width: 13),
             Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(

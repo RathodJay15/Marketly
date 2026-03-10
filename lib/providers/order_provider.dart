@@ -60,6 +60,46 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void applyCouponDiscount({
+    required double couponDiscountAmount,
+    required int couponPercentage,
+    required String couponCode,
+  }) {
+    if (_order == null) return;
+
+    final pricing = Map<String, dynamic>.from(_order!.pricing);
+
+    final subtotal = pricing["subtotal"] ?? 0.0;
+
+    final total = subtotal - couponDiscountAmount;
+
+    pricing["couponDiscount"] = couponDiscountAmount;
+    pricing["couponPercentage"] = couponPercentage;
+    pricing["couponCode"] = couponCode;
+    pricing["total"] = total;
+
+    _order = _order!.copyWith(pricing: pricing);
+
+    notifyListeners();
+  }
+
+  void removeCouponDiscount() {
+    if (_order == null) return;
+
+    final pricing = Map<String, dynamic>.from(_order!.pricing);
+
+    final subtotal = pricing["subtotal"] ?? 0.0;
+
+    pricing["couponDiscount"] = 0.0;
+    pricing["couponPercentage"] = 0.0;
+    pricing["couponCode"] = null;
+    pricing["total"] = subtotal;
+
+    _order = _order!.copyWith(pricing: pricing);
+
+    notifyListeners();
+  }
+
   void setPaymentMethod(String method) {
     if (_order == null) return;
 
@@ -92,44 +132,22 @@ class OrderProvider extends ChangeNotifier {
   // PLACE ORDER
   // ---------------------------------------------------------------------------
 
-  Future<void> placeOrder({
-    required double subTotal,
-    required double discount,
-    required double grandTotal,
-  }) async {
-    if (_order == null) return;
+  Future<OrderModel?> placeOrder() async {
+    if (_order == null) return null;
 
     _isLoading = true;
     notifyListeners();
 
     try {
-      final roundedSubTotal = double.parse(subTotal.toStringAsFixed(2));
-      final roundedDiscount = double.parse(discount.toStringAsFixed(2));
-      final roundedGrandTotal = double.parse(grandTotal.toStringAsFixed(2));
-
-      final discountPercentage = roundedSubTotal == 0
-          ? 0.0
-          : double.parse(
-              ((roundedDiscount / roundedSubTotal) * 100).toStringAsFixed(2),
-            );
-
-      _order = _order!.copyWith(
-        pricing: {
-          "subtotal": roundedSubTotal,
-          "discount": roundedDiscount,
-          "discountPercentage": discountPercentage,
-          "total": roundedGrandTotal,
-        },
-      );
-
-      await _orderService.placeOrder(_order!);
+      final placedOrder = await _orderService.placeOrder(_order!);
       _order = null;
+      return placedOrder;
     } catch (e) {
       debugPrint('Place order failed: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   // ---------------------------------------------------------------------------

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/services/coupon_services.dart';
 import 'package:marketly/data/services/razorpay_services.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/coupon_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
+import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -19,13 +22,18 @@ class PaymentScreen extends StatefulWidget {
 
 class _paymentScreenState extends State<PaymentScreen> {
   String _paymentMethod = 'Cash on Delivery';
+  String? couponError = null;
+
+  final TextEditingController _textCouponController = TextEditingController();
+  final FocusNode _couponFocusNode = FocusNode();
+  bool _isSearching = false;
 
   late RazorpayServices razorpayService;
 
   @override
   void initState() {
     super.initState();
-
+    _couponFocusNode.addListener(_onFocusChange);
     razorpayService = RazorpayServices();
 
     razorpayService.initialize(
@@ -33,6 +41,51 @@ class _paymentScreenState extends State<PaymentScreen> {
       onFailur: _handlePaymentError,
       onExternalWallet: _handleExternalWallet,
     );
+  }
+
+  void _onFocusChange() {
+    if (!_couponFocusNode.hasFocus && _textCouponController.text.isEmpty) {
+      if (_isSearching) {
+        setState(() => _isSearching = false);
+      }
+    }
+  }
+
+  void _startCoupn() {
+    if (!_isSearching) {
+      setState(() {
+        _isSearching = true;
+      });
+    }
+    _couponFocusNode.requestFocus();
+  }
+
+  void _onApplyPressed(String value, double cartTotal) async {
+    final String code = value.toUpperCase().trim();
+    final couponProvider = context.read<CouponProvider>();
+    final orderProvider = context.read<OrderProvider>();
+    final userProvider = context.read<UserProvider>();
+
+    // CouponServices couponServices = CouponServices();
+    // couponServices.addDefaultCoupons();
+
+    couponError = await couponProvider.appliyCouponCode(
+      code,
+      cartTotal,
+      userProvider.user!.uid,
+      orderProvider,
+    );
+    _couponFocusNode.unfocus();
+    setState(() {
+      _isSearching = false;
+    });
+  }
+
+  void _closeOrClearCoupon() {
+    _couponFocusNode.unfocus();
+    _textCouponController.text = '';
+    couponError = null;
+    setState(() => _isSearching = false);
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
@@ -66,16 +119,20 @@ class _paymentScreenState extends State<PaymentScreen> {
     orderProvider.setPaymentMethod(_paymentMethod);
 
     // Place order via PROVIDER
-    await orderProvider.placeOrder(
-      discount: cartProvider.totalDiscount,
-      grandTotal: cartProvider.finalTotal,
-      subTotal: cartProvider.subTotal,
+    final placedOrder = await orderProvider.placeOrder();
+    await CouponServices().saveCouponUsage(
+      userId: placedOrder!.userId,
+      couponCode: placedOrder.pricing["couponCode"],
+      orderNumber: placedOrder.orderNumber,
     );
 
     // Clear states
     cartProvider.unlockCart();
     cartProvider.clearCart();
     orderProvider.clearOrder();
+    setState(() {
+      _isSearching = false;
+    });
 
     // set NavBar index to Profile
     navigationProvider.setScreenIndex(3);
@@ -100,6 +157,8 @@ class _paymentScreenState extends State<PaymentScreen> {
   @override
   void dispose() {
     razorpayService.dispose();
+    _textCouponController.clear();
+    _couponFocusNode.unfocus();
     super.dispose();
   }
 
@@ -197,6 +256,7 @@ class _paymentScreenState extends State<PaymentScreen> {
 
   Widget _orderDetails() {
     final order = context.watch<OrderProvider>().order;
+    final couponProvider = context.read<CouponProvider>();
 
     if (order == null ||
         order.address.isEmpty ||
@@ -226,7 +286,7 @@ class _paymentScreenState extends State<PaymentScreen> {
 
         _sectionTitle(AppConstants.couponCode),
 
-        _couponCodeSection(context),
+        _couponCodeSection(context, order.pricing['total']),
 
         const SizedBox(height: 24),
 
@@ -245,9 +305,17 @@ class _paymentScreenState extends State<PaymentScreen> {
               AppConstants.inrAmount(order.pricing['subtotal']),
             ),
             _row(
-              AppConstants.discount,
-              "-${AppConstants.inrAmount(order.pricing['discount'])}",
+              '${AppConstants.discount} (${order.pricing['discountPercentage']}%)',
+              '- ${AppConstants.inrAmount(order.pricing['discount'])}',
             ),
+            if (order.pricing['couponPercentage'] != null &&
+                order.pricing['couponDiscount'] != null &&
+                couponProvider.isApplied)
+              _row(
+                '${AppConstants.couponDiscount} (${order.pricing['couponPercentage']}%)',
+                "- ${AppConstants.inrAmount(order.pricing['couponDiscount'])}",
+              ),
+
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
               AppConstants.total,
@@ -337,14 +405,14 @@ class _paymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  Widget _couponCodeSection(BuildContext context) {
+  Widget _couponCodeSection(BuildContext context, double cartTotal) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSecondaryContainer,
         borderRadius: BorderRadius.circular(10),
       ),
       child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
         childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         collapsedShape: RoundedRectangleBorder(
@@ -358,34 +426,104 @@ class _paymentScreenState extends State<PaymentScreen> {
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
         ),
-        children: [_couponRow()],
+        children: [_couponRow(cartTotal)],
       ),
     );
   }
 
-  Widget _couponRow() {
+  Widget _couponRow(double cartTotal) {
+    final couponProvider = context.read<CouponProvider>();
+    final orderProvider = context.read<OrderProvider>();
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: AppConstants.enterCouponCode,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: TextField(
+                    controller: _textCouponController,
+                    focusNode: _couponFocusNode,
+                    onTap: _startCoupn,
+                    onChanged: (value) {
+                      if (!_isSearching) {
+                        setState(() {
+                          _isSearching = true;
+                        });
+                      }
+                    },
+                    decoration: InputDecoration(
+                      hintText: AppConstants.enterCouponCode,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+
+                      suffixIcon: _isSearching
+                          ? IconButton(
+                              onPressed: _closeOrClearCoupon,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                              icon: Icon(Icons.close),
+                            )
+                          : null,
+                    ),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    ),
+                  ),
                 ),
-              ),
+                if (couponError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, left: 8.0),
+                    child: Text(
+                      couponError!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
           SizedBox(width: 10),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text(
-              AppConstants.apply,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onInverseSurface,
+          SizedBox(
+            width: 100,
+            child: ElevatedButton(
+              onPressed: () {
+                if (couponProvider.isApplied) {
+                  couponProvider.removeCoupon(orderProvider);
+                } else {
+                  _onApplyPressed(_textCouponController.text, cartTotal);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: couponProvider.isApplied
+                    ? Theme.of(context).colorScheme.onSurface
+                    : Theme.of(context).colorScheme.onInverseSurface,
+                minimumSize: const Size(double.infinity, 50.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                couponProvider.isApplied
+                    ? AppConstants.cancel
+                    : AppConstants.apply,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

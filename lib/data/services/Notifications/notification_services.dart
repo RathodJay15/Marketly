@@ -85,10 +85,10 @@ class NotificationServices {
     await _localNotifications.initialize(
       settings: settings,
       onDidReceiveNotificationResponse: (response) {
-        final productId = response.payload;
+        final payload = response.payload;
 
-        if (productId != null) {
-          _handleNavigation(productId, navigatorKey);
+        if (payload != null) {
+          _handleNavigation(payload, navigatorKey);
         }
       },
     );
@@ -99,14 +99,30 @@ class NotificationServices {
   //----------------------------------------------------------------------------
 
   void _handleNavigation(
-    String productId,
+    String payload,
     GlobalKey<NavigatorState> navigatorKey,
   ) {
-    navigatorKey.currentState?.push(
-      MaterialPageRoute(
-        builder: (_) => ProductDetailsScreen(productId: productId),
-      ),
-    );
+    if (payload.startsWith("product:")) {
+      final productId = payload.split(":")[1];
+
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => ProductDetailsScreen(productId: productId),
+        ),
+      );
+    } else if (payload.startsWith("order:")) {
+      final orderId = payload.split(":")[1];
+
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (_) => OrderDetailsScreen(orderId: orderId)),
+      );
+    } else if (payload == "cart") {
+      final context = navigatorKey.currentContext;
+
+      if (context != null) {
+        context.read<NavigationProvider>().setScreenIndex(2);
+      }
+    }
   }
 
   //----------------------------------------------------------------------------
@@ -227,9 +243,9 @@ class NotificationServices {
       String? payload;
 
       if (type == "new_product") {
-        payload = message.data['productid'];
+        payload = "product:${message.data['productid']}";
       } else if (type == "order_update") {
-        payload = message.data['orderId'];
+        payload = "order:${message.data['orderId']}";
       } else if (type == "cart_expiry") {
         payload = "cart";
       }

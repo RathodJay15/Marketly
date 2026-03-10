@@ -5,13 +5,16 @@ class OrderModel {
   final int sequence;
 
   final Map<String, dynamic> userInfo;
-  final Map<String, dynamic> address;
-  final List<Map<String, dynamic>> items;
+  final Map<String, dynamic>
+  address; //{address , addressId , city , country , email , name , phone , pincode , state}
+  final List<Map<String, dynamic>> items; // [cartItemModel]
 
-  final Map<String, dynamic> pricing;
+  final Map<String, dynamic>
+  pricing; //subtotal , discount , discount percentage , total
   final String paymentMethod;
   final String paymentStatus;
-  final List<Map<String, dynamic>> statusTimeline;
+  final List<Map<String, dynamic>>
+  statusTimeline; // [{'status' : 'ORDER_PLACED' , 'time' : Timestamp},...]
 
   final String? razorpayPaymentId;
 

@@ -130,12 +130,13 @@ exports.sendOrderStatusNotification = onDocumentUpdated(
     }
   }
 );
+
 exports.notifyExpiringCarts = onSchedule("every 5 minutes", async () => {
   const db = admin.firestore();
 
   const now = admin.firestore.Timestamp.now();
   const tenMinutesLater = admin.firestore.Timestamp.fromDate(
-    new Date(Date.now() + 10 * 60 * 1000)
+    new Date(Date.now() + 30 * 60 * 1000)
   );
 
   const snapshot = await db
@@ -155,7 +156,6 @@ exports.notifyExpiringCarts = onSchedule("every 5 minutes", async () => {
       if (!userDoc.exists) continue;
 
       console.log("User data:", userDoc.data());  
-      console.log("User data:", userDoc.data());
 
       const tokens = userDoc.data().fcmToken;
       
@@ -169,7 +169,7 @@ exports.notifyExpiringCarts = onSchedule("every 5 minutes", async () => {
         tokens: tokens,
         notification: {
           title: "Your cart is about to expire ⏳",
-          body: "Only 10 minutes left! Complete your purchase now.",
+          body: "Only 30 minutes left! Complete your purchase now.",
         },
         data: {
           type: "cart_expiry",
@@ -180,7 +180,7 @@ exports.notifyExpiringCarts = onSchedule("every 5 minutes", async () => {
       await db.collection("notifications").add({
         userId: userId,
         title: "Cart Expiring Soon",
-        body: "Only 10 minutes left! Complete your purchase now.",
+        body: "Only 30 minutes left! Complete your purchase now.",
         type: "cart_expiry",
         isRead: false,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -201,6 +201,7 @@ exports.notifyExpiringCarts = onSchedule("every 5 minutes", async () => {
 
 exports.cleanExpiredCarts = onSchedule("every 10 minutes", async () => {
   const now = admin.firestore.Timestamp.now();
+  const db = admin.firestore();
 
   const snapshot = await admin.firestore()
     .collection("cart")

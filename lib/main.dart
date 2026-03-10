@@ -12,6 +12,7 @@ import 'package:marketly/providers/admin/admin_user_provider.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/admin/admin_categories_provider.dart';
+import 'package:marketly/providers/coupon_provider.dart';
 import 'package:marketly/providers/favorites_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/notification_provider.dart';
@@ -95,6 +96,7 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider(create: (_) => AdminUserProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => CouponProvider()),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userProvider, _) {

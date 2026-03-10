@@ -16,16 +16,16 @@ class CartItemModel {
     required this.id,
     required this.productId,
     required this.title,
-    required this.price,
+    required this.price, //base price
     required this.quantity,
-    required this.total,
+    required this.total, // price * quantity
     required this.discountPercentage,
-    required this.discountedTotal,
+    required this.discountedTotal, // total - discount
     required this.thumbnail,
     this.addedAt,
   });
 
-  // 🔽 Firestore → Model
+  // Firestore → Model
   factory CartItemModel.fromFirestore(Map<String, dynamic> map, String id) {
     return CartItemModel(
       id: id,
@@ -43,7 +43,7 @@ class CartItemModel {
     );
   }
 
-  // 🔼 Model → Firestore
+  // Model → Firestore
   Map<String, dynamic> toFirestore() {
     return {
       'productId': productId,
@@ -58,7 +58,7 @@ class CartItemModel {
     };
   }
 
-  // 🧮 Helper to recalculate totals safely
+  // Helper to recalculate totals safely
   CartItemModel copyWithQuantity(int newQuantity) {
     final newTotal = price * newQuantity;
     final newDiscountedTotal = newTotal - (newTotal * discountPercentage / 100);

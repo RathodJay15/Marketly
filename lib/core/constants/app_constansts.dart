@@ -106,6 +106,7 @@ class AppConstants {
   static const String defaultAdrs = "Default address";
   static const String couponCode = "Coupon Code";
   static const String enterCouponCode = "Enter Coupon Code";
+  static const String couponDiscount = "Coupon Discount";
   static const String apply = "Apply";
   static const String addNewAdrs = "Add new address";
   static const String dialogEmptyCart = "Empty cart?";
