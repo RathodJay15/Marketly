@@ -8,6 +8,7 @@ class AppConstants {
   static const String categories = "Categories";
   static const String addCategory = "Add Category";
   static const String categoryAdded = "Category added successfully ✅";
+  static const String couponAdded = "Coupon added successfully ✅";
   static const String addProduct = "Add Product";
   static const String productAdded = "Product added successfully ✅";
   static const String updtCategory = "Update Category";
@@ -107,6 +108,9 @@ class AppConstants {
   static const String couponCode = "Coupon Code";
   static const String enterCouponCode = "Enter Coupon Code";
   static const String couponDiscount = "Coupon Discount";
+  static const String coupons = "Coupons";
+  static const String totalCoupons = "Total Coupons";
+  static const String addCoupon = "Add Coupon";
   static const String apply = "Apply";
   static const String addNewAdrs = "Add new address";
   static const String dialogEmptyCart = "Empty cart?";

@@ -28,4 +28,21 @@ class CouponModel {
       firstOrderOnly: doc['firstOrderOnly'] ?? false,
     );
   }
+
+  CouponModel copyWith({
+    String? code,
+    int? discountPercentage,
+    int? minOrderAmount,
+    bool? isActive,
+    bool? firstOrderOnly,
+    Timestamp? expiryDate,
+  }) {
+    return CouponModel(
+      code: code ?? this.code,
+      discountPercentage: discountPercentage ?? this.discountPercentage,
+      minOrderAmount: minOrderAmount ?? this.minOrderAmount,
+      isActive: isActive ?? this.isActive,
+      firstOrderOnly: firstOrderOnly ?? this.firstOrderOnly,
+    );
+  }
 }

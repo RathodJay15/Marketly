@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/admin/crud_category/all_categories.dart';
+import 'package:marketly/presentation/admin/crud_coupons/all_coupons.dart';
 import 'package:marketly/presentation/admin/crud_product/all_products.dart';
 import 'package:marketly/presentation/admin/users/all_users.dart';
 import 'package:marketly/presentation/admin/orders/all_orders.dart';
@@ -41,6 +42,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
   void _goToCategories() {
     Navigator.push(context, MaterialPageRoute(builder: (_) => AllCategories()));
+  }
+
+  void _goToCoupons() {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => AllCoupons()));
   }
 
   void _goToProducts() {
@@ -102,6 +107,20 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 subtitle2Val: dashboardProvider.inactiveCategories.toString(),
                 onTap: () => _goToCategories(),
               ),
+
+              _sectionTitle(AppConstants.coupons),
+
+              _subTitleTile(
+                icon: Icons.closed_caption_rounded,
+                title: '${AppConstants.totalCoupons} : ',
+                titleVal: dashboardProvider.totalCoupons.toString(),
+                subtitle1: '${AppConstants.active} : ',
+                subtitle1Val: dashboardProvider.activeCoupons.toString(),
+                subtitle2: '${AppConstants.inActive} : ',
+                subtitle2Val: dashboardProvider.inactiveCoupons.toString(),
+                onTap: () => _goToCoupons(),
+              ),
+
               _sectionTitle(AppConstants.products),
 
               _titleTile(

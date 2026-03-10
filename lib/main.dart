@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:marketly/auth_gate.dart';
 import 'package:marketly/data/services/Notifications/notification_services.dart';
 import 'package:marketly/firebase_options.dart';
+import 'package:marketly/providers/admin/admin_coupon_provider.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
 import 'package:marketly/providers/admin/admin_order_provider.dart';
 import 'package:marketly/providers/admin/admin_user_provider.dart';
@@ -94,6 +95,7 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider(create: (_) => AdminDashboardProvider()),
         ChangeNotifierProvider(create: (_) => AdminOrderProvider()),
         ChangeNotifierProvider(create: (_) => AdminUserProvider()),
+        ChangeNotifierProvider(create: (_) => AdminCouponProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => CouponProvider()),

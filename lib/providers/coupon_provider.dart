@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/data/models/coupon_model.dart';
-import 'package:marketly/data/services/coupon_services.dart';
+import 'package:marketly/data/services/coupon_service.dart';
 import 'package:marketly/data/services/order_service.dart';
 import 'package:marketly/providers/order_provider.dart';
 

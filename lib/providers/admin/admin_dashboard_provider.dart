@@ -61,4 +61,8 @@ class AdminDashboardProvider extends ChangeNotifier {
   int get confirmedOrders => (_stats['orderStatus']?['confirmedOrders']) ?? 0;
 
   int get pendingOrders => (_stats['orderStatus']?['pendingOrders']) ?? 0;
+
+  int get totalCoupons => _stats['totalCoupons'] ?? 0;
+  int get activeCoupons => _stats['activeCoupons'] ?? 0;
+  int get inactiveCoupons => _stats['inactiveCoupons'] ?? 0;
 }

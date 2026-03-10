@@ -95,6 +95,38 @@ class AdminService {
   }
 
   // ------------------------------------------------------------
+  // Total coupons
+  // ------------------------------------------------------------
+  Future<int> getTotalCoupons() async {
+    final snapshot = await _firestore.collection('coupons').get();
+    return snapshot.size;
+  }
+
+  // ------------------------------------------------------------
+  // Total Active coupons
+  // ------------------------------------------------------------
+  Future<int> getTotalActiveCoupons() async {
+    final snapshot = await _firestore
+        .collection('coupons')
+        .where('isActive', isEqualTo: true)
+        .get();
+
+    return snapshot.size;
+  }
+
+  // ------------------------------------------------------------
+  // Total Inactive coupons
+  // ------------------------------------------------------------
+  Future<int> getTotalInactiveCoupons() async {
+    final snapshot = await _firestore
+        .collection('coupons')
+        .where('isActive', isEqualTo: false)
+        .get();
+
+    return snapshot.size;
+  }
+
+  // ------------------------------------------------------------
   // Total revenue
   // ------------------------------------------------------------
   Future<double> getTotalRevenue() async {
@@ -134,6 +166,9 @@ class AdminService {
     final activeCategoriesFuture = getTotalActiveCategories();
     final inactiveCategoriesFuture = getTotalInactiveCategories();
     final orderStatusFuture = getOrderStatusStats();
+    final totalCouponsFuture = getTotalCoupons();
+    final activeCoupons = getTotalActiveCoupons();
+    final inactiveCoupons = getTotalInactiveCoupons();
 
     final results = await Future.wait([
       usersFuture,
@@ -145,6 +180,9 @@ class AdminService {
       inactiveCategoriesFuture,
       orderStatusFuture,
       activeUserFuture,
+      totalCouponsFuture,
+      activeCoupons,
+      inactiveCoupons,
     ]);
 
     return {
@@ -157,6 +195,9 @@ class AdminService {
       'inactiveCategories': results[6],
       'orderStatus': results[7],
       'activeUsers': results[8],
+      'totalCoupons': results[9],
+      'activeCoupons': results[10],
+      'inactiveCoupons': results[11],
     };
   }
 }
