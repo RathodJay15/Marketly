@@ -55,6 +55,17 @@ class _allOrdersState extends State<AllOrders> {
               );
             }
 
+            if (provider.orders.isEmpty) {
+              return Center(
+                child: Text(
+                  AppConstants.noOrdersYet,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                ),
+              );
+            }
+
             return ListView.builder(
               itemCount: provider.orders.length,
               itemBuilder: (context, index) {

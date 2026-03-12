@@ -50,7 +50,7 @@ class CouponServices {
     required bool isActive,
     required bool firstOrderOnly,
     required int expiriesInDays,
-    required double minOrderAmount,
+    required int minOrderAmount,
   }) async {
     final collectionRef = _firestore.collection('coupons');
     final docRef = collectionRef.doc(code);
@@ -111,9 +111,7 @@ class CouponServices {
         'isActive': isActive,
         'firstOrderOnly': firstOrderOnly,
         'minOrderAmount': minOrderAmount,
-        'expiryDate': Timestamp.fromDate(
-          DateTime.now().add(Duration(days: expiriesInDays)),
-        ),
+        'expiryDate': DateTime.now().add(Duration(days: expiriesInDays)),
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -127,9 +125,7 @@ class CouponServices {
         'isActive': isActive,
         'firstOrderOnly': firstOrderOnly,
         'minOrderAmount': minOrderAmount,
-        'expiryDate': Timestamp.fromDate(
-          DateTime.now().add(Duration(days: expiriesInDays)),
-        ),
+        'expiryDate': DateTime.now().add(Duration(days: expiriesInDays)),
         'createdAt': FieldValue.serverTimestamp(),
       });
     }
@@ -177,9 +173,7 @@ class CouponServices {
         "isActive": true,
         "firstOrderOnly": true,
         "createdAt": FieldValue.serverTimestamp(),
-        "expiryDate": Timestamp.fromDate(
-          DateTime.now().add(Duration(days: 30)),
-        ),
+        "expiryDate": DateTime.now().add(Duration(days: 30)),
       });
     }
 

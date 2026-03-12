@@ -252,4 +252,40 @@ class Validators {
     }
     return null;
   }
+
+  // ---------------- COUPON CODE --------------------
+  static String? couponCode(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Coupon Code is required";
+    }
+    return null;
+  }
+
+  // --------------- COUPON MINIMUM ORDER AMOUNT --------------
+  static String? minOrderAmount(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Minimum Order Amount is required";
+    }
+
+    final minOrderAmount = int.tryParse(value);
+    if (minOrderAmount == null || minOrderAmount < 0) {
+      return "Enter valid Minimum Order Amount";
+    }
+
+    return null;
+  }
+
+  // --------------- COUPON EXPIRY DAYS --------------
+  static String? expiriesInDays(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Number of Days are required";
+    }
+
+    final expiriesInDays = int.tryParse(value);
+    if (expiriesInDays == null || expiriesInDays < 0) {
+      return "Enter valid Number of Days";
+    }
+
+    return null;
+  }
 }

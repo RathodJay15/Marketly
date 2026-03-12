@@ -102,6 +102,27 @@ class _allProductsState extends State<AllProducts> {
                 ),
               );
             }
+            if (provider.error != null) {
+              return Center(
+                child: Text(
+                  provider.error!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              );
+            }
+
+            if (provider.visibleProducts.isEmpty) {
+              return Center(
+                child: Text(
+                  AppConstants.noProductsAvailable,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                ),
+              );
+            }
             final products = provider.visibleProducts;
             return ListView.builder(
               itemCount: products.length + 2,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/admin/crud_coupons/add_coupon.dart';
+import 'package:marketly/presentation/admin/crud_coupons/edit_coupon.dart';
 import 'package:marketly/providers/admin/admin_coupon_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -53,6 +54,28 @@ class _allCouponsState extends State<AllCoupons> {
               );
             }
 
+            if (provider.error != null) {
+              return Center(
+                child: Text(
+                  provider.error!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              );
+            }
+
+            if (provider.coupons.isEmpty) {
+              return Center(
+                child: Text(
+                  AppConstants.noCouponsAvailable,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                ),
+              );
+            }
+
             return ListView.builder(
               itemCount: provider.coupons.length + 1,
               itemBuilder: (context, index) {
@@ -87,7 +110,7 @@ class _allCouponsState extends State<AllCoupons> {
                     ),
                   );
                 }
-                final coupons = provider.coupons[index - 1];
+                final coupon = provider.coupons[index - 1];
                 return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
@@ -103,7 +126,7 @@ class _allCouponsState extends State<AllCoupons> {
                       ),
                     ),
                     title: Text(
-                      coupons.code,
+                      coupon.code,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                         fontWeight: FontWeight.bold,
@@ -111,11 +134,11 @@ class _allCouponsState extends State<AllCoupons> {
                       ),
                     ),
                     subtitle: Text(
-                      coupons.isActive
+                      coupon.isActive
                           ? AppConstants.active
                           : AppConstants.inActive,
                       style: TextStyle(
-                        color: coupons.isActive
+                        color: coupon.isActive
                             ? Theme.of(context).colorScheme.onSecondary
                             : Theme.of(context).colorScheme.onSurface,
                         fontSize: 15,
@@ -123,12 +146,12 @@ class _allCouponsState extends State<AllCoupons> {
                     ),
                     trailing: IconButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (_) => EditCategory(coupons: coupons),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditCoupon(coupon: coupon),
+                          ),
+                        );
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),

@@ -6,7 +6,7 @@ class CouponModel {
   final int minOrderAmount;
   final bool isActive;
   final bool firstOrderOnly;
-  final Timestamp? expiryDate;
+  final Timestamp expiryDate;
 
   CouponModel({
     required this.code,
@@ -14,7 +14,7 @@ class CouponModel {
     required this.minOrderAmount,
     required this.isActive,
     required this.firstOrderOnly,
-    this.expiryDate,
+    required this.expiryDate,
   });
 
   factory CouponModel.fromFirestore(
@@ -26,6 +26,7 @@ class CouponModel {
       minOrderAmount: doc['minOrderAmount'],
       isActive: doc['isActive'],
       firstOrderOnly: doc['firstOrderOnly'] ?? false,
+      expiryDate: doc['expiryDate'],
     );
   }
 
@@ -43,6 +44,7 @@ class CouponModel {
       minOrderAmount: minOrderAmount ?? this.minOrderAmount,
       isActive: isActive ?? this.isActive,
       firstOrderOnly: firstOrderOnly ?? this.firstOrderOnly,
+      expiryDate: expiryDate ?? this.expiryDate,
     );
   }
 }

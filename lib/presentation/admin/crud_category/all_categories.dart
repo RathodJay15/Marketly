@@ -56,6 +56,28 @@ class _allCategoriesState extends State<AllCategories> {
               );
             }
 
+            if (provider.error != null) {
+              return Center(
+                child: Text(
+                  provider.error!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              );
+            }
+
+            if (provider.categories.isEmpty) {
+              return Center(
+                child: Text(
+                  AppConstants.noCategoriesAvailable,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                ),
+              );
+            }
+
             return ListView.builder(
               itemCount: provider.categories.length + 1,
               itemBuilder: (context, index) {

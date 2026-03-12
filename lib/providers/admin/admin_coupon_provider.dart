@@ -37,7 +37,7 @@ class AdminCouponProvider extends ChangeNotifier {
     required int discountPercentage,
     required bool isActive,
     required bool firstOrderOnly,
-    required double minOrderAmount,
+    required int minOrderAmount,
     required int expiriesInDays,
   }) async {
     try {
@@ -65,7 +65,7 @@ class AdminCouponProvider extends ChangeNotifier {
   // ------------------------------------------------------------
   // Activate / Deactivate Category
   // ------------------------------------------------------------
-  Future<void> toggleCategoryStatus({
+  Future<void> toggleCouponStatus({
     required String code,
     required bool isActive,
   }) async {
@@ -88,9 +88,9 @@ class AdminCouponProvider extends ChangeNotifier {
   }
 
   // ------------------------------------------------------------
-  // Update Category (Title, Slug, Active Status)
+  // Update Coupon (Title, Slug, Active Status)
   // ------------------------------------------------------------
-  Future<bool> updateCategory({
+  Future<bool> updateCoupon({
     required String oldCode,
     required String code,
     required int discountPercentage,

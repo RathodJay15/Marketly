@@ -21,7 +21,7 @@ class _addCoupnState extends State<AddCoupon> {
   TextEditingController expiriesInDaysCtrl = TextEditingController();
 
   bool isActive = true;
-  bool firstOrderOnly = true;
+  bool firstOrderOnly = false;
   bool isAdding = false;
 
   @override
@@ -44,7 +44,7 @@ class _addCoupnState extends State<AddCoupon> {
         discountPercentage: int.parse(discountPercentageCtrl.text.trim()),
         expiriesInDays: int.parse(expiriesInDaysCtrl.text.trim()),
         firstOrderOnly: firstOrderOnly,
-        minOrderAmount: double.parse(minOrderAmountCtrl.text.trim()),
+        minOrderAmount: int.parse(minOrderAmountCtrl.text.trim()),
         isActive: isActive,
       );
       if (!mounted) return;
@@ -93,86 +93,140 @@ class _addCoupnState extends State<AddCoupon> {
           ),
         ),
       ),
-      // body: _detailsForm(),
+      body: _detailsForm(),
     );
   }
 
-  // Widget _detailsForm() {
-  //   return Form(
-  //     key: _formKey,
-  //     child: ListView(
-  //       padding: const EdgeInsets.symmetric(horizontal: 20),
-  //       children: [
-  //         _label(AppConstants.title),
-  //         _field(
-  //           titleCtrl,
-  //           AppConstants.title,
-  //           Validators.title,
-  //           icon: Icons.title_rounded,
-  //         ),
-  //         _label(AppConstants.slug),
-  //         _field(
-  //           slugCtrl,
-  //           AppConstants.slug,
-  //           Validators.slug,
-  //           icon: Icons.text_fields_rounded,
-  //         ),
-  //         const SizedBox(height: 20),
+  Widget _detailsForm() {
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _label(AppConstants.couponCode),
+              _field(
+                codeCtrl,
+                AppConstants.couponCode,
+                Validators.couponCode,
+                icon: Icons.closed_caption_rounded,
+              ),
+              _label(AppConstants.couponDiscount),
+              _field(
+                discountPercentageCtrl,
+                AppConstants.couponDiscount,
+                Validators.discount,
+                icon: Icons.discount_rounded,
+              ),
+              _label(AppConstants.minOrderAmount),
+              _field(
+                minOrderAmountCtrl,
+                AppConstants.minOrderAmount,
+                Validators.minOrderAmount,
+                icon: Icons.attach_money_rounded,
+              ),
+              _label(AppConstants.erpiriesInDay),
+              _field(
+                expiriesInDaysCtrl,
+                AppConstants.enterNoOfDays,
+                Validators.discount,
+                icon: Icons.discount_rounded,
+              ),
+              const SizedBox(height: 20),
 
-  //         /// Active Switch
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             Text(
-  //               AppConstants.activeStatus,
-  //               style: TextStyle(
-  //                 fontSize: 16,
-  //                 color: Theme.of(context).colorScheme.onInverseSurface,
-  //               ),
-  //             ),
-  //             Switch(
-  //               value: isActive,
-  //               activeThumbColor: Theme.of(
-  //                 context,
-  //               ).colorScheme.onInverseSurface,
-  //               inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
-  //               inactiveTrackColor: Theme.of(
-  //                 context,
-  //               ).colorScheme.onSecondaryContainer,
-  //               onChanged: (value) {
-  //                 setState(() {
-  //                   isActive = value;
-  //                 });
-  //               },
-  //             ),
-  //           ],
-  //         ),
+              /// Active Switch
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppConstants.activeStatus,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    ),
+                  ),
+                  Switch(
+                    value: isActive,
+                    activeThumbColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
+                    inactiveTrackColor: Theme.of(
+                      context,
+                    ).colorScheme.onSecondaryContainer,
+                    onChanged: (value) {
+                      setState(() {
+                        isActive = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
 
-  //         const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
-  //         SizedBox(
-  //           height: 50,
-  //           child: ElevatedButton(
-  //             style: ElevatedButton.styleFrom(
-  //               backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-  //               shape: RoundedRectangleBorder(
-  //                 borderRadius: BorderRadius.circular(10),
-  //               ),
-  //             ),
-  //             onPressed: _onAdd,
-  //             child: Text(
-  //               AppConstants.addCategory,
-  //               style: TextStyle(
-  //                 fontSize: 16,
-  //                 color: Theme.of(context).colorScheme.primary,
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+              /// First Order Switch
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    AppConstants.firstOrderOnly,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    ),
+                  ),
+                  Switch(
+                    value: firstOrderOnly,
+                    activeThumbColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
+                    inactiveTrackColor: Theme.of(
+                      context,
+                    ).colorScheme.onSecondaryContainer,
+                    onChanged: (value) {
+                      setState(() {
+                        firstOrderOnly = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: _onAdd,
+                  child: Text(
+                    AppConstants.addCoupon,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _label(String text) {
     return Padding(

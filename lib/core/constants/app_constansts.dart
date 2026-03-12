@@ -8,7 +8,6 @@ class AppConstants {
   static const String categories = "Categories";
   static const String addCategory = "Add Category";
   static const String categoryAdded = "Category added successfully ✅";
-  static const String couponAdded = "Coupon added successfully ✅";
   static const String addProduct = "Add Product";
   static const String productAdded = "Product added successfully ✅";
   static const String updtCategory = "Update Category";
@@ -105,12 +104,7 @@ class AppConstants {
   static const String favorites = "Favorites";
   static const String logout = "Logout";
   static const String defaultAdrs = "Default address";
-  static const String couponCode = "Coupon Code";
-  static const String enterCouponCode = "Enter Coupon Code";
-  static const String couponDiscount = "Coupon Discount";
-  static const String coupons = "Coupons";
-  static const String totalCoupons = "Total Coupons";
-  static const String addCoupon = "Add Coupon";
+
   static const String apply = "Apply";
   static const String addNewAdrs = "Add new address";
   static const String dialogEmptyCart = "Empty cart?";
@@ -183,6 +177,27 @@ class AppConstants {
   static const String totalProducts = "Total Products";
   static const String totalQuantity = "Total of Quantity";
   static const String goTocheckOut = "Go to Check Out!";
+  static const String noCategoriesAvailable = "No categories available";
+  static const String noProductsAvailable = "No products available";
+  static const String noOrdersYet = "No orders yet";
+
+  // Coupon constants
+  static const String couponAdded = "Coupon added successfully ✅";
+  static const String couponDeleted = "Coupon Deleted successfully ✅";
+  static const String couponUpdated = "Coupon Updated successfully ✅";
+  static const String couponCode = "Coupon Code";
+  static const String enterCouponCode = "Enter Coupon Code";
+  static const String couponDiscount = "Coupon Discount";
+  static const String coupons = "Coupons";
+  static const String totalCoupons = "Total Coupons";
+  static const String addCoupon = "Add Coupon";
+  static const String couponDiscountPercentage = "Coupon Discount Percentage";
+  static const String minOrderAmount = "Minimum Order Amount";
+  static const String firstOrderOnly = "First Order Only";
+  static const String erpiriesInDay = "Expires in (Days)";
+  static const String enterNoOfDays = "Enter No. of days";
+  static const String noCouponsAvailable = "No coupons available";
+  static const String updtCoupon = "Update Coupon";
 
   static String orderOf(int items) {
     return 'Order of $items items';
