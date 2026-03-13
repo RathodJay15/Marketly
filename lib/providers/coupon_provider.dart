@@ -34,8 +34,7 @@ class CouponProvider extends ChangeNotifier {
       return "You have already used this coupon";
     }
 
-    if (coupon.expiryDate != null &&
-        coupon.expiryDate!.toDate().isBefore(DateTime.now())) {
+    if (coupon.expiryDate.toDate().isBefore(DateTime.now())) {
       return 'Coupon expired';
     }
 

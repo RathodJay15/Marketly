@@ -6,6 +6,7 @@ import 'package:marketly/presentation/user/home_screen_body.dart';
 import 'package:marketly/presentation/user/menu/menu_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
+import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
@@ -101,14 +102,15 @@ class _homeScreenState extends State<HomeScreen>
 
           child: Consumer<NavigationProvider>(
             builder: (context, navProvider, child) {
+              final cartItems = context.watch<CartProvider>().items.length;
               return Container(
-                height: 65,
+                height: 70,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   borderRadius: BorderRadius.circular(35),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Colors.black26,
+                      color: Theme.of(context).colorScheme.primary,
                       blurRadius: 12,
                       offset: Offset(0, 6),
                     ),
@@ -125,21 +127,54 @@ class _homeScreenState extends State<HomeScreen>
                   selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
                   unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
                   elevation: 0,
-                  items: const [
+                  items: [
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.home, size: 20),
+                      icon: Icon(Icons.home, size: 25),
                       label: AppConstants.home,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.search, size: 20),
+                      icon: Icon(Icons.search, size: 25),
                       label: AppConstants.search,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.shopping_cart_outlined, size: 20),
+                      icon: Stack(
+                        children: [
+                          Icon(Icons.shopping_cart_outlined, size: 25),
+                          if (cartItems > 0)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(1),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: Text(
+                                  '$cartItems',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onInverseSurface,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                       label: AppConstants.cart,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.menu_rounded, size: 20),
+                      icon: Icon(Icons.menu_rounded, size: 25),
                       label: AppConstants.menu,
                     ),
                   ],

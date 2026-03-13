@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 class AppConstants {
   static const String welcomeMsg = "Hello, Welcome 👋";
   static const String searchProducts = "Search products..";
+  static const String forgotPass = "Forgot Password";
   static const String totalCategories = "Total Categories";
   static const String categories = "Categories";
   static const String addCategory = "Add Category";
@@ -70,8 +71,11 @@ class AppConstants {
   static const String back = "Back";
   static const String next = "Next";
   static const String exit = "Exit";
+  static const String productNotFound = "Product not found";
   static const String cancel = "Cancel";
+  static const String goTo = "Go to";
   static const String save = "Save";
+  static const String send = "Send";
   static const String delete = "Delete";
   static const String deleteAcc = "Delete Account";
   static const String removeItem = "Remove Item";
@@ -198,6 +202,12 @@ class AppConstants {
   static const String enterNoOfDays = "Enter No. of days";
   static const String noCouponsAvailable = "No coupons available";
   static const String updtCoupon = "Update Coupon";
+
+  // Inter Access
+  static const String turnOnInternet =
+      "Please turn on WiFi or mobile data to continue.";
+  static const String noInternet = "No Internet";
+  static const String retry = "Retry";
 
   static String orderOf(int items) {
     return 'Order of $items items';

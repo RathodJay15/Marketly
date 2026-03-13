@@ -111,7 +111,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       ),
       openBuilder: (context, _) {
         FocusManager.instance.primaryFocus?.unfocus();
-        return ProductDetailsScreen(productId: product.id);
+        return ProductDetailsScreen(productId: product.id, fromFavorites: true);
       },
       closedBuilder: (context, openContainer) => GestureDetector(
         onTap: openContainer,

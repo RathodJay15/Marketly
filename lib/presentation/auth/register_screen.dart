@@ -371,7 +371,7 @@ class _registerScreenState extends State<RegisterScreen> {
                         ),
                       ),
 
-                    // Register link
+                    // Login link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

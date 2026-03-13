@@ -20,9 +20,9 @@ class _editCouponState extends State<EditCoupon> {
   final _formKey = GlobalKey<FormState>();
 
   late TextEditingController codeCtrl;
-  late TextEditingController discountPercentageCtrl = TextEditingController();
-  late TextEditingController minOrderAmountCtrl = TextEditingController();
-  late TextEditingController expiriesInDaysCtrl = TextEditingController();
+  late TextEditingController discountPercentageCtrl;
+  late TextEditingController minOrderAmountCtrl;
+  late TextEditingController expiriesInDaysCtrl;
   late bool isActive;
   late bool firstOrderOnly;
 

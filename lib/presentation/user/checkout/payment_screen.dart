@@ -22,7 +22,7 @@ class PaymentScreen extends StatefulWidget {
 
 class _paymentScreenState extends State<PaymentScreen> {
   String _paymentMethod = 'Cash on Delivery';
-  String? couponError = null;
+  String? couponError;
 
   final TextEditingController _textCouponController = TextEditingController();
   final FocusNode _couponFocusNode = FocusNode();
@@ -120,11 +120,14 @@ class _paymentScreenState extends State<PaymentScreen> {
 
     // Place order via PROVIDER
     final placedOrder = await orderProvider.placeOrder();
-    await CouponServices().saveCouponUsage(
-      userId: placedOrder!.userId,
-      couponCode: placedOrder.pricing["couponCode"],
-      orderNumber: placedOrder.orderNumber,
-    );
+
+    if (placedOrder!.pricing["couponCode"] != null) {
+      await CouponServices().saveCouponUsage(
+        userId: placedOrder.userId,
+        couponCode: placedOrder.pricing["couponCode"],
+        orderNumber: placedOrder.orderNumber,
+      );
+    }
 
     // Clear states
     cartProvider.unlockCart();

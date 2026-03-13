@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/presentation/auth/forgotPass_screen.dart';
 import 'package:marketly/presentation/auth/register_screen.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -179,7 +180,32 @@ class _loginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 40.0),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        onPressed: () {
+                          _formKey.currentState?.reset();
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ForgotpassScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppConstants.forgotPass,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
 
                     // Sign In Button
                     ElevatedButton(

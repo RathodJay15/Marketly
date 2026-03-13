@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/presentation/admin/dash_board_screen.dart';
 import 'package:marketly/data/services/Notifications/notification_services.dart';
@@ -20,7 +24,74 @@ class AuthGate extends StatefulWidget {
 
 class _authGateState extends State<AuthGate> {
   NotificationServices notificationServices = NotificationServices();
+  late StreamSubscription _connectivitySubscription;
   bool _notificationInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      result,
+    ) {
+      if (result == ConnectivityResult.none) {
+        _checkInternet(context);
+      }
+    });
+  }
+
+  Future<void> _init() async {
+    bool hasInternet = await _checkInternet(context);
+    if (!mounted) return;
+    if (!hasInternet) return;
+  }
+
+  Future<bool> _checkInternet(BuildContext context) async {
+    final results = await Connectivity().checkConnectivity();
+
+    if (results.contains(ConnectivityResult.none)) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              AppConstants.noInternet,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+            content: Text(
+              AppConstants.turnOnInternet,
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await _checkInternet(context);
+                },
+                child: Text(
+                  AppConstants.retry,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

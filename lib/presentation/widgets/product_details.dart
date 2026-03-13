@@ -16,8 +16,13 @@ import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final String productId;
+  final bool fromFavorites;
 
-  const ProductDetailsScreen({super.key, required this.productId});
+  const ProductDetailsScreen({
+    super.key,
+    required this.productId,
+    this.fromFavorites = false,
+  });
 
   @override
   State<ProductDetailsScreen> createState() => _productDetailsScreenState();
@@ -55,7 +60,7 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
       if (!mounted) return;
 
       setState(() {
-        _error = "Product not found";
+        _error = AppConstants.productNotFound;
         _isLoading = false;
       });
     }
@@ -90,6 +95,9 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
               listen: false,
             ).setScreenIndex(2);
             Navigator.pop(context);
+            if (widget.fromFavorites) {
+              Navigator.pop(context); // close favorites screen
+            }
           },
           child: SizedBox(
             height: 20,

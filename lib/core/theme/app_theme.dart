@@ -71,7 +71,7 @@ class MarketTheme {
         66,
       ), //TextField BG / Card BG
       onPrimaryContainer: const Color.fromARGB(255, 0, 0, 255), //Button 1
-      onSecondary: const Color.fromARGB(255, 0, 255, 0), //Button2
+      onSecondary: const Color.fromARGB(255, 0, 180, 0), //Button2
       onSurface: const Color.fromARGB(255, 255, 0, 0), //Button 3
       onSurfaceVariant: const Color.fromARGB(255, 255, 200, 0), //Rating Bar
       onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //\
