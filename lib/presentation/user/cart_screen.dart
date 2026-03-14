@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/presentation/user/checkout/checkout_flow_screen.dart';
@@ -230,7 +231,7 @@ class _cartScreenState extends State<CartScreen> {
               fit: BoxFit.contain,
               errorWidget: (_, __, ___) => Container(
                 color: Theme.of(context).colorScheme.onPrimary,
-                child: const Icon(Icons.image_not_supported),
+                child: Iconoir(IconoirIcons.mediaImage),
               ),
             ),
           ),
@@ -288,7 +289,7 @@ class _cartScreenState extends State<CartScreen> {
                     minHeight: 32,
                   ),
                   padding: EdgeInsets.zero,
-                  icon: Icon(Icons.add_rounded),
+                  icon: Iconoir(IconoirIcons.plus),
                   iconSize: 25,
                   color: Theme.of(context).colorScheme.onSecondary,
                 ),
@@ -310,7 +311,7 @@ class _cartScreenState extends State<CartScreen> {
                     minHeight: 32,
                   ),
                   padding: EdgeInsets.zero,
-                  icon: Icon(Icons.remove_rounded),
+                  icon: Iconoir(IconoirIcons.minus),
                   iconSize: 25,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),

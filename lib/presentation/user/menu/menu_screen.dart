@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/menu/favorites_screen.dart';
@@ -91,29 +92,25 @@ class _menuScreenState extends State<MenuScreen> {
 
         SizedBox(height: 20),
 
-        _buildTile(goToMyAccount, Icons.person, AppConstants.myAccount),
+        _buildTile(goToMyAccount, IconoirIcons.user, AppConstants.myAccount),
 
-        _buildTile(goToMyAddresses, Icons.location_on, AppConstants.savedAdrs),
+        _buildTile(
+          goToMyAddresses,
+          IconoirIcons.pinAlt,
+          AppConstants.savedAdrs,
+        ),
 
         _buildTile(
           goToNotifications,
-          Icons.notifications_rounded,
+          IconoirIcons.bell,
           AppConstants.notifications,
         ),
 
-        _buildTile(
-          goToFavorites,
-          Icons.favorite_rounded,
-          AppConstants.favorites,
-        ),
+        _buildTile(goToFavorites, IconoirIcons.heart, AppConstants.favorites),
 
-        _buildTile(
-          goToMyOrders,
-          Icons.format_list_bulleted_rounded,
-          AppConstants.myOrders,
-        ),
+        _buildTile(goToMyOrders, IconoirIcons.list, AppConstants.myOrders),
 
-        _buildTile(goToCart, Icons.shopping_cart, AppConstants.myCart),
+        _buildTile(goToCart, IconoirIcons.cartAlt, AppConstants.myCart),
 
         _themeTile(
           currentTheme: user.themeMode, // 'system' | 'light' | 'dark'
@@ -129,13 +126,13 @@ class _menuScreenState extends State<MenuScreen> {
           },
         ),
 
-        _buildTile(logout, Icons.logout_outlined, AppConstants.logout),
-        SizedBox(height: 75),
+        _logoutTile(logout, IconoirIcons.logOut, AppConstants.logout),
+        SizedBox(height: 85),
       ],
     );
   }
 
-  Widget _buildTile(VoidCallback onTap, IconData icon, String label) {
+  Widget _buildTile(VoidCallback onTap, IconoirIcons icon, String label) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
@@ -147,7 +144,45 @@ class _menuScreenState extends State<MenuScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(
+              Iconoir(
+                icon,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                size: 25,
+              ),
+              SizedBox(width: 20),
+              Text(
+                label,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 18,
+                ),
+              ),
+              Spacer(),
+              Iconoir(
+                IconoirIcons.navArrowRight,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                size: 30,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _logoutTile(VoidCallback onTap, IconoirIcons icon, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: SizedBox(
+          height: 50,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Iconoir(
                 icon,
                 color: Theme.of(context).colorScheme.onInverseSurface,
                 size: 25,
@@ -159,14 +194,6 @@ class _menuScreenState extends State<MenuScreen> {
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   fontSize: 18,
                 ),
-              ),
-              Spacer(),
-              Icon(
-                label == AppConstants.logout
-                    ? null
-                    : Icons.chevron_right_rounded,
-                color: Theme.of(context).colorScheme.onInverseSurface,
-                size: 30,
               ),
             ],
           ),
@@ -201,14 +228,18 @@ class _menuScreenState extends State<MenuScreen> {
                       height: 120,
                       width: 120,
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      child: const Icon(Icons.person, size: 30),
+                      child: Center(
+                        child: const Iconoir(IconoirIcons.user, size: 30),
+                      ),
                     ),
                   )
                 : Container(
                     height: 120,
                     width: 120,
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    child: const Icon(Icons.person, size: 60),
+                    child: Center(
+                      child: const Iconoir(IconoirIcons.user, size: 60),
+                    ),
                   ),
           ),
           SizedBox(height: 10),
@@ -243,8 +274,8 @@ class _menuScreenState extends State<MenuScreen> {
         height: 50,
         child: Row(
           children: [
-            Icon(
-              Icons.brightness_6_outlined,
+            Iconoir(
+              IconoirIcons.sunLight,
               color: Theme.of(context).colorScheme.onInverseSurface,
               size: 25,
             ),
@@ -252,7 +283,7 @@ class _menuScreenState extends State<MenuScreen> {
             const SizedBox(width: 10),
 
             Text(
-              'Theme',
+              AppConstants.theme,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onInverseSurface,
                 fontSize: 18,
@@ -267,33 +298,33 @@ class _menuScreenState extends State<MenuScreen> {
                 dropdownColor: Theme.of(
                   context,
                 ).colorScheme.onSecondaryContainer,
-                icon: Icon(
-                  Icons.arrow_drop_down,
+                icon: Iconoir(
+                  IconoirIcons.navArrowDown,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                 ),
                 items: [
                   DropdownMenuItem(
-                    value: 'system',
+                    value: AppConstants.systemDdValue,
                     child: Text(
-                      'System',
+                      AppConstants.system,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
                     ),
                   ),
                   DropdownMenuItem(
-                    value: 'light',
+                    value: AppConstants.lightDdValue,
                     child: Text(
-                      'Light',
+                      AppConstants.light,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),
                     ),
                   ),
                   DropdownMenuItem(
-                    value: 'dark',
+                    value: AppConstants.darkDdValue,
                     child: Text(
-                      'Dark',
+                      AppConstants.dark,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onInverseSurface,
                       ),

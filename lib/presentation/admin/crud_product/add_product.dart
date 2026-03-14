@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
@@ -210,7 +211,7 @@ class _addProductState extends State<AddProduct> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () => Navigator.pop(context),
         ),
@@ -615,8 +616,8 @@ class _addProductState extends State<AddProduct> {
           child: Row(
             children: [
               // left icon
-              Icon(
-                Icons.image,
+              Iconoir(
+                IconoirIcons.mediaImage,
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
 
@@ -642,8 +643,8 @@ class _addProductState extends State<AddProduct> {
               ),
 
               imageFile == null
-                  ? Icon(
-                      Icons.camera_alt_outlined,
+                  ? Iconoir(
+                      IconoirIcons.camera,
                       color: Theme.of(context).colorScheme.onPrimary,
                     )
                   : IconButton(
@@ -681,8 +682,8 @@ class _addProductState extends State<AddProduct> {
           child: Row(
             children: [
               // left icon
-              Icon(
-                Icons.image,
+              Iconoir(
+                IconoirIcons.mediaImage,
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
 
@@ -708,8 +709,8 @@ class _addProductState extends State<AddProduct> {
               ),
 
               imageFiles == null
-                  ? Icon(
-                      Icons.camera_alt_outlined,
+                  ? Iconoir(
+                      IconoirIcons.camera,
                       color: Theme.of(context).colorScheme.onPrimary,
                     )
                   : IconButton(

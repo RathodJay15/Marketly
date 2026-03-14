@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/coupon_model.dart';
@@ -126,7 +127,7 @@ class _editCouponState extends State<EditCoupon> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () => Navigator.pop(context),
         ),
@@ -141,7 +142,7 @@ class _editCouponState extends State<EditCoupon> {
         actions: [
           IconButton(
             onPressed: _onDelete,
-            icon: const Icon(Icons.delete_rounded),
+            icon: const Iconoir(IconoirIcons.trash),
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ],
@@ -162,28 +163,29 @@ class _editCouponState extends State<EditCoupon> {
             codeCtrl,
             AppConstants.couponCode,
             Validators.couponCode,
-            icon: Icons.closed_caption_rounded,
+            icon: IconoirIcons.closedCaptions,
+            isNum: false,
           ),
           _label(AppConstants.couponDiscount),
           _field(
             discountPercentageCtrl,
             AppConstants.couponDiscount,
             Validators.discount,
-            icon: Icons.discount_rounded,
+            icon: IconoirIcons.percentageRound,
           ),
           _label(AppConstants.minOrderAmount),
           _field(
             minOrderAmountCtrl,
             AppConstants.minOrderAmount,
             Validators.minOrderAmount,
-            icon: Icons.attach_money_rounded,
+            icon: IconoirIcons.dollar,
           ),
           _label(AppConstants.erpiriesInDay),
           _field(
             expiriesInDaysCtrl,
             AppConstants.enterNoOfDays,
             Validators.discount,
-            icon: Icons.discount_rounded,
+            icon: IconoirIcons.calendar,
           ),
           const SizedBox(height: 20),
 
@@ -295,7 +297,8 @@ class _editCouponState extends State<EditCoupon> {
     TextEditingController controller,
     String hint,
     String? Function(String?)? validator, {
-    IconData icon = Icons.text_fields_outlined,
+    IconoirIcons icon = IconoirIcons.closedCaptions,
+    bool isNum = true,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -303,6 +306,7 @@ class _editCouponState extends State<EditCoupon> {
         controller: controller,
         style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
         textInputAction: TextInputAction.next,
+        keyboardType: isNum == true ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
@@ -322,9 +326,15 @@ class _editCouponState extends State<EditCoupon> {
               width: 1,
             ),
           ),
-          prefixIcon: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.onInverseSurface,
+          prefixIcon: SizedBox(
+            height: 40,
+            width: 40,
+            child: Center(
+              child: Iconoir(
+                icon,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
           ),
         ),
         validator: validator,

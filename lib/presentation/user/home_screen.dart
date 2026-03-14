@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
@@ -78,7 +79,7 @@ class _homeScreenState extends State<HomeScreen>
       },
       child: Scaffold(
         extendBody: true,
-        // resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         body: BottomBar(
           barColor: Colors.transparent,
@@ -129,17 +130,17 @@ class _homeScreenState extends State<HomeScreen>
                   elevation: 0,
                   items: [
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.home, size: 25),
+                      icon: Iconoir(IconoirIcons.homeAlt, size: 25),
                       label: AppConstants.home,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.search, size: 25),
+                      icon: Iconoir(IconoirIcons.search, size: 25),
                       label: AppConstants.search,
                     ),
                     BottomNavigationBarItem(
                       icon: Stack(
                         children: [
-                          Icon(Icons.shopping_cart_outlined, size: 25),
+                          Iconoir(IconoirIcons.cartAlt, size: 25),
                           if (cartItems > 0)
                             Positioned(
                               right: 0,
@@ -174,7 +175,7 @@ class _homeScreenState extends State<HomeScreen>
                       label: AppConstants.cart,
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.menu_rounded, size: 25),
+                      icon: Iconoir(IconoirIcons.menu, size: 25),
                       label: AppConstants.menu,
                     ),
                   ],

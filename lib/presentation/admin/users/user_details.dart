@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/user_model.dart';
 
@@ -18,7 +19,7 @@ class _userDetailsScreen extends State<UserDetails> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () {
             Navigator.of(context).pop();

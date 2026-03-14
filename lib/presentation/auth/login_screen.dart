@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/auth/forgotPass_screen.dart';
 import 'package:marketly/presentation/auth/register_screen.dart';
@@ -83,10 +84,18 @@ class _loginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(
-                      Icons.person_search,
-                      size: 80.0,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Image.asset(
+                        AppConstants.marketlyLogo,
+                        height: 100,
+                        width: 100,
+                      ),
                     ),
                     SizedBox(height: 30.0),
 
@@ -132,9 +141,17 @@ class _loginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(10.0),
                           borderSide: BorderSide.none,
                         ),
-                        prefixIcon: Icon(
-                          Icons.email,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        prefixIcon: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: Center(
+                            child: Iconoir(
+                              IconoirIcons.mail,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -165,18 +182,26 @@ class _loginScreenState extends State<LoginScreen> {
                         suffixIcon: IconButton(
                           onPressed: () => _showPass(),
                           color: Theme.of(context).colorScheme.onInverseSurface,
-                          icon: Icon(
+                          icon: Iconoir(
                             hiddenPass
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                                ? IconoirIcons.eyeAlt
+                                : IconoirIcons.eyeClose,
                             color: Theme.of(
                               context,
                             ).colorScheme.onInverseSurface,
                           ),
                         ),
-                        prefixIcon: Icon(
-                          Icons.lock,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        prefixIcon: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: Center(
+                            child: Iconoir(
+                              IconoirIcons.lock,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
+                          ),
                         ),
                       ),
                     ),

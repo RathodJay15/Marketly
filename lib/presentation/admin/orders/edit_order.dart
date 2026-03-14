@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/order_model.dart';
 import 'package:marketly/providers/admin/admin_dashboard_provider.dart';
@@ -93,7 +94,7 @@ class _editOrderScreen extends State<EditOrder> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () {
             Navigator.of(context).pop();
@@ -257,7 +258,7 @@ class _editOrderScreen extends State<EditOrder> {
                   formattedStatus,
                   style: TextStyle(
                     color: isLocked
-                        ? Colors.grey
+                        ? Theme.of(context).colorScheme.onPrimary
                         : Theme.of(context).colorScheme.onInverseSurface,
                     fontWeight: FontWeight.w600,
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/admin/crud_product/add_product.dart';
 import 'package:marketly/presentation/admin/crud_product/edit_product.dart';
@@ -73,7 +74,7 @@ class _allProductsState extends State<AllProducts> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () async {
             await context.read<AdminDashboardProvider>().refreshDashboard();
@@ -102,6 +103,7 @@ class _allProductsState extends State<AllProducts> {
                 ),
               );
             }
+
             if (provider.error != null) {
               return Center(
                 child: Text(
@@ -113,26 +115,35 @@ class _allProductsState extends State<AllProducts> {
               );
             }
 
-            if (provider.visibleProducts.isEmpty) {
-              return Center(
-                child: Text(
-                  AppConstants.noProductsAvailable,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onInverseSurface,
-                  ),
-                ),
-              );
-            }
             final products = provider.visibleProducts;
+
             return ListView.builder(
-              itemCount: products.length + 2,
+              itemCount: products.isEmpty ? 2 : products.length + 2,
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return _buildSearchSection();
                 }
+
                 if (index == 1) {
+                  if (products.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Center(
+                        child: Text(
+                          AppConstants.noProductsAvailable,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
                   return GestureDetector(
-                    onTap: () async {
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => AddProduct()),
@@ -161,7 +172,8 @@ class _allProductsState extends State<AllProducts> {
                     ),
                   );
                 }
-                final product = provider.visibleProducts[index - 2];
+
+                final product = products[index - 2];
                 return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
@@ -217,7 +229,7 @@ class _allProductsState extends State<AllProducts> {
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      icon: Icon(Icons.edit),
+                      icon: Iconoir(IconoirIcons.editPencil),
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                   ),
@@ -245,7 +257,7 @@ class _allProductsState extends State<AllProducts> {
         }
         context.read<ProductProvider>().searchProducts(value);
       },
-      textInputAction: TextInputAction.next,
+      textInputAction: TextInputAction.done,
       decoration: InputDecoration(
         hintText: AppConstants.searchProducts,
         hintStyle: TextStyle(
@@ -257,9 +269,16 @@ class _allProductsState extends State<AllProducts> {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
-        prefixIcon: Icon(
-          Icons.search,
-          color: Theme.of(context).colorScheme.onInverseSurface,
+        prefixIcon: SizedBox(
+          height: 40,
+          width: 40,
+          child: Center(
+            child: Iconoir(
+              IconoirIcons.search,
+              size: 25,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
         ),
         suffixIcon: Row(
           mainAxisSize: MainAxisSize.min,

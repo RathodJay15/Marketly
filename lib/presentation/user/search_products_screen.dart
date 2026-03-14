@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
@@ -169,7 +170,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
               const SizedBox(height: 20),
 
               _buildProductCardGride(),
-              SizedBox(height: 85),
+              SizedBox(height: 95),
             ],
           ),
         ),
@@ -180,10 +181,8 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
             backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
             foregroundColor: Theme.of(context).colorScheme.primary,
             splashColor: Theme.of(context).colorScheme.onPrimary,
-            onPressed: () {
-              scrollToTop();
-            },
-            child: Icon(Icons.move_up),
+            onPressed: scrollToTop,
+            child: Iconoir(IconoirIcons.longArrowLeftUp, size: 30),
           ),
         ),
       ],
@@ -223,16 +222,23 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: Theme.of(context).colorScheme.onInverseSurface,
+              prefixIcon: SizedBox(
+                height: 30,
+                width: 30,
+                child: Center(
+                  child: Iconoir(
+                    IconoirIcons.search,
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    size: 30,
+                  ),
+                ),
               ),
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (_isSearching)
                     IconButton(
-                      icon: Icon(Icons.close),
+                      icon: Iconoir(IconoirIcons.cancel, size: 30),
                       color: Theme.of(context).colorScheme.onInverseSurface,
                       onPressed: _closeOrClearSearch,
                     ),

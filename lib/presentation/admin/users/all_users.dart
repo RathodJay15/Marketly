@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 // import 'package:marketly/presentation/admin/users/add_user.dart';
 import 'package:marketly/presentation/admin/users/user_details.dart';
@@ -25,7 +26,7 @@ class _allUsersState extends State<AllUsers> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () {
             Navigator.of(context).pop();
@@ -127,12 +128,11 @@ class _allUsersState extends State<AllUsers> {
                           ),
                         ),
                         SizedBox(width: 10),
-                        Icon(
-                          user.isDeleted ? Icons.block : null,
-                          color: user.isDeleted
-                              ? Theme.of(context).colorScheme.onSurface
-                              : null,
-                        ),
+                        if (user.isDeleted)
+                          Iconoir(
+                            IconoirIcons.warningSquareOutline,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                       ],
                     ),
                     trailing: IconButton(
@@ -146,7 +146,7 @@ class _allUsersState extends State<AllUsers> {
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      icon: Icon(Icons.visibility_outlined),
+                      icon: Iconoir(IconoirIcons.eyeAlt),
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                   ),

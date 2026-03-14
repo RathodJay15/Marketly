@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
@@ -262,7 +263,7 @@ class _editProductState extends State<EditProduct> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () => Navigator.pop(context),
         ),
@@ -277,7 +278,7 @@ class _editProductState extends State<EditProduct> {
         actions: [
           IconButton(
             onPressed: _onDelete,
-            icon: const Icon(Icons.delete_rounded),
+            icon: const Iconoir(IconoirIcons.trash, size: 30),
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ],
@@ -558,12 +559,18 @@ class _editProductState extends State<EditProduct> {
     return Consumer<CategoryProvider>(
       builder: (context, categoryProvider, _) {
         final categories = categoryProvider.categories;
+        final uniqueCategories = {
+          for (var c in categories) c.slug: c,
+        }.values.toList();
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: DropdownButtonFormField<String>(
             isExpanded: true,
             validator: Validators.category,
-            initialValue: categoryCtrl.text.isEmpty ? null : categoryCtrl.text,
+            initialValue:
+                uniqueCategories.any((c) => c.slug == categoryCtrl.text)
+                ? categoryCtrl.text
+                : null,
             decoration: InputDecoration(
               filled: true,
               fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -594,7 +601,7 @@ class _editProductState extends State<EditProduct> {
                 fontSize: 16,
               ),
             ),
-            items: categories.map((category) {
+            items: uniqueCategories.map((category) {
               return DropdownMenuItem<String>(
                 value: category.slug, // change if you store id instead
                 child: Text(category.title),
@@ -699,8 +706,8 @@ class _editProductState extends State<EditProduct> {
           child: Row(
             children: [
               // left icon
-              Icon(
-                Icons.image,
+              Iconoir(
+                IconoirIcons.mediaImage,
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
 
@@ -726,8 +733,8 @@ class _editProductState extends State<EditProduct> {
               ),
 
               imageFile == null
-                  ? Icon(
-                      Icons.camera_alt_outlined,
+                  ? Iconoir(
+                      IconoirIcons.camera,
                       color: Theme.of(context).colorScheme.onPrimary,
                     )
                   : IconButton(
@@ -837,8 +844,8 @@ class _editProductState extends State<EditProduct> {
           child: Row(
             children: [
               // left icon
-              Icon(
-                Icons.image,
+              Iconoir(
+                IconoirIcons.mediaImage,
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
 
@@ -864,8 +871,8 @@ class _editProductState extends State<EditProduct> {
               ),
 
               imageFiles == null
-                  ? Icon(
-                      Icons.camera_alt_outlined,
+                  ? Iconoir(
+                      IconoirIcons.camera,
                       color: Theme.of(context).colorScheme.onPrimary,
                     )
                   : IconButton(

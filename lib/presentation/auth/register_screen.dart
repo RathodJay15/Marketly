@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/core/data_instance/validators.dart';
@@ -64,8 +65,8 @@ class _registerScreenState extends State<RegisterScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(
-                  Icons.camera_alt_rounded,
+                leading: Iconoir(
+                  IconoirIcons.camera,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   size: 30,
                 ),
@@ -79,8 +80,8 @@ class _registerScreenState extends State<RegisterScreen> {
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
               ListTile(
-                leading: Icon(
-                  Icons.photo_library,
+                leading: Iconoir(
+                  IconoirIcons.mediaImageList,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   size: 30,
                 ),
@@ -195,10 +196,18 @@ class _registerScreenState extends State<RegisterScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(
-                      Icons.app_registration_outlined,
-                      size: 80.0,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Image.asset(
+                        AppConstants.marketlyLogo,
+                        height: 100,
+                        width: 100,
+                      ),
                     ),
                     SizedBox(height: 30.0),
 
@@ -224,7 +233,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     // Username
                     _textFormField(
-                      icon: Icons.person,
+                      icon: IconoirIcons.user,
                       hint: AppConstants.username,
                       controller: _usernameController,
                       validator: Validators.username,
@@ -233,7 +242,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     // Email
                     _textFormField(
-                      icon: Icons.email_rounded,
+                      icon: IconoirIcons.mail,
                       hint: AppConstants.email,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -243,7 +252,7 @@ class _registerScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20.0),
 
                     _textFormField(
-                      icon: Icons.lock,
+                      icon: IconoirIcons.lock,
                       hint: AppConstants.pass,
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -253,7 +262,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.lock,
+                      icon: IconoirIcons.lock,
                       hint: AppConstants.confPass,
                       controller: _confirmController,
                       obscureText: _obscureConfirm,
@@ -266,7 +275,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.phone,
+                      icon: IconoirIcons.phone,
                       hint: AppConstants.phone,
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
@@ -275,7 +284,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.home_rounded,
+                      icon: IconoirIcons.pinAlt,
                       hint: AppConstants.adrs,
                       controller: _addressController,
                       validator: Validators.address,
@@ -283,21 +292,21 @@ class _registerScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.location_city_outlined,
+                      icon: IconoirIcons.city,
                       hint: AppConstants.ct,
                       controller: _cityController,
                       validator: Validators.username,
                     ),
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.map_outlined,
+                      icon: IconoirIcons.map,
                       hint: AppConstants.state,
                       controller: _stateController,
                       validator: Validators.username,
                     ),
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.public_outlined,
+                      icon: IconoirIcons.globe,
                       hint: AppConstants.cntry,
                       controller: _countyController,
                       validator: Validators.username,
@@ -305,7 +314,7 @@ class _registerScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 20.0),
                     _textFormField(
-                      icon: Icons.pin_outlined,
+                      icon: IconoirIcons.pin,
                       hint: AppConstants.pincode,
                       controller: _pincodeController,
                       validator: Validators.username,
@@ -408,7 +417,7 @@ class _registerScreenState extends State<RegisterScreen> {
   }
 
   Widget _textFormField({
-    required IconData icon,
+    required IconoirIcons icon,
     required String hint,
     required TextEditingController controller,
     String? Function(String?)? validator,
@@ -437,18 +446,22 @@ class _registerScreenState extends State<RegisterScreen> {
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
-        prefixIcon: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.onInverseSurface,
+        prefixIcon: SizedBox(
+          height: 40,
+          width: 40,
+          child: Center(
+            child: Iconoir(
+              icon,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
         ),
         suffixIcon: onToggleVisibility != null
             ? IconButton(
                 onPressed: onToggleVisibility,
                 color: Theme.of(context).colorScheme.onInverseSurface,
-                icon: Icon(
-                  obscureText
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
+                icon: Iconoir(
+                  obscureText ? IconoirIcons.eyeAlt : IconoirIcons.eyeClose,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                 ),
               )
@@ -473,8 +486,8 @@ class _registerScreenState extends State<RegisterScreen> {
         child: Row(
           children: [
             // left icon
-            Icon(
-              Icons.person_outline,
+            Iconoir(
+              IconoirIcons.user,
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
 
@@ -509,8 +522,8 @@ class _registerScreenState extends State<RegisterScreen> {
                     ),
             ),
 
-            Icon(
-              Icons.camera_alt_outlined,
+            Iconoir(
+              IconoirIcons.camera,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
           ],

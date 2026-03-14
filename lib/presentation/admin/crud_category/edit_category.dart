@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/category_model.dart';
@@ -92,7 +93,7 @@ class _editCategoryState extends State<EditCategory> {
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () => Navigator.pop(context),
         ),
@@ -107,7 +108,7 @@ class _editCategoryState extends State<EditCategory> {
         actions: [
           IconButton(
             onPressed: _onDelete,
-            icon: const Icon(Icons.delete_rounded),
+            icon: const Iconoir(IconoirIcons.trash),
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ],
@@ -127,14 +128,14 @@ class _editCategoryState extends State<EditCategory> {
             titleCtrl,
             AppConstants.title,
             Validators.title,
-            icon: Icons.title_rounded,
+            icon: IconoirIcons.text,
           ),
           _label(AppConstants.slug),
           _field(
             slugCtrl,
             AppConstants.slug,
             Validators.slug,
-            icon: Icons.text_fields_rounded,
+            icon: IconoirIcons.textSize,
           ),
           const SizedBox(height: 20),
 
@@ -211,7 +212,7 @@ class _editCategoryState extends State<EditCategory> {
     TextEditingController controller,
     String hint,
     String? Function(String?)? validator, {
-    IconData icon = Icons.text_fields_outlined,
+    IconoirIcons icon = IconoirIcons.text,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -237,9 +238,15 @@ class _editCategoryState extends State<EditCategory> {
               width: 1,
             ),
           ),
-          prefixIcon: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.onInverseSurface,
+          prefixIcon: SizedBox(
+            height: 40,
+            width: 40,
+            child: Center(
+              child: Iconoir(
+                icon,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
           ),
         ),
         validator: validator,

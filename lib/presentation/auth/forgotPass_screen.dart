@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
@@ -108,9 +109,17 @@ class _forgotpassScreenState extends State<ForgotpassScreen> {
                           borderRadius: BorderRadius.circular(10.0),
                           borderSide: BorderSide.none,
                         ),
-                        prefixIcon: Icon(
-                          Icons.email,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        prefixIcon: SizedBox(
+                          height: 40,
+                          width: 40,
+                          child: Center(
+                            child: Iconoir(
+                              IconoirIcons.mail,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
+                          ),
                         ),
                       ),
                     ),

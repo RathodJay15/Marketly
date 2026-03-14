@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
@@ -46,7 +47,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         children: [
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.chevron_left_rounded),
+            icon: const Iconoir(IconoirIcons.navArrowLeft),
             color: Theme.of(context).colorScheme.onInverseSurface,
             iconSize: 35,
           ),

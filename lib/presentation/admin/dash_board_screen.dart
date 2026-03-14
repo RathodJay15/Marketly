@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/admin/crud_category/all_categories.dart';
@@ -117,7 +118,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 _sectionTitle(AppConstants.category),
 
                 _subTitleTile(
-                  icon: Icons.category_rounded,
+                  icon: IconoirIcons.box,
                   title: '${AppConstants.totalCategories} : ',
                   titleVal: dashboardProvider.totalCategories.toString(),
                   subtitle1: '${AppConstants.active} : ',
@@ -130,7 +131,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 _sectionTitle(AppConstants.coupons),
 
                 _subTitleTile(
-                  icon: Icons.closed_caption_rounded,
+                  icon: IconoirIcons.closedCaptions,
                   title: '${AppConstants.totalCoupons} : ',
                   titleVal: dashboardProvider.totalCoupons.toString(),
                   subtitle1: '${AppConstants.active} : ',
@@ -143,7 +144,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 _sectionTitle(AppConstants.products),
 
                 _titleTile(
-                  icon: Icons.card_giftcard_rounded,
+                  icon: IconoirIcons.boxIso,
                   label: AppConstants.totalProducts,
                   value: dashboardProvider.totalProducts.toString(),
                   onTap: () => _goToProducts(),
@@ -152,7 +153,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 _sectionTitle(AppConstants.orders),
 
                 _subTitleTile(
-                  icon: Icons.local_shipping_rounded,
+                  icon: IconoirIcons.deliveryTruck,
                   title: '${AppConstants.totalOrders} : ',
                   titleVal: dashboardProvider.totalOrders.toString(),
                   subtitle1: '${AppConstants.confirmed} : ',
@@ -165,7 +166,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 _sectionTitle(AppConstants.users),
 
                 _subTitleTile(
-                  icon: Icons.person,
+                  icon: IconoirIcons.group,
                   title: '${AppConstants.totalUsers} : ',
                   titleVal: dashboardProvider.totalUsers.toString(),
                   subtitle1: '${AppConstants.active} : ',
@@ -199,7 +200,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               children: [
                 Expanded(
                   child: _statbox(
-                    icon: Icons.person,
+                    icon: IconoirIcons.group,
                     label: AppConstants.users,
                     value: dashboardProvider.totalUsers.toString(),
                   ),
@@ -207,7 +208,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 SizedBox(width: 13),
                 Expanded(
                   child: _statbox(
-                    icon: Icons.local_shipping_rounded,
+                    icon: IconoirIcons.deliveryTruck,
                     label: AppConstants.orders,
                     value: dashboardProvider.totalOrders.toString(),
                     pending: dashboardProvider.pendingOrders.toString(),
@@ -216,7 +217,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               ],
             ),
             _statbox(
-              icon: Icons.attach_money_rounded,
+              icon: IconoirIcons.dollar,
               label: AppConstants.revenue,
               value: AppConstants.inrAmount(dashboardProvider.totalRevenue),
             ),
@@ -227,7 +228,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   Widget _statbox({
-    required IconData icon,
+    required IconoirIcons icon,
     required String label,
     required String value,
     String pending = '',
@@ -261,7 +262,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(
+                  Iconoir(
                     icon,
                     color: Theme.of(context).colorScheme.onInverseSurface,
                     size: 40,
@@ -306,7 +307,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   Widget _titleTile({
-    required IconData icon,
+    required IconoirIcons icon,
     required String label,
     required String value,
     required VoidCallback onTap,
@@ -327,7 +328,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(18),
-                child: Icon(
+                child: Iconoir(
                   icon,
                   size: 30,
                   color: Theme.of(context).colorScheme.onInverseSurface,
@@ -359,7 +360,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               ),
               IconButton(
                 onPressed: () => onTap(),
-                icon: Icon(Icons.chevron_right_rounded, size: 30),
+                icon: Iconoir(IconoirIcons.navArrowRight, size: 30),
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
             ],
@@ -370,7 +371,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   Widget _subTitleTile({
-    required IconData icon,
+    required IconoirIcons icon,
     required String title,
     required String titleVal,
     required String subtitle1,
@@ -395,7 +396,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(18),
-                child: Icon(
+                child: Iconoir(
                   icon,
                   size: 30,
                   color: Theme.of(context).colorScheme.onInverseSurface,
@@ -478,7 +479,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               ),
               IconButton(
                 onPressed: () => onTap(),
-                icon: Icon(Icons.chevron_right_rounded, size: 30),
+                icon: Iconoir(IconoirIcons.navArrowRight, size: 30),
                 color: Theme.of(context).colorScheme.onInverseSurface,
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/category_model.dart';
 import 'package:marketly/data/models/product_model.dart';
@@ -90,7 +91,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
           child: _buildCartList(),
         ),
-        SizedBox(height: 85),
+        SizedBox(height: 95),
       ],
     );
   }
@@ -152,14 +153,20 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                         color: Theme.of(
                           context,
                         ).colorScheme.onSecondaryContainer,
-                        child: const Icon(Icons.person, size: 30),
+                        child: const Iconoir(IconoirIcons.user, size: 30),
                       ),
                     )
                   : Container(
                       height: 50,
                       width: 50,
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      child: const Icon(Icons.person, size: 30),
+                      child: Center(
+                        child: Iconoir(
+                          IconoirIcons.user,
+                          size: 30,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
+                      ),
                     ),
             ),
             SizedBox(width: 13),
@@ -197,7 +204,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                     color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.notifications),
+                    icon: Iconoir(IconoirIcons.bell),
                     iconSize: 28,
                     onPressed: () {
                       Navigator.push(
@@ -248,9 +255,16 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
-          prefixIcon: Icon(
-            Icons.search,
-            color: Theme.of(context).colorScheme.onInverseSurface,
+          prefixIcon: SizedBox(
+            height: 30,
+            width: 30,
+            child: Center(
+              child: Iconoir(
+                IconoirIcons.search,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                size: 30,
+              ),
+            ),
           ),
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,

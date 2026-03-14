@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/auth_gate.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/core/data_instance/validators.dart';
@@ -67,8 +68,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(
-                  Icons.camera_alt_rounded,
+                leading: Iconoir(
+                  IconoirIcons.camera,
                   size: 30,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                 ),
@@ -82,8 +83,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
               ListTile(
-                leading: Icon(
-                  Icons.photo_library,
+                leading: Iconoir(
+                  IconoirIcons.mediaImageList,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   size: 30,
                 ),
@@ -97,8 +98,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
               ),
               ListTile(
-                leading: Icon(
-                  Icons.delete_rounded,
+                leading: Iconoir(
+                  IconoirIcons.trash,
                   color: Theme.of(context).colorScheme.onInverseSurface,
                   size: 30,
                 ),
@@ -232,7 +233,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.chevron_left_rounded),
+            icon: Iconoir(IconoirIcons.navArrowLeft),
             color: Theme.of(context).colorScheme.onInverseSurface,
             iconSize: 35,
           ),
@@ -285,10 +286,10 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                       color: Theme.of(context).colorScheme.onInverseSurface,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Icon(
-                      Icons.camera_alt_rounded,
+                    child: Iconoir(
+                      IconoirIcons.camera,
                       color: Theme.of(context).colorScheme.primary,
-                      size: 20,
+                      size: 25,
                     ),
                   ),
                 ),
@@ -313,7 +314,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
     if (!hasValidUrl) {
       return Container(
         color: Theme.of(context).colorScheme.onSecondaryContainer,
-        child: const Icon(Icons.person, size: 60),
+        child: Center(child: const Iconoir(IconoirIcons.user, size: 70)),
       );
     }
 
@@ -330,7 +331,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
       ),
       errorWidget: (context, url, error) => Container(
         color: Theme.of(context).colorScheme.onSecondaryContainer,
-        child: const Icon(Icons.person, size: 60),
+        child: Center(child: const Iconoir(IconoirIcons.user, size: 70)),
       ),
     );
   }
@@ -350,7 +351,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             fieldKey: 'name',
             controller: nameCtrl,
             hint: AppConstants.username,
-            icon: Icons.person_outline,
+            icon: IconoirIcons.user,
             validator: Validators.username,
           ),
 
@@ -358,7 +359,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             fieldKey: 'phone',
             controller: phoneCtrl,
             hint: AppConstants.phone,
-            icon: Icons.phone_outlined,
+            icon: IconoirIcons.phone,
             keyboardType: TextInputType.phone,
             validator: Validators.phone,
           ),
@@ -389,14 +390,27 @@ class _myAccountScreenState extends State<MyAccountScreen> {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
                   ),
-                  prefixIcon: Icon(
-                    Icons.location_on_outlined,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  prefixIcon: SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: Center(
+                      child: Iconoir(
+                        IconoirIcons.pinAlt,
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                        size: 25,
+                      ),
+                    ),
                   ),
-                  suffixIcon: Icon(
-                    Icons.chevron_right_rounded,
-                    size: 30,
-                    color: Theme.of(context).colorScheme.onInverseSurface,
+                  suffixIcon: SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: Center(
+                      child: Iconoir(
+                        IconoirIcons.navArrowRight,
+                        size: 25,
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -407,28 +421,28 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             fieldKey: 'city',
             controller: cityCtrl,
             hint: AppConstants.ct,
-            icon: Icons.location_city_outlined,
+            icon: IconoirIcons.city,
             validator: Validators.city,
           ),
           _editableField(
             fieldKey: 'state',
             controller: stateCtrl,
             hint: AppConstants.state,
-            icon: Icons.map_outlined,
+            icon: IconoirIcons.map,
             validator: Validators.city,
           ),
           _editableField(
             fieldKey: 'country',
             controller: countryCtrl,
             hint: AppConstants.cntry,
-            icon: Icons.public_rounded,
+            icon: IconoirIcons.globe,
             validator: Validators.city,
           ),
           _editableField(
             fieldKey: 'pincode',
             controller: pincodeCtrl,
             hint: AppConstants.pincode,
-            icon: Icons.pin_outlined,
+            icon: IconoirIcons.pin,
             validator: Validators.city,
           ),
           _resetPass(user),
@@ -443,7 +457,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
     required String fieldKey,
     required TextEditingController controller,
     required String hint,
-    required IconData icon,
+    required IconoirIcons icon,
     required String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
   }) {
@@ -471,14 +485,24 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
-          prefixIcon: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.onInverseSurface,
+          prefixIcon: SizedBox(
+            height: 40,
+            width: 40,
+            child: Center(
+              child: Iconoir(
+                icon,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                size: 25,
+              ),
+            ),
           ),
 
           // suffix icon
           suffixIcon: IconButton(
-            icon: Icon(isEditing ? Icons.check_rounded : Icons.edit),
+            icon: Iconoir(
+              isEditing ? IconoirIcons.navArrowRight : IconoirIcons.editPencil,
+              size: 25,
+            ),
             color: Theme.of(context).colorScheme.onInverseSurface,
             onPressed: () async {
               if (isEditing) {
@@ -511,8 +535,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(13),
-            child: Icon(
-              Icons.password_rounded,
+            child: Iconoir(
+              IconoirIcons.passwordCursor,
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
           ),
@@ -527,8 +551,8 @@ class _myAccountScreenState extends State<MyAccountScreen> {
           Spacer(),
           IconButton(
             onPressed: () => changePass(user.email),
-            icon: Icon(Icons.chevron_right_rounded),
-            iconSize: 30,
+            icon: Iconoir(IconoirIcons.navArrowRight),
+            iconSize: 25,
             color: Theme.of(context).colorScheme.onInverseSurface,
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/admin/orders/edit_order.dart';
 import 'package:marketly/providers/admin/admin_order_provider.dart';
@@ -26,7 +27,7 @@ class _allOrdersState extends State<AllOrders> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () {
             Navigator.of(context).pop();
@@ -106,8 +107,10 @@ class _allOrdersState extends State<AllOrders> {
                           ),
                         ),
                         SizedBox(width: 10),
-                        Icon(
-                          isConfirmed ? Icons.check_circle : Icons.pending,
+                        Iconoir(
+                          isConfirmed
+                              ? IconoirIcons.checkCircledOutline
+                              : IconoirIcons.clockOutline,
                           color: isConfirmed
                               ? Theme.of(context).colorScheme.onSecondary
                               : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -152,7 +155,7 @@ class _allOrdersState extends State<AllOrders> {
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      icon: Icon(Icons.edit),
+                      icon: const Iconoir(IconoirIcons.editPencil),
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                   ),

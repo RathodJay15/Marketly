@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/order_model.dart';
 import 'package:marketly/providers/order_provider.dart';
@@ -85,7 +86,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.chevron_left_rounded),
+            icon: Iconoir(IconoirIcons.navArrowLeft),
             color: Theme.of(context).colorScheme.onInverseSurface,
             iconSize: 35,
           ),
@@ -279,8 +280,6 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
   }) {
     final activeColor = Theme.of(context).colorScheme.onSecondary;
     final inactiveColor = Theme.of(context).colorScheme.onPrimary;
-    final activeIcon = Icons.check_box_rounded;
-    final inactiveIcon = Icons.check_box_outline_blank_rounded;
     String formatStatus(String status) {
       return status
           .replaceAll('_', ' ')
@@ -295,11 +294,15 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(5),
-          child: Icon(
-            isCompleted ? activeIcon : inactiveIcon,
-            size: 30,
-            color: isCompleted ? activeColor : inactiveColor,
-          ),
+          child: isCompleted
+              ? Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Iconoir(IconoirIcons.square, size: 30, color: activeColor),
+                    Iconoir(IconoirIcons.check, size: 20, color: activeColor),
+                  ],
+                )
+              : Iconoir(IconoirIcons.square, size: 30, color: inactiveColor),
         ),
 
         const SizedBox(width: 12),

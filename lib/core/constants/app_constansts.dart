@@ -72,6 +72,7 @@ class AppConstants {
   static const String next = "Next";
   static const String exit = "Exit";
   static const String productNotFound = "Product not found";
+  static const String theme = "Theme";
   static const String cancel = "Cancel";
   static const String goTo = "Go to";
   static const String save = "Save";
@@ -184,6 +185,12 @@ class AppConstants {
   static const String noCategoriesAvailable = "No categories available";
   static const String noProductsAvailable = "No products available";
   static const String noOrdersYet = "No orders yet";
+  static const String system = "System";
+  static const String light = "Light";
+  static const String dark = "Dark";
+  static const String systemDdValue = "system";
+  static const String lightDdValue = "light";
+  static const String darkDdValue = "dark";
 
   // Coupon constants
   static const String couponAdded = "Coupon added successfully ✅";
@@ -202,6 +209,9 @@ class AppConstants {
   static const String enterNoOfDays = "Enter No. of days";
   static const String noCouponsAvailable = "No coupons available";
   static const String updtCoupon = "Update Coupon";
+
+  // Logo path
+  static const String marketlyLogo = "assets/images/marketly_logo.png";
 
   // Inter Access
   static const String turnOnInternet =

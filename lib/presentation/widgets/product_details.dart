@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/data/models/product_model.dart';
@@ -269,10 +270,10 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
+                  icon: Iconoir(
+                    IconoirIcons.navArrowLeft,
                     color: Theme.of(context).colorScheme.primary,
-                    size: 28,
+                    size: 35,
                   ),
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                   onPressed: () {
@@ -289,8 +290,8 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: IconButton(
-                        icon: Icon(
-                          Icons.add_shopping_cart_outlined,
+                        icon: Iconoir(
+                          IconoirIcons.addToCart,
                           color: Theme.of(context).colorScheme.primary,
                           size: 28,
                         ),
@@ -324,7 +325,7 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                               minHeight: 32,
                             ),
                             padding: EdgeInsets.zero,
-                            icon: Icon(Icons.add_rounded),
+                            icon: Iconoir(IconoirIcons.plus),
                             iconSize: 25,
                             color: Theme.of(context).colorScheme.onSecondary,
                           ),
@@ -350,7 +351,7 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                               minHeight: 32,
                             ),
                             padding: EdgeInsets.zero,
-                            icon: Icon(Icons.remove_rounded),
+                            icon: Iconoir(IconoirIcons.minus),
                             iconSize: 25,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
@@ -402,7 +403,7 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
               fit: BoxFit.contain,
               errorWidget: (context, url, error) => Container(
                 color: Theme.of(context).colorScheme.onInverseSurface,
-                child: Icon(Icons.image_not_supported),
+                child: Iconoir(IconoirIcons.mediaImage),
               ),
             ),
           ),
@@ -444,7 +445,7 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
               fit: BoxFit.contain,
               errorWidget: (context, url, error) => Container(
                 color: Theme.of(context).colorScheme.onInverseSurface,
-                child: Icon(Icons.image_not_supported),
+                child: Iconoir(IconoirIcons.mediaImage),
               ),
             ),
           ),

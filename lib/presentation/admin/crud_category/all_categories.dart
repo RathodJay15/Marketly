@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/presentation/admin/crud_category/add_category.dart';
 import 'package:marketly/presentation/admin/crud_category/edit_category.dart';
@@ -27,7 +28,7 @@ class _allCategoriesState extends State<AllCategories> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Iconoir(IconoirIcons.navArrowLeft, size: 30),
           color: Theme.of(context).colorScheme.onInverseSurface,
           onPressed: () {
             Navigator.of(context).pop();
@@ -157,7 +158,7 @@ class _allCategoriesState extends State<AllCategories> {
                       },
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      icon: Icon(Icons.edit),
+                      icon: Iconoir(IconoirIcons.editPencil),
                       color: Theme.of(context).colorScheme.onInverseSurface,
                     ),
                   ),
