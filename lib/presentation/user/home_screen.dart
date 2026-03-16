@@ -2,13 +2,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/cart_screen.dart';
 import 'package:marketly/presentation/user/home_screen_body.dart';
+import 'package:marketly/presentation/user/menu/favorites_screen.dart';
 import 'package:marketly/presentation/user/menu/menu_screen.dart';
+import 'package:marketly/presentation/user/menu/my_account_screen.dart';
+import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
+import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
+import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 
@@ -48,11 +54,62 @@ class _homeScreenState extends State<HomeScreen>
   // }
   //--------------------------------------------------------------------
 
-  void onNavigation(index) {
+  void goToFavorites() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => FavoritesScreen()),
+    );
+  }
+
+  void goToMyOrders() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MyOrdersScreen()),
+    );
+  }
+
+  void goToMyAccount() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MyAccountScreen()),
+    );
+  }
+
+  void goToMyAddresses() {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SavedAddressesScreen()),
+    );
+  }
+
+  void logout() async {
+    final shouldExit = await MarketlyDialog.showMyDialog(
+      context: context,
+      title: AppConstants.logout,
+      content: AppConstants.areYouSureLogout,
+    );
+
+    if (shouldExit == true) {
+      context.read<NavigationProvider>().setScreenIndex(
+        0,
+      ); // set navbar to home
+      context.read<CartProvider>().stopListening();
+      context.read<UserProvider>().clearUser(); // App state
+      await AuthService().logout(); // Firebase session
+    }
+  }
+
+  void onNavigation(int index) {
     Provider.of<NavigationProvider>(
       context,
       listen: false,
     ).setScreenIndex(index);
+
+    Navigator.pop(context);
   }
 
   Future<void> _confirmLeave() async {
@@ -80,6 +137,7 @@ class _homeScreenState extends State<HomeScreen>
       child: Scaffold(
         extendBody: true,
         resizeToAvoidBottomInset: false,
+        drawer: _buildDrawer(),
         backgroundColor: Theme.of(context).colorScheme.primary,
         body: BottomBar(
           barColor: Colors.transparent,
@@ -108,7 +166,7 @@ class _homeScreenState extends State<HomeScreen>
                 height: 70,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.onInverseSurface,
-                  borderRadius: BorderRadius.circular(35),
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).colorScheme.primary,
@@ -130,7 +188,7 @@ class _homeScreenState extends State<HomeScreen>
                   elevation: 0,
                   items: [
                     BottomNavigationBarItem(
-                      icon: Iconoir(IconoirIcons.homeAlt, size: 25),
+                      icon: Iconoir(IconoirIcons.home, size: 25),
                       label: AppConstants.home,
                     ),
                     BottomNavigationBarItem(
@@ -185,6 +243,187 @@ class _homeScreenState extends State<HomeScreen>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDrawer() {
+    final user = context.watch<UserProvider>().user;
+    if (user == null) {
+      return const SizedBox();
+    }
+    final hasValidUrl = user.profilePic != null && user.profilePic!.isNotEmpty;
+    return Theme(
+      data: Theme.of(
+        context,
+      ).copyWith(dividerColor: Theme.of(context).colorScheme.onPrimary),
+      child: Drawer(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: GestureDetector(
+                  onTap: () => goToMyAccount(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: hasValidUrl
+                            ? Image.network(
+                                user.profilePic!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  height: 80,
+                                  width: 80,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSecondaryContainer,
+                                  child: Center(
+                                    child: const Iconoir(
+                                      IconoirIcons.user,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                height: 80,
+                                width: 80,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
+                                child: Center(
+                                  child: const Iconoir(
+                                    IconoirIcons.user,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        user.name.isEmpty ? AppConstants.username : user.name,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        user.email.isEmpty ? AppConstants.username : user.email,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 10),
+
+              Divider(color: Theme.of(context).colorScheme.onPrimary),
+
+              _drawerListTile(
+                icon: IconoirIcons.home,
+                text: AppConstants.home,
+                onTap: () => onNavigation(0),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.search,
+                text: AppConstants.search,
+                onTap: () => onNavigation(1),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.cartAlt,
+                text: AppConstants.cart,
+                onTap: () => onNavigation(2),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.menu,
+                text: AppConstants.menu,
+                onTap: () => onNavigation(3),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.user,
+                text: AppConstants.myAccount,
+                onTap: () => goToMyAccount(),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.pinAlt,
+                text: AppConstants.savedAdrs,
+                onTap: () => goToMyAddresses(),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.heart,
+                text: AppConstants.savedAdrs,
+                onTap: () => goToFavorites(),
+              ),
+
+              _drawerListTile(
+                icon: IconoirIcons.list,
+                text: AppConstants.myOrders,
+                onTap: () => goToMyOrders(),
+              ),
+
+              Divider(color: Theme.of(context).colorScheme.onPrimary),
+
+              _drawerListTile(
+                icon: IconoirIcons.logOut,
+                text: AppConstants.logout,
+                onTap: () => logout(),
+                navButton: false,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerListTile({
+    required IconoirIcons icon,
+    required String text,
+    required VoidCallback onTap,
+    bool navButton = true,
+  }) {
+    return ListTile(
+      leading: Iconoir(
+        icon,
+        color: Theme.of(context).colorScheme.onInverseSurface,
+      ),
+      title: Text(
+        text,
+        style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
+      ),
+      onTap: () {
+        onTap();
+      },
+      trailing: navButton
+          ? Iconoir(
+              IconoirIcons.navArrowRight,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              size: 25,
+            )
+          : null,
     );
   }
 }

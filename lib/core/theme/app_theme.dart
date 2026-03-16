@@ -46,6 +46,7 @@ class MarketTheme {
       thumbColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
       trackColor: WidgetStateProperty.all(const Color.fromARGB(255, 0, 0, 0)),
     ),
+    dividerColor: const Color.fromARGB(255, 150, 150, 150),
     useMaterial3: true,
   );
   //-------------------------------------------------------------------------------------------
@@ -97,6 +98,7 @@ class MarketTheme {
         const Color.fromARGB(255, 255, 255, 255),
       ),
     ),
+    dividerColor: const Color.fromARGB(255, 150, 150, 150),
     useMaterial3: true,
   );
 }

@@ -54,44 +54,62 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-          child: _buildProfileCard(),
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          elevation: 0,
+          floating: true,
+          snap: true,
+          toolbarHeight: 70,
+          titleSpacing: 20,
+          title: _buildProfileCard(),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildSearchSection(),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildCategoryChips(),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildTitleSection(AppConstants.ourProducts, 1, true),
-        ),
-        // const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildProductCardList(),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildTitleSection(
-            AppConstants.cartProducts,
-            2,
-            context.watch<CartProvider>().items.isNotEmpty,
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildSearchSection(),
           ),
         ),
-        Padding(
-          padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
-          child: _buildCartList(),
+        SliverToBoxAdapter(child: const SizedBox(height: 16)),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildCategoryChips(),
+          ),
         ),
-        SizedBox(height: 95),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildTitleSection(AppConstants.ourProducts, 1, true),
+          ),
+        ),
+        // const SizedBox(height: 12),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildProductCardList(),
+          ),
+        ),
+        SliverToBoxAdapter(child: const SizedBox(height: 16)),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: _buildTitleSection(
+              AppConstants.cartProducts,
+              2,
+              context.watch<CartProvider>().items.isNotEmpty,
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 20),
+            child: _buildCartList(),
+          ),
+        ),
+        SliverToBoxAdapter(child: const SizedBox(height: 95)),
       ],
     );
   }
@@ -115,60 +133,22 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+              height: 50,
+              width: 50,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context).colorScheme.onSecondaryContainer,
               ),
-              clipBehavior: Clip.antiAlias,
-              child:
-                  user?.profilePic != null &&
-                      user!.profilePic!.isNotEmpty &&
-                      !isLoading
-                  ? CachedNetworkImage(
-                      imageUrl: user.profilePic!,
-                      height: 50,
-                      width: 50,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        height: 50,
-                        width: 50,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSecondaryContainer,
-                        child: Center(
-                          child: SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onInverseSurface,
-                            ),
-                          ),
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        height: 50,
-                        width: 50,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSecondaryContainer,
-                        child: const Iconoir(IconoirIcons.user, size: 30),
-                      ),
-                    )
-                  : Container(
-                      height: 50,
-                      width: 50,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      child: Center(
-                        child: Iconoir(
-                          IconoirIcons.user,
-                          size: 30,
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                        ),
-                      ),
-                    ),
+              child: IconButton(
+                icon: Iconoir(IconoirIcons.menu),
+                iconSize: 28,
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
             ),
+
             SizedBox(width: 13),
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -231,6 +211,62 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                     ),
                   ),
               ],
+            ),
+            SizedBox(width: 10),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child:
+                  user?.profilePic != null &&
+                      user!.profilePic!.isNotEmpty &&
+                      !isLoading
+                  ? CachedNetworkImage(
+                      imageUrl: user.profilePic!,
+                      height: 50,
+                      width: 50,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        height: 50,
+                        width: 50,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        child: Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        height: 50,
+                        width: 50,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        child: const Iconoir(IconoirIcons.user, size: 30),
+                      ),
+                    )
+                  : Container(
+                      height: 50,
+                      width: 50,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      child: Center(
+                        child: Iconoir(
+                          IconoirIcons.user,
+                          size: 30,
+                          color: Theme.of(context).colorScheme.onInverseSurface,
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),

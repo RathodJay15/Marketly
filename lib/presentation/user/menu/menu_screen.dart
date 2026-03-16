@@ -94,11 +94,15 @@ class _menuScreenState extends State<MenuScreen> {
 
         _buildTile(goToMyAccount, IconoirIcons.user, AppConstants.myAccount),
 
+        SizedBox(height: 10),
+
         _buildTile(
           goToMyAddresses,
           IconoirIcons.pinAlt,
           AppConstants.savedAdrs,
         ),
+
+        SizedBox(height: 10),
 
         _buildTile(
           goToNotifications,
@@ -106,11 +110,19 @@ class _menuScreenState extends State<MenuScreen> {
           AppConstants.notifications,
         ),
 
+        SizedBox(height: 10),
+
         _buildTile(goToFavorites, IconoirIcons.heart, AppConstants.favorites),
+
+        SizedBox(height: 10),
 
         _buildTile(goToMyOrders, IconoirIcons.list, AppConstants.myOrders),
 
+        SizedBox(height: 10),
+
         _buildTile(goToCart, IconoirIcons.cartAlt, AppConstants.myCart),
+
+        SizedBox(height: 10),
 
         _themeTile(
           currentTheme: user.themeMode, // 'system' | 'light' | 'dark'
@@ -126,8 +138,10 @@ class _menuScreenState extends State<MenuScreen> {
           },
         ),
 
+        SizedBox(height: 10),
+
         _logoutTile(logout, IconoirIcons.logOut, AppConstants.logout),
-        SizedBox(height: 85),
+        SizedBox(height: 95),
       ],
     );
   }
@@ -136,9 +150,16 @@ class _menuScreenState extends State<MenuScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: SizedBox(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Theme.of(
+              context,
+            ).colorScheme.onPrimary.withValues(alpha: .30),
+          ),
           height: 50,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -149,7 +170,7 @@ class _menuScreenState extends State<MenuScreen> {
                 color: Theme.of(context).colorScheme.onInverseSurface,
                 size: 25,
               ),
-              SizedBox(width: 20),
+              SizedBox(width: 15),
               Text(
                 label,
                 style: TextStyle(
@@ -176,7 +197,14 @@ class _menuScreenState extends State<MenuScreen> {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: SizedBox(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            color: Theme.of(
+              context,
+            ).colorScheme.onPrimary.withValues(alpha: .30),
+            borderRadius: BorderRadius.circular(10),
+          ),
           height: 50,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -270,8 +298,13 @@ class _menuScreenState extends State<MenuScreen> {
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SizedBox(
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 15),
         height: 50,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: .30),
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Row(
           children: [
             Iconoir(

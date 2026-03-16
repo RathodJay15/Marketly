@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/services/coupon_service.dart';
 import 'package:marketly/data/services/razorpay_services.dart';
@@ -453,6 +454,8 @@ class _paymentScreenState extends State<PaymentScreen> {
                   child: TextField(
                     controller: _textCouponController,
                     focusNode: _couponFocusNode,
+                    textCapitalization: TextCapitalization.characters,
+                    inputFormatters: [UpperCaseTextFormatter()],
                     onTap: _startCoupn,
                     onChanged: (value) {
                       if (!_isSearching) {
@@ -594,6 +597,19 @@ class _paymentScreenState extends State<PaymentScreen> {
             ),
           ),
       ],
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }
