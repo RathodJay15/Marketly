@@ -460,7 +460,7 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           if (products.isEmpty) {
             return Center(
               child: Text(
-                AppConstants.emptyCartMsg,
+                AppConstants.emptyCartTitle,
                 style: TextStyle(
                   fontSize: 18,
                   color: Theme.of(context).colorScheme.onPrimary,

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/product_model.dart';
+import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/presentation/widgets/product_details.dart';
 import 'package:marketly/providers/favorites_provider.dart';
 import 'package:marketly/providers/product_provider.dart';
@@ -77,12 +78,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
         if (favoriteProducts.isEmpty) {
           return Center(
-            child: Text(
-              AppConstants.noFavorites,
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+            child: EmptystateScreen.emptyState(
+              icon: IconoirIcons.heart,
+              title: AppConstants.emptyFavoritesTitle,
+              subtitle: AppConstants.emptyFavoritesSubtitle,
+              context: context,
             ),
           );
         }

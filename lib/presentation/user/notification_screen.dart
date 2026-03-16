@@ -4,6 +4,7 @@ import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/notification_model.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
+import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/notification_provider.dart';
 import 'package:marketly/providers/order_provider.dart';
@@ -22,8 +23,11 @@ class _notificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(
-        child: ListView(
-          children: [_titleSection(), _orderListScetion(context)],
+        child: Column(
+          children: [
+            _titleSection(),
+            Expanded(child: _orderListScetion(context)),
+          ],
         ),
       ),
     );
@@ -63,12 +67,11 @@ class _notificationScreenState extends State<NotificationScreen> {
         final notifications = notificationProvider.notifications;
         if (notificationProvider.notifications.isEmpty) {
           return Center(
-            child: Text(
-              AppConstants.noNotifications,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 20,
-              ),
+            child: EmptystateScreen.emptyState(
+              icon: IconoirIcons.bell,
+              title: AppConstants.emptyNotificationsTitle,
+              subtitle: AppConstants.emptyNotificationsSubtitle,
+              context: context,
             ),
           );
         }

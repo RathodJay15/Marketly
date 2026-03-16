@@ -4,6 +4,7 @@ import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/order_model.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
+import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -34,8 +35,11 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(
-        child: ListView(
-          children: [_titleSection(), _orderListScetion(context)],
+        child: Column(
+          children: [
+            _titleSection(),
+            Expanded(child: _orderListScetion(context)),
+          ],
         ),
       ),
     );
@@ -84,12 +88,11 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
         }
         if (orderProvider.orders.isEmpty) {
           return Center(
-            child: Text(
-              AppConstants.noOrder,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 20,
-              ),
+            child: EmptystateScreen.emptyState(
+              icon: IconoirIcons.deliveryTruck,
+              title: AppConstants.emptyOrdersTitle,
+              subtitle: AppConstants.emptyOrdersSubtitle,
+              context: context,
             ),
           );
         }

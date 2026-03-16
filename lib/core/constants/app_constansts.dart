@@ -64,7 +64,6 @@ class AppConstants {
   static const String upldProductImages = "Upload product images";
   static const String imgSelected = "Image selected";
   static const String noProductFound = "No products found";
-  static const String emptyCartMsg = "Cart is Empty";
   static const String addedToCart = "Product added to cart";
   static const String goToCart = "Go to Cart";
   static const String deleteProduct = "Delete Product";
@@ -115,8 +114,6 @@ class AppConstants {
   static const String dialogEmptyCart = "Empty cart?";
   static const String yesEmptyCart = "Yes, empty cart";
   static const String notifications = "Notifications";
-  static const String noNotifications = "No notifications yet";
-  static const String noFavorites = "No favorite products yet ❤️";
   static const String checkForMail =
       "Check your email inbox or spam for change / forgot password mail from marketly";
 
@@ -166,7 +163,6 @@ class AppConstants {
   static const String total = "Total";
   static const String placeOrder = "Place Order";
   static const String orderPlacedMsg = "Order placed successfully 🎉";
-  static const String noOrder = "No Order History!";
   static const String viewOrderDetails = "View Order details";
   static const String orderDetails = "Order details";
   static const String finalOrderSummary = "Final Order Summary";
@@ -209,6 +205,20 @@ class AppConstants {
   static const String enterNoOfDays = "Enter No. of days";
   static const String noCouponsAvailable = "No coupons available";
   static const String updtCoupon = "Update Coupon";
+
+  // Empty state title and subtitle
+  static const String emptyCartTitle = "Your Cart is Empty";
+  static const String emptyCartSubtitle =
+      "Looks like you haven't added anything yet. Start exploring and add your favorite products.";
+  static const String emptyFavoritesTitle = "No Favorites Yet";
+  static const String emptyFavoritesSubtitle =
+      "Save products you love to your favorites and find them here anytime.";
+  static const String emptyOrdersTitle = "No Orders Yet";
+  static const String emptyOrdersSubtitle =
+      "You haven’t placed any orders yet. Start shopping and your orders will appear here.";
+  static const String emptyNotificationsTitle = "No Notifications Yet";
+  static const String emptyNotificationsSubtitle =
+      "You’ll see updates about your orders, offers, and important alerts here.";
 
   // Logo path
   static const String marketlyLogo = "assets/images/marketly_logo.png";

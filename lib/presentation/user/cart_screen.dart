@@ -4,6 +4,7 @@ import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/presentation/user/checkout/checkout_flow_screen.dart';
+import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -37,19 +38,19 @@ class _cartScreenState extends State<CartScreen> {
 
   Widget _emptyCartView(BuildContext context, CartProvider cartProvider) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _headerSection(10, context, cartProvider),
         Expanded(
-          child: Center(
-            child: Text(
-              AppConstants.emptyCartMsg,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 20,
-              ),
-            ),
+          child: EmptystateScreen.emptyState(
+            icon: IconoirIcons.simpleCart,
+            subtitle: AppConstants.emptyCartSubtitle,
+            title: AppConstants.emptyCartTitle,
+            context: context,
           ),
         ),
+        SizedBox(height: 100),
       ],
     );
   }
