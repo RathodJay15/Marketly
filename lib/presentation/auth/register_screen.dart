@@ -7,6 +7,7 @@ import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/services/image_service.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -101,6 +102,22 @@ class _registerScreenState extends State<RegisterScreen> {
     );
 
     if (source == null) return;
+
+    Permission permission = source == ImageSource.camera
+        ? Permission.camera
+        : Permission.photos;
+    final status = await permission.request();
+    if (status.isDenied) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Permission denied")));
+      return null;
+    }
+
+    if (status.isPermanentlyDenied) {
+      await openAppSettings();
+      return null;
+    }
 
     final picked = await _imagePicker.pickImage(
       source: source,

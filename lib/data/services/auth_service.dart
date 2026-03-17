@@ -136,7 +136,10 @@ class AuthService {
       List<AddressModel> defaultAddress = [
         AddressModel(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
+          label: 'Home',
           address: address,
+          recipientName: name,
+          recipientPhone: phone,
           isDefault: true,
         ),
       ];
@@ -173,10 +176,9 @@ class AuthService {
   // ------------------------------------------------------------
   // Add new address
   // ------------------------------------------------------------
-  Future<void> addAddress({
+  Future<void> addAddressFull({
     required String uid,
-    required String address,
-    bool setAsDefault = false,
+    required AddressModel address,
   }) async {
     final userRef = _firestore.collection('users').doc(uid);
     final doc = await userRef.get();
@@ -185,17 +187,14 @@ class AuthService {
       doc.data()?['addresses'] ?? [],
     );
 
-    if (setAsDefault) {
+    // Handle default
+    if (address.isDefault == true) {
       for (final a in addresses) {
         a['isDefault'] = false;
       }
     }
 
-    addresses.add({
-      "id": DateTime.now().millisecondsSinceEpoch.toString(),
-      "address": address,
-      "isDefault": setAsDefault,
-    });
+    addresses.add(address.toMap());
 
     await userRef.update({"addresses": addresses});
   }
@@ -203,10 +202,9 @@ class AuthService {
   // ------------------------------------------------------------
   // Update address text
   // ------------------------------------------------------------
-  Future<void> updateAddress({
+  Future<void> updateAddressFull({
     required String uid,
-    required String addressId,
-    required String newAddress,
+    required AddressModel address,
   }) async {
     final userRef = _firestore.collection('users').doc(uid);
     final doc = await userRef.get();
@@ -215,10 +213,10 @@ class AuthService {
       doc.data()?['addresses'] ?? [],
     );
 
-    final index = addresses.indexWhere((a) => a['id'] == addressId);
+    final index = addresses.indexWhere((a) => a['id'] == address.id);
     if (index == -1) return;
 
-    addresses[index]['address'] = newAddress;
+    addresses[index] = address.toMap();
 
     await userRef.update({"addresses": addresses});
   }
@@ -254,6 +252,31 @@ class AuthService {
 
     for (final addr in addresses) {
       addr['isDefault'] = false;
+    }
+
+    await userRef.update({"addresses": addresses});
+  }
+
+  // ------------------------------------------------------------
+  // Delete Address
+  // ------------------------------------------------------------
+
+  Future<void> deleteAddress({
+    required String uid,
+    required String addressId,
+  }) async {
+    final userRef = _firestore.collection('users').doc(uid);
+    final doc = await userRef.get();
+
+    final addresses = List<Map<String, dynamic>>.from(
+      doc.data()?['addresses'] ?? [],
+    );
+
+    addresses.removeWhere((a) => a['id'] == addressId);
+
+    // Handle default
+    if (addresses.isNotEmpty && !addresses.any((a) => a['isDefault'] == true)) {
+      addresses[0]['isDefault'] = true;
     }
 
     await userRef.update({"addresses": addresses});

@@ -13,6 +13,7 @@ import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -123,6 +124,30 @@ class _myAccountScreenState extends State<MyAccountScreen> {
 
     if (source == null) return null;
 
+    Permission permission = source == ImageSource.camera
+        ? Permission.camera
+        : Permission.photos;
+    PermissionStatus status = await permission.request();
+    if (status.isDenied || status.isLimited) {
+      status = await permission.request();
+    }
+    if (status.isDenied) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Permission denied")));
+      return null;
+    }
+
+    if (status.isPermanentlyDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Enable permission from settings")),
+      );
+
+      await openAppSettings();
+      return null;
+    }
+
+    ///  PICK IMAGE
     _isPickingImage = true;
 
     try {
