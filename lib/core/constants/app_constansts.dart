@@ -219,6 +219,9 @@ class AppConstants {
   static const String emptyNotificationsTitle = "No Notifications Yet";
   static const String emptyNotificationsSubtitle =
       "You’ll see updates about your orders, offers, and important alerts here.";
+  static const String emptyProductsTitle = "No Products Found";
+  static const String emptyProductsSubtitle =
+      "We couldn’t find any products matching your search. Try something else.";
 
   // Logo path
   static const String marketlyLogo = "assets/images/marketly_logo.png";

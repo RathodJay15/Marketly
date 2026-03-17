@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
+import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/presentation/widgets/product_card.dart';
 import 'package:marketly/providers/category_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
@@ -102,6 +104,12 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
   }
 
   void _onSearchPressed(value) async {
+    if (!_isSearching) {
+      setState(() {
+        _isSearching = true;
+      });
+    }
+    context.read<ProductProvider>().searchProducts(value);
     _searchFocusNode.unfocus();
   }
 
@@ -114,8 +122,6 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
       _textSearchController.clear();
 
       context.read<ProductProvider>().clearSearchResult();
-      // 👆 You must implement this in provider
-
       setState(() => _isSearching = false);
     }
   }
@@ -152,25 +158,31 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
             _closeOrClearSearch();
             _categoryProvider.clearSelection();
           },
-          child: ListView(
+          child: CustomScrollView(
             controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 13,
+            slivers: [
+              SliverAppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                elevation: 0,
+                floating: true,
+                snap: true,
+                toolbarHeight: 70,
+                titleSpacing: 20,
+                title: _buildSearchSection(),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _buildCategoryChips(),
                 ),
-                child: _buildSearchSection(),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildCategoryChips(),
-              ),
-              const SizedBox(height: 20),
+              SliverToBoxAdapter(child: const SizedBox(height: 20)),
 
-              _buildProductCardGride(),
-              SizedBox(height: 95),
+              _buildProductSliverGrid(),
+
+              SliverToBoxAdapter(child: const SizedBox(height: 95)),
             ],
           ),
         ),
@@ -210,7 +222,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
               }
               context.read<ProductProvider>().searchProducts(value);
             },
-            textInputAction: TextInputAction.next,
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               hintText: AppConstants.searchProducts,
               hintStyle: TextStyle(
@@ -316,40 +328,41 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
     );
   }
 
-  Widget _buildProductCardGride() {
+  Widget _buildProductSliverGrid() {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return Consumer<ProductProvider>(
-      builder: (context, productProvider, _) {
-        final products = productProvider.visibleProducts;
 
+    return Selector<ProductProvider, List<ProductModel>>(
+      selector: (_, provider) => provider.visibleProducts,
+      builder: (context, products, _) {
         if (products.isEmpty) {
-          return Center(
-            child: Text(
-              AppConstants.noProductFound,
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onPrimary,
+          return SliverToBoxAdapter(
+            child: Center(
+              child: EmptystateScreen.emptyState(
+                icon: IconoirIcons.boxIso,
+                title: AppConstants.emptyProductsTitle,
+                subtitle: AppConstants.emptyProductsSubtitle,
+                context: context,
               ),
             ),
           );
         }
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 215,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: isLandscape
-                ? (215 / 310)
-                : (215 / 340), //width-height
+
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          sliver: SliverGrid(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return RepaintBoundary(
+                child: ProductCard(product: products[index]),
+              );
+            }, childCount: products.length),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 215,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: isLandscape ? (215 / 310) : (215 / 340),
+            ),
           ),
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            return ProductCard(product: products[index]);
-          },
         );
       },
     );

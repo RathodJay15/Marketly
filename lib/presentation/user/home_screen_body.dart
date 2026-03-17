@@ -176,13 +176,10 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
             Spacer(),
             Stack(
               children: [
-                Container(
+                SizedBox(
                   height: 50,
                   width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
+
                   child: IconButton(
                     icon: Iconoir(IconoirIcons.bell),
                     iconSize: 28,
@@ -199,8 +196,8 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
                 //  Red Dot Indicator
                 if (hasUnread)
                   Positioned(
-                    right: 6,
-                    top: 6,
+                    right: 8,
+                    top: 8,
                     child: Container(
                       height: 10,
                       width: 10,
@@ -459,12 +456,24 @@ class _homeScreenBodyState extends State<HomeScreenBody> {
           final products = cartProvider.items;
           if (products.isEmpty) {
             return Center(
-              child: Text(
-                AppConstants.emptyCartTitle,
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Iconoir(
+                    IconoirIcons.simpleCart,
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    size: 40,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    AppConstants.emptyCartTitle,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ],
               ),
             );
           }

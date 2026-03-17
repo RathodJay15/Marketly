@@ -161,7 +161,9 @@ class _homeScreenState extends State<HomeScreen>
 
           child: Consumer<NavigationProvider>(
             builder: (context, navProvider, child) {
-              final cartItems = context.watch<CartProvider>().items.length;
+              final cartItems = context.select<CartProvider, int>(
+                (p) => p.items.length,
+              );
               return Container(
                 height: 70,
                 decoration: BoxDecoration(
