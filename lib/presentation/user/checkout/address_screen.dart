@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
-import 'package:marketly/core/data_instance/validators.dart';
-import 'package:marketly/data/models/user_model.dart';
+import 'package:marketly/data/models/address_model.dart';
+import 'package:marketly/presentation/user/menu/address_form.dart';
+import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -16,75 +19,19 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _addressScreenState extends State<AddressScreen> {
-  final _formKey = GlobalKey<FormState>();
-
-  final nameCtrl = TextEditingController();
-  final emailCtrl = TextEditingController();
-  final phoneCtrl = TextEditingController();
-  final addressCtrl = TextEditingController();
-  final cityCtrl = TextEditingController();
-  final stateCtrl = TextEditingController();
-  final countryCtrl = TextEditingController();
-  final pincodeCtrl = TextEditingController();
-
   String? selectedAddressId;
-  bool _initialized = false;
-
-  void _initFromUser(UserModel user) {
-    if (_initialized) return;
-
-    nameCtrl.text = user.name;
-    emailCtrl.text = user.email;
-    phoneCtrl.text = user.phone;
-    cityCtrl.text = user.city;
-    stateCtrl.text = user.state;
-    countryCtrl.text = user.country;
-    pincodeCtrl.text = user.pincode;
-
-    if (user.addresses.isNotEmpty) {
-      final defaultAddr = user.addresses.firstWhere(
-        (a) => a.isDefault == true,
-        orElse: () => user.addresses.first,
-      );
-
-      selectedAddressId = defaultAddr.id;
-      addressCtrl.text = defaultAddr.address;
-    }
-
-    _initialized = true;
-  }
-
-  @override
-  void dispose() {
-    nameCtrl.dispose();
-    emailCtrl.dispose();
-    phoneCtrl.dispose();
-    addressCtrl.dispose();
-    cityCtrl.dispose();
-    stateCtrl.dispose();
-    countryCtrl.dispose();
-    pincodeCtrl.dispose();
-    super.dispose();
-  }
 
   void _saveAddressDetails() {
     final orderProvider = context.read<OrderProvider>();
+    final user = context.read<UserProvider>().user;
 
-    if (!_formKey.currentState!.validate()) return;
+    if (selectedAddressId == null) return;
 
-    final addressData = {
-      "addressId": selectedAddressId,
-      "name": nameCtrl.text.trim(),
-      "email": emailCtrl.text.trim(),
-      "phone": phoneCtrl.text.trim(),
-      "address": addressCtrl.text.trim(),
-      "city": cityCtrl.text.trim(),
-      "state": stateCtrl.text.trim(),
-      "country": countryCtrl.text.trim(),
-      "pincode": pincodeCtrl.text.trim(),
-    };
+    final selectedAddress = user!.addresses.firstWhere(
+      (a) => a.id == selectedAddressId,
+    );
 
-    orderProvider.setAddress(addressData);
+    orderProvider.setAddress(selectedAddress.toMap());
 
     FocusManager.instance.primaryFocus?.unfocus();
     widget.onNext();
@@ -96,7 +43,8 @@ class _addressScreenState extends State<AddressScreen> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(child: _detailsForm()),
+        _titleSection(),
+        Expanded(child: _adrsList()),
         Padding(
           padding: const EdgeInsets.all(20),
           child: Row(
@@ -129,11 +77,7 @@ class _addressScreenState extends State<AddressScreen> {
                 width: 120,
                 child: ElevatedButton(
                   onPressed: () {
-                    // FocusManager.instance.primaryFocus?.unfocus();
-                    // widget.onNext();
-                    if (_formKey.currentState!.validate()) {
-                      _saveAddressDetails();
-                    }
+                    _saveAddressDetails();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(
@@ -160,7 +104,7 @@ class _addressScreenState extends State<AddressScreen> {
     );
   }
 
-  Widget _detailsForm() {
+  Widget _adrsList() {
     return Consumer<UserProvider>(
       builder: (context, userProvider, _) {
         final user = userProvider.user;
@@ -168,169 +112,296 @@ class _addressScreenState extends State<AddressScreen> {
         if (user == null) {
           return const Center(child: CircularProgressIndicator());
         }
+        if (selectedAddressId == null && user.addresses.isNotEmpty) {
+          final defaultAddress = user.addresses.firstWhere(
+            (a) => a.isDefault,
+            orElse: () => user.addresses.first,
+          );
+          selectedAddressId = defaultAddress.id;
+        }
 
-        _initFromUser(user);
-
-        return Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 12),
-
-                  _field(
-                    nameCtrl,
-                    AppConstants.username,
-                    Validators.username,
-                    icon: Icons.person_outline,
-                  ),
-
-                  _field(
-                    emailCtrl,
-                    AppConstants.email,
-                    Validators.email,
-                    icon: Icons.email_outlined,
-                    readOnly: true,
-                  ),
-
-                  _field(
-                    phoneCtrl,
-                    AppConstants.phone,
-                    Validators.phone,
-                    icon: Icons.phone_outlined,
-                    keyboardType: TextInputType.phone,
-                  ),
-
-                  DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    initialValue: selectedAddressId,
-                    hint: Text(
-                      AppConstants.selectAdrs,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onInverseSurface,
-                      ),
-                    ),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Theme.of(
-                        context,
-                      ).colorScheme.onSecondaryContainer,
-                      border: OutlineInputBorder(
+        return RadioGroup<String>(
+          groupValue: selectedAddressId,
+          onChanged: (value) {
+            setState(() {
+              selectedAddressId = value;
+            });
+          },
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: user.addresses.length,
+            itemBuilder: (builder, index) {
+              final AddressModel address = user.addresses[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 5,
+                ),
+                child: Slidable(
+                  key: ValueKey(address.id),
+                  endActionPane: ActionPane(
+                    motion: const DrawerMotion(),
+                    extentRatio: 0.60,
+                    children: [
+                      SlidableAction(
+                        onPressed: (context) async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddressForm(
+                                title: AppConstants.editAdrs,
+                                address: address,
+                              ),
+                            ),
+                          );
+                        },
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSecondary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onTertiaryContainer,
+                        icon: Icons.edit,
+                        label: AppConstants.editAdrs,
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
                       ),
-                      prefixIcon: Icon(
-                        Icons.location_on_outlined,
-                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      SlidableAction(
+                        onPressed: (context) async {
+                          if (address.isDefault) {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                title: Text(
+                                  AppConstants.cantDeleteDefault,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onInverseSurface,
+                                  ),
+                                ),
+                                content: Text(
+                                  AppConstants.setOtherAdrsDefaultFirst,
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: Text(
+                                      AppConstants.yes,
+                                      style: TextStyle(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onInverseSurface,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return;
+                          }
+                          final confirm = await MarketlyDialog.showMyDialog(
+                            context: context,
+                            title: AppConstants.deleteAdrs,
+                            content: AppConstants.areYouSureDeleteAdrs,
+                            actionN: AppConstants.cancel,
+                            actionY: AppConstants.delete,
+                          );
+                          if (confirm == true) {
+                            userProvider.deleteAddress(address.id);
+                          }
+                        },
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onTertiaryContainer,
+                        icon: Icons.delete,
+                        label: AppConstants.deleteAdrs,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    items: user.addresses.map((addr) {
-                      return DropdownMenuItem<String>(
-                        value: addr.id,
-                        child: Text(
-                          addr.address,
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onInverseSurface,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      final selected = user.addresses.firstWhere(
-                        (a) => a.id == value,
-                      );
-                      setState(() {
-                        selectedAddressId = value;
-                        addressCtrl.text = selected.address;
-                      });
-                    },
-                    validator: (value) =>
-                        value == null ? AppConstants.selectAdrs : null,
+                    ],
                   ),
-
-                  const SizedBox(height: 12),
-
-                  _field(
-                    cityCtrl,
-                    AppConstants.ct,
-                    Validators.city,
-                    icon: Icons.location_city_outlined,
-                  ),
-
-                  _field(
-                    stateCtrl,
-                    AppConstants.state,
-                    Validators.state,
-                    icon: Icons.map_outlined,
-                  ),
-
-                  _field(
-                    countryCtrl,
-                    AppConstants.cntry,
-                    Validators.country,
-                    icon: Icons.public_outlined,
-                  ),
-
-                  _field(
-                    pincodeCtrl,
-                    AppConstants.pincode,
-                    Validators.pincode,
-                    icon: Icons.pin_outlined,
-                    keyboardType: TextInputType.number,
-                  ),
-                ],
-              ),
-            ),
+                  child: _listCard(address),
+                ),
+              );
+            },
           ),
         );
       },
     );
   }
 
-  Widget _field(
-    TextEditingController controller,
-    String hint,
-    String? Function(String?)? validator, {
-    IconData icon = Icons.text_fields_outlined,
-    bool readOnly = false,
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        controller: controller,
-        readOnly: readOnly,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        minLines: 1,
-        textInputAction: TextInputAction.done,
-        style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.onInverseSurface,
-          ),
+  Widget _listCard(AddressModel address) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedAddressId = address.id;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Theme.of(context).colorScheme.onPrimary),
         ),
-        validator: validator,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 170,
+                    child: Text(
+                      address.label,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      if (address.isDefault)
+                        Container(
+                          margin: EdgeInsets.only(right: 10),
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
+                          ),
+                          child: Text(
+                            AppConstants.defaultAdrs,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onInverseSurface,
+                            ),
+                          ),
+                        ),
+
+                      Radio<String>(
+                        value: address.id,
+                        fillColor: WidgetStateProperty.resolveWith<Color>((
+                          states,
+                        ) {
+                          if (states.contains(WidgetState.selected)) {
+                            return Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface;
+                          }
+                          return Theme.of(context).colorScheme.onPrimary;
+                        }),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            Divider(color: Theme.of(context).colorScheme.onPrimary),
+
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    address.recipientName,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Spacer(),
+                  Iconoir(
+                    IconoirIcons.phone,
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    size: 18,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    address.recipientPhone,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              address.address,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _titleSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            AppConstants.savedAdrs,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          Spacer(),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddressForm(title: AppConstants.addNewAdrs),
+                ),
+              );
+            },
+            color: Theme.of(context).colorScheme.onInverseSurface,
+            icon: Iconoir(
+              IconoirIcons.plus,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              size: 35,
+            ),
+          ),
+        ],
       ),
     );
   }

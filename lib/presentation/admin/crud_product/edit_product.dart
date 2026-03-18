@@ -290,136 +290,144 @@ class _editProductState extends State<EditProduct> {
   Widget _detailsForm() {
     return Form(
       key: _formKey,
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          _label(AppConstants.title),
-          _field(
-            titleCtrl,
-            AppConstants.title,
-            Validators.title,
-            keyboardType: TextInputType.text,
-          ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              _label(AppConstants.title),
+              _field(
+                titleCtrl,
+                AppConstants.title,
+                Validators.title,
+                keyboardType: TextInputType.text,
+              ),
 
-          _label(AppConstants.description),
-          _field(
-            descriptionCtrl,
-            AppConstants.description,
-            Validators.requiredField,
-            keyboardType: TextInputType.text,
-          ),
+              _label(AppConstants.description),
+              _field(
+                descriptionCtrl,
+                AppConstants.description,
+                Validators.requiredField,
+                keyboardType: TextInputType.text,
+              ),
 
-          _label(AppConstants.category),
-          _categoryDropdown(),
+              _label(AppConstants.category),
+              _categoryDropdown(),
 
-          _label(AppConstants.price),
-          _field(
-            priceCtrl,
-            AppConstants.price,
-            Validators.price,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.price),
+              _field(
+                priceCtrl,
+                AppConstants.price,
+                Validators.price,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.discount),
-          _field(
-            discountCtrl,
-            AppConstants.discount,
-            Validators.discount,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.discount),
+              _field(
+                discountCtrl,
+                AppConstants.discount,
+                Validators.discount,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.rating),
-          _field(
-            ratingCtrl,
-            AppConstants.rating,
-            Validators.rating,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.rating),
+              _field(
+                ratingCtrl,
+                AppConstants.rating,
+                Validators.rating,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.stock),
-          _field(
-            stockCtrl,
-            AppConstants.stock,
-            Validators.stock,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.stock),
+              _field(
+                stockCtrl,
+                AppConstants.stock,
+                Validators.stock,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.tags),
-          _field(
-            tagsCtrl,
-            AppConstants.tagsFieldHint,
-            Validators.requiredField,
-            keyboardType: TextInputType.text,
-          ),
+              _label(AppConstants.tags),
+              _field(
+                tagsCtrl,
+                AppConstants.tagsFieldHint,
+                Validators.requiredField,
+                keyboardType: TextInputType.text,
+              ),
 
-          _label(AppConstants.brand),
-          _field(
-            brandCtrl,
-            AppConstants.brand,
-            Validators.requiredField,
-            keyboardType: TextInputType.text,
-          ),
+              _label(AppConstants.brand),
+              _field(
+                brandCtrl,
+                AppConstants.brand,
+                Validators.requiredField,
+                keyboardType: TextInputType.text,
+              ),
 
-          _label(AppConstants.weight),
-          _field(
-            weightCtrl,
-            AppConstants.weight,
-            Validators.requiredField,
-            keyboardType: TextInputType.number,
-          ),
+              _label(AppConstants.weight),
+              _field(
+                weightCtrl,
+                AppConstants.weight,
+                Validators.requiredField,
+                keyboardType: TextInputType.number,
+              ),
 
-          _label(AppConstants.dimensions),
-          _dimensions(),
+              _label(AppConstants.dimensions),
+              _dimensions(),
 
-          _label(AppConstants.thubnailImg),
-          _thumbnailImageFormField(
-            imageFile: _selectedThumbnail,
-            onTap: _pickThumbnail,
-          ),
+              _label(AppConstants.thubnailImg),
+              _thumbnailImageFormField(
+                imageFile: _selectedThumbnail,
+                onTap: _pickThumbnail,
+              ),
 
-          if (_selectedThumbnail != null)
-            _thumbnailPreview(imageFile: _selectedThumbnail)
-          else if (_networkThumbnail != null && _networkThumbnail!.isNotEmpty)
-            _thumbnailNetworkPreview(),
+              if (_selectedThumbnail != null)
+                _thumbnailPreview(imageFile: _selectedThumbnail)
+              else if (_networkThumbnail != null &&
+                  _networkThumbnail!.isNotEmpty)
+                _thumbnailNetworkPreview(),
 
-          _label(AppConstants.images),
-          if (_selectedImages != null && _selectedImages!.isNotEmpty)
-            _imagesPreview(imageFiles: _selectedImages),
+              _label(AppConstants.images),
+              if (_selectedImages != null && _selectedImages!.isNotEmpty)
+                _imagesPreview(imageFiles: _selectedImages),
 
-          _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
-          if (_networkImages.isNotEmpty) _imagesNetworkPreview(_networkImages),
+              _imagesFormField(imageFiles: _selectedImages, onTap: _pickImages),
+              if (_networkImages.isNotEmpty)
+                _imagesNetworkPreview(_networkImages),
 
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: _onUpdate,
+                  child: isEditing
+                      ? SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        )
+                      : Text(
+                          AppConstants.updtProduct,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
                 ),
               ),
-              onPressed: _onUpdate,
-              child: isEditing
-                  ? SizedBox(
-                      height: 22,
-                      width: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
-                  : Text(
-                      AppConstants.updtProduct,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-            ),
+              const SizedBox(height: 30),
+            ],
           ),
-          const SizedBox(height: 30),
-        ],
+        ),
       ),
     );
   }

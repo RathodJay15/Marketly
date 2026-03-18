@@ -190,10 +190,6 @@ class _myAccountScreenState extends State<MyAccountScreen> {
 
     nameCtrl.text = user.name;
     phoneCtrl.text = user.phone;
-    cityCtrl.text = user.city;
-    stateCtrl.text = user.state;
-    countryCtrl.text = user.country;
-    pincodeCtrl.text = user.pincode;
 
     if (user.addresses.isNotEmpty) {
       final defaultAddr = user.addresses.firstWhere(
@@ -442,34 +438,6 @@ class _myAccountScreenState extends State<MyAccountScreen> {
             ),
           ),
           SizedBox(height: 12),
-          _editableField(
-            fieldKey: 'city',
-            controller: cityCtrl,
-            hint: AppConstants.ct,
-            icon: IconoirIcons.city,
-            validator: Validators.city,
-          ),
-          _editableField(
-            fieldKey: 'state',
-            controller: stateCtrl,
-            hint: AppConstants.state,
-            icon: IconoirIcons.map,
-            validator: Validators.city,
-          ),
-          _editableField(
-            fieldKey: 'country',
-            controller: countryCtrl,
-            hint: AppConstants.cntry,
-            icon: IconoirIcons.globe,
-            validator: Validators.city,
-          ),
-          _editableField(
-            fieldKey: 'pincode',
-            controller: pincodeCtrl,
-            hint: AppConstants.pincode,
-            icon: IconoirIcons.pin,
-            validator: Validators.city,
-          ),
           _resetPass(user),
           SizedBox(height: 30),
           _deleteAccountBTN(user.uid),
@@ -712,18 +680,6 @@ class _myAccountScreenState extends State<MyAccountScreen> {
       case 'phone':
         updates['phone'] = phoneCtrl.text.trim();
         break;
-      case 'city':
-        updates['city'] = cityCtrl.text.trim();
-        break;
-      case 'state':
-        updates['state'] = stateCtrl.text.trim();
-        break;
-      case 'country':
-        updates['country'] = countryCtrl.text.trim();
-        break;
-      case 'pincode':
-        updates['pincode'] = pincodeCtrl.text.trim();
-        break;
     }
 
     await FirebaseFirestore.instance
@@ -732,14 +688,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         .update(updates);
 
     context.read<UserProvider>().setUser(
-      user.copyWith(
-        name: updates['name'],
-        phone: updates['phone'],
-        city: updates['city'],
-        state: updates['state'],
-        country: updates['country'],
-        pincode: updates['pincode'],
-      ),
+      user.copyWith(name: updates['name'], phone: updates['phone']),
     );
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
 import 'package:marketly/data/models/address_model.dart';
-import 'package:marketly/data/models/user_model.dart';
+import 'package:marketly/presentation/user/menu/address_form.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +22,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: SafeArea(
         child: CustomScrollView(
+          physics: NeverScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
               automaticallyImplyLeading: false,
@@ -34,7 +35,17 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
               title: _titleSection(),
             ),
 
-            SliverToBoxAdapter(child: _addressList()),
+            SliverFillRemaining(
+              hasScrollBody: true,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: _addressList()),
+                  _addButton(),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -66,7 +77,15 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         ),
         Spacer(),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddressForm(title: AppConstants.addNewAdrs),
+              ),
+            );
+          },
+          color: Theme.of(context).colorScheme.onInverseSurface,
           icon: Iconoir(
             IconoirIcons.plus,
             color: Theme.of(context).colorScheme.onInverseSurface,
@@ -87,41 +106,105 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         }
 
         return ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
           itemCount: user.addresses.length,
           itemBuilder: (builder, index) {
             final AddressModel address = user.addresses[index];
-            return Slidable(
-              key: ValueKey(address.id),
-              endActionPane: ActionPane(
-                motion: const DrawerMotion(), // smooth slide animation
-                extentRatio: 0.25, // how much space action takes
-                children: [
-                  SlidableAction(
-                    onPressed: (context) async {
-                      final confirm = await MarketlyDialog.showMyDialog(
-                        context: context,
-                        title: AppConstants.removeItem,
-                        content: AppConstants.areYouSureRemoveCartItem,
-                        actionN: AppConstants.cancel,
-                        actionY: AppConstants.removeItem,
-                      );
-                      if (confirm == true) {
-                        userProvider.deleteAddress(address.id);
-                      }
-                    },
-                    backgroundColor: Theme.of(context).colorScheme.onSurface,
-                    foregroundColor: Theme.of(
-                      context,
-                    ).colorScheme.onTertiaryContainer,
-                    icon: Icons.delete,
-                    label: AppConstants.removeItem,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ],
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              child: Slidable(
+                key: ValueKey(address.id),
+                endActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                  extentRatio: 0.60,
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) async {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => AddressForm(
+                              title: AppConstants.editAdrs,
+                              address: address,
+                            ),
+                          ),
+                        );
+                      },
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onSecondary,
+                      foregroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onTertiaryContainer,
+                      icon: Icons.edit,
+                      label: AppConstants.editAdrs,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    SlidableAction(
+                      onPressed: (context) async {
+                        if (address.isDefault) {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              title: Text(
+                                AppConstants.cantDeleteDefault,
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onInverseSurface,
+                                ),
+                              ),
+                              content: Text(
+                                AppConstants.setOtherAdrsDefaultFirst,
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: Text(
+                                    AppConstants.yes,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onInverseSurface,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                          return;
+                        }
+                        final confirm = await MarketlyDialog.showMyDialog(
+                          context: context,
+                          title: AppConstants.deleteAdrs,
+                          content: AppConstants.areYouSureDeleteAdrs,
+                          actionN: AppConstants.cancel,
+                          actionY: AppConstants.delete,
+                        );
+                        if (confirm == true) {
+                          userProvider.deleteAddress(address.id);
+                        }
+                      },
+                      backgroundColor: Theme.of(context).colorScheme.onSurface,
+                      foregroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onTertiaryContainer,
+                      icon: Icons.delete,
+                      label: AppConstants.deleteAdrs,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ],
+                ),
+                child: _listCard(address),
               ),
-
-              child: _listCard(address),
             );
           },
         );
@@ -130,22 +213,133 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
   }
 
   Widget _listCard(AddressModel address) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSecondaryContainer,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Theme.of(context).colorScheme.onPrimary),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [],
+              children: [
+                SizedBox(
+                  width: 170,
+                  child: Text(
+                    address.label,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (address.isDefault)
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                    child: Text(
+                      AppConstants.defaultAdrs,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
+          ),
+
+          Divider(color: Theme.of(context).colorScheme.onPrimary),
+
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  address.recipientName,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Spacer(),
+                Iconoir(
+                  IconoirIcons.phone,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  size: 18,
+                ),
+                SizedBox(width: 10),
+                Text(
+                  address.recipientPhone,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onInverseSurface,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Text(
+            address.address,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addButton() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: SizedBox(
+        width: 200,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddressForm(title: AppConstants.addNewAdrs),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+            minimumSize: const Size(double.infinity, 50.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: Text(
+            AppConstants.addNewAdrs,
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ),
     );

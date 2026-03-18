@@ -36,22 +36,8 @@ class UserProvider extends ChangeNotifier {
   // ------------------------------------------------------------
   // ADD ADDRESS
   // ------------------------------------------------------------
-  Future<void> addAddress(
-    String label,
-    String addressText,
-    String recipientName,
-    String recipientPhone,
-  ) async {
+  Future<void> addAddress(AddressModel newAddress) async {
     final user = _user!;
-
-    final newAddress = AddressModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      label: label,
-      address: addressText,
-      recipientName: recipientName,
-      recipientPhone: recipientPhone,
-      isDefault: user.addresses.isEmpty,
-    );
 
     await authService.addAddressFull(
       // 👈 FIXED SERVICE METHOD

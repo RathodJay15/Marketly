@@ -156,9 +156,7 @@ class _menuScreenState extends State<MenuScreen> {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Theme.of(
-              context,
-            ).colorScheme.onPrimary.withValues(alpha: .30),
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
           ),
           height: 50,
           child: Row(
@@ -200,9 +198,7 @@ class _menuScreenState extends State<MenuScreen> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 15),
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.onPrimary.withValues(alpha: .30),
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
             borderRadius: BorderRadius.circular(10),
           ),
           height: 50,
@@ -302,7 +298,7 @@ class _menuScreenState extends State<MenuScreen> {
         padding: EdgeInsets.symmetric(horizontal: 15),
         height: 50,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: .30),
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(

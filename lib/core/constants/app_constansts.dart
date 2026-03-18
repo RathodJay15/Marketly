@@ -30,6 +30,7 @@ class AppConstants {
   static const String userCreated = "User Created successfully ✅";
   static const String productDeleted = "Product Deleted successfully ✅";
   static const String categoryDeleted = "Category Deleted successfully ✅";
+  static const String adrsSved = "Address Saved successfully ✅";
   static const String active = "Active";
   static const String pending = "Pending";
   static const String confirmed = "Confirmed";
@@ -38,6 +39,7 @@ class AppConstants {
   static const String home = "Home";
   static const String search = "Search";
   static const String cart = "Cart";
+  static const String adrsLabel = "Address Label";
   static const String cartProducts = "Cart Products";
   static const String menu = "Menu";
   static const String ourProducts = "Our Products";
@@ -78,13 +80,18 @@ class AppConstants {
   static const String send = "Send";
   static const String delete = "Delete";
   static const String deleteAcc = "Delete Account";
+  static const String deleteAdrs = "Delete Address";
+  static const String cantDeleteDefault = "Can not delete default address";
+  static const String setAsDefaultAdrs = "Set as default address";
   static const String removeItem = "Remove Item";
   static const String itemRemoved = "Item removed from cart";
   static const String cancelCheckOut = "Cancel checkout?";
+  static const String setOtherAdrsDefaultFirst =
+      "Set another address as default to delete this address";
   static const String areYouSureCancelCheckOut =
       "Are you sure you wnat to cancel check out process?";
   static const String areYouSureDeleteAdrs =
-      "Are you sure you want to delete this address?";
+      "Are you sure you want to delete this Address?";
   static const String areYouSureDeleteProduct =
       "Are you sure you want to delete this product?";
   static const String areYouSureEmptyCart =
@@ -107,10 +114,10 @@ class AppConstants {
   static const String myCart = "My Cart";
   static const String favorites = "Favorites";
   static const String logout = "Logout";
-  static const String defaultAdrs = "Default address";
-
+  static const String defaultAdrs = "Default Address";
+  static const somthingWentWrong = "Something went wrong";
   static const String apply = "Apply";
-  static const String addNewAdrs = "Add new address";
+  static const String addNewAdrs = "Add New Address";
   static const String dialogEmptyCart = "Empty cart?";
   static const String yesEmptyCart = "Yes, empty cart";
   static const String notifications = "Notifications";
@@ -136,6 +143,8 @@ class AppConstants {
   static const String cntry = "Country";
   static const String pincode = "Pincode";
   static const String changePass = "Change Password";
+  static const String recipientsName = "Recipient's Name";
+  static const String recipientsPhone = "Recipient's Phone no.";
   static const String errorInChangePass =
       "Somthing went wrong while changing password. Try again. ";
 

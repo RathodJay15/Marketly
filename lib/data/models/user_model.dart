@@ -6,10 +6,7 @@ class UserModel {
   final String email;
   final List<AddressModel> addresses;
   final String phone;
-  final String city;
-  final String state;
-  final String country;
-  final String pincode;
+
   final String? profilePic;
   final String themeMode;
   final List<String>? fcmToken;
@@ -24,10 +21,6 @@ class UserModel {
     required this.phone,
     required this.addresses,
     required this.profilePic,
-    required this.city,
-    required this.country,
-    required this.state,
-    required this.pincode,
     required this.themeMode,
     this.isDeleted = false,
     this.fcmToken,
@@ -43,10 +36,6 @@ class UserModel {
           .toList(),
 
       phone: map['phone'],
-      city: map['city'],
-      country: map['country'],
-      pincode: map['pincode'],
-      state: map['state'],
       profilePic: map['profilePic'],
       role: map['role'],
       themeMode: map['themeMode'] ?? 'system',
@@ -64,10 +53,6 @@ class UserModel {
       'addresses': addresses.map((a) => a.toMap()).toList(),
       'phone': phone,
       'role': role,
-      'state': state,
-      'city': city,
-      'country': country,
-      'pincode': pincode,
       'profilePic': profilePic,
       'themeMode': themeMode,
       'isDeleted': isDeleted,
@@ -80,10 +65,6 @@ class UserModel {
     String? email,
     List<AddressModel>? addresses,
     String? phone,
-    String? city,
-    String? state,
-    String? country,
-    String? pincode,
     String? profilePic,
     String? role,
     String? themeMode,
@@ -96,10 +77,6 @@ class UserModel {
       email: email ?? this.email,
       addresses: addresses ?? this.addresses,
       phone: phone ?? this.phone,
-      city: city ?? this.city,
-      state: state ?? this.state,
-      country: country ?? this.country,
-      pincode: pincode ?? this.pincode,
       profilePic: profilePic ?? this.profilePic,
       role: role ?? this.role,
       themeMode: themeMode ?? this.themeMode,
