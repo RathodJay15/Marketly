@@ -7,8 +7,8 @@ import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddressForm extends StatefulWidget {
-  String title;
-  AddressModel? address;
+  final String title;
+  final AddressModel? address;
 
   AddressForm({super.key, required this.title, required this.address});
 

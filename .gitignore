@@ -51,3 +51,6 @@ macos/Runner/GoogleService-Info.plist
 
 # Firebase Api
 lib/firebase_options.dart
+
+# Maps Api (in manifest file)
+android/app/src/main/AndroidManifest.xml
