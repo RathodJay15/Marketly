@@ -10,11 +10,13 @@ class AddressForm extends StatefulWidget {
   String title;
   AddressModel? address;
 
-  AddressForm({super.key, required this.title, this.address});
+  AddressForm({super.key, required this.title, required this.address});
 
   @override
   State<StatefulWidget> createState() => _addressFormState();
 }
+
+enum LocationType { country, state, city }
 
 class _addressFormState extends State<AddressForm> {
   final _formKey = GlobalKey<FormState>();
@@ -85,6 +87,9 @@ class _addressFormState extends State<AddressForm> {
 
   @override
   void initState() {
+    final provider = context.read<UserProvider>();
+    provider.clearLocation();
+
     if (widget.address != null) {
       labelController = TextEditingController(text: widget.address!.label);
       adrsController = TextEditingController(text: widget.address!.address);
@@ -99,6 +104,11 @@ class _addressFormState extends State<AddressForm> {
       countryController = TextEditingController(text: widget.address!.country);
       pincodeController = TextEditingController(text: widget.address!.pincode);
       isDefault = widget.address!.isDefault;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        provider.selectCountry(widget.address!.country);
+        provider.selectState(widget.address!.state);
+        provider.selectCity(widget.address!.city);
+      });
     }
 
     super.initState();
@@ -198,18 +208,14 @@ class _addressFormState extends State<AddressForm> {
               Validators.phone,
             ),
 
-            _titlePart(AppConstants.ct),
-
-            _field(cityController, AppConstants.ct, Validators.city),
+            _titlePart(AppConstants.cntry),
+            _locationDropdown(type: LocationType.country),
 
             _titlePart(AppConstants.state),
+            _locationDropdown(type: LocationType.state),
 
-            _field(stateController, AppConstants.state, Validators.state),
-
-            _titlePart(AppConstants.cntry),
-
-            _field(countryController, AppConstants.cntry, Validators.country),
-
+            _titlePart(AppConstants.ct),
+            _locationDropdown(type: LocationType.city),
             _titlePart(AppConstants.pincode),
 
             _field(pincodeController, AppConstants.pincode, Validators.pincode),
@@ -332,6 +338,94 @@ class _addressFormState extends State<AddressForm> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _locationDropdown({required LocationType type}) {
+    return Consumer<UserProvider>(
+      builder: (context, provider, _) {
+        List<String> items = [];
+        String? value;
+        String hint = "";
+
+        // Decide behavior based on type
+        switch (type) {
+          case LocationType.country:
+            items = provider.countries;
+            value = provider.selectedCountry;
+            hint = AppConstants.cntry;
+            break;
+
+          case LocationType.state:
+            items = provider.states;
+            value = provider.selectedState;
+            hint = AppConstants.state;
+            break;
+
+          case LocationType.city:
+            items = provider.cities;
+            value = provider.selectedCity;
+            hint = AppConstants.ct;
+            break;
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: DropdownButtonFormField<String>(
+            isExpanded: true,
+            initialValue: items.contains(value) ? value : null,
+            validator: (val) => val == null ? "Required" : null,
+
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+
+            dropdownColor: Theme.of(context).colorScheme.onSecondaryContainer,
+
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              fontSize: 16,
+            ),
+
+            hint: Text(
+              hint,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+
+            items: items.map((item) {
+              return DropdownMenuItem<String>(value: item, child: Text(item));
+            }).toList(),
+
+            onChanged: (val) {
+              if (val == null) return;
+
+              switch (type) {
+                case LocationType.country:
+                  provider.selectCountry(val);
+                  countryController.text = val;
+                  break;
+
+                case LocationType.state:
+                  provider.selectState(val);
+                  stateController.text = val;
+                  break;
+
+                case LocationType.city:
+                  provider.selectCity(val);
+                  cityController.text = val;
+                  break;
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

@@ -184,23 +184,25 @@ class _homeScreenState extends State<HomeScreen>
                   },
                   type: BottomNavigationBarType.fixed,
                   backgroundColor: Colors.transparent,
+                  selectedIconTheme: IconThemeData(size: 30),
+                  unselectedIconTheme: IconThemeData(size: 25),
                   selectedItemColor: Theme.of(context).colorScheme.primary,
                   selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
                   unselectedItemColor: Theme.of(context).colorScheme.onPrimary,
                   elevation: 0,
                   items: [
                     BottomNavigationBarItem(
-                      icon: Iconoir(IconoirIcons.home, size: 25),
+                      icon: Iconoir(IconoirIcons.home),
                       label: AppConstants.home,
                     ),
                     BottomNavigationBarItem(
-                      icon: Iconoir(IconoirIcons.search, size: 25),
+                      icon: Iconoir(IconoirIcons.search),
                       label: AppConstants.search,
                     ),
                     BottomNavigationBarItem(
                       icon: Stack(
                         children: [
-                          Iconoir(IconoirIcons.cartAlt, size: 25),
+                          Iconoir(IconoirIcons.cartAlt),
                           if (cartItems > 0)
                             Positioned(
                               right: 0,
@@ -235,7 +237,7 @@ class _homeScreenState extends State<HomeScreen>
                       label: AppConstants.cart,
                     ),
                     BottomNavigationBarItem(
-                      icon: Iconoir(IconoirIcons.menu, size: 25),
+                      icon: Iconoir(IconoirIcons.menu),
                       label: AppConstants.menu,
                     ),
                   ],
@@ -376,7 +378,7 @@ class _homeScreenState extends State<HomeScreen>
 
               _drawerListTile(
                 icon: IconoirIcons.heart,
-                text: AppConstants.savedAdrs,
+                text: AppConstants.favorites,
                 onTap: () => goToFavorites(),
               ),
 

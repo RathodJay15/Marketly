@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
-
 class AppConstants {
   static const String welcomeMsg = "Hello, Welcome 👋";
   static const String searchProducts = "Search products..";
@@ -74,6 +71,7 @@ class AppConstants {
   static const String exit = "Exit";
   static const String productNotFound = "Product not found";
   static const String theme = "Theme";
+  static const String method = "Method";
   static const String cancel = "Cancel";
   static const String goTo = "Go to";
   static const String save = "Save";
@@ -111,6 +109,8 @@ class AppConstants {
   static const String myAccount = "My Account";
   static const String savedAdrs = "Saved Addresses";
   static const String myOrders = "My Orders";
+  static const String review = "Review";
+  static const String payment = "Payment";
   static const String myCart = "My Cart";
   static const String favorites = "Favorites";
   static const String logout = "Logout";
@@ -171,6 +171,7 @@ class AppConstants {
   static const String qty = "Qty";
   static const String total = "Total";
   static const String placeOrder = "Place Order";
+  static const String orderNotFound = "Order not found";
   static const String orderPlacedMsg = "Order placed successfully 🎉";
   static const String viewOrderDetails = "View Order details";
   static const String orderDetails = "Order details";
@@ -255,20 +256,6 @@ class AppConstants {
 
   static String discountOff(double discount) {
     return "${discount.toStringAsFixed(2)}% off ";
-  }
-
-  static String formatedDate(Timestamp timestamp) {
-    final dateTime = timestamp.toDate();
-
-    final date = DateFormat('d MMMM yyyy').format(dateTime);
-
-    return date;
-  }
-
-  static String formatedTime(Timestamp timestamp) {
-    final dateTime = timestamp.toDate();
-    final time = DateFormat('HH:mm').format(dateTime);
-    return time;
   }
 
   static double roundToTwo(double value) {

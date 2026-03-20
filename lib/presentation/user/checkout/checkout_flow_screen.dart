@@ -82,9 +82,9 @@ class _CheckoutFlowScreenState extends State<CheckoutFlowScreen> {
                 iconHeight: 36,
 
                 stepperList: [
-                  _step("Review", 0),
-                  _step("Address", 1),
-                  _step("Payment", 2),
+                  _step(AppConstants.review, 0),
+                  _step(AppConstants.adrs, 1),
+                  _step(AppConstants.payment, 2),
                 ],
               ),
 

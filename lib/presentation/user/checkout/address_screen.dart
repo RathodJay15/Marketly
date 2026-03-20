@@ -390,7 +390,10 @@ class _addressScreenState extends State<AddressScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AddressForm(title: AppConstants.addNewAdrs),
+                  builder: (_) => AddressForm(
+                    title: AppConstants.addNewAdrs,
+                    address: null,
+                  ),
                 ),
               );
             },

@@ -1,7 +1,9 @@
+import 'package:another_stepper/another_stepper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_helpers.dart';
 import 'package:marketly/data/models/order_model.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +40,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
       if (!mounted) return;
 
       setState(() {
-        _error = "Order not found";
+        _error = AppConstants.orderNotFound;
       });
     }
   }
@@ -135,6 +137,12 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
               AppConstants.discount,
               "-${AppConstants.inrAmount(order.pricing['discount'])}",
             ),
+            if (order.pricing['couponDiscount'] != null)
+              _row(
+                AppConstants.couponDiscount,
+                "-${AppConstants.inrAmount(order.pricing['couponDiscount'])}",
+              ),
+
             Divider(color: Theme.of(context).colorScheme.onPrimary),
             _row(
               AppConstants.total,
@@ -148,7 +156,9 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
 
         _sectionTitle(AppConstants.paymentDetails),
         _greyCard(
-          children: [_row("Method", order.paymentMethod, isBold: true)],
+          children: [
+            _row(AppConstants.method, order.paymentMethod, isBold: true),
+          ],
         ),
         const SizedBox(height: 24),
 
@@ -243,7 +253,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
     );
   }
 
-  Widget _orderStatusTimeline(BuildContext context, OrderModel item) {
+  Widget _orderStatusTimeline(BuildContext context, OrderModel order) {
     const List<String> orderSteps = [
       'ORDER_PLACED',
       'ORDER_CONFIRMED',
@@ -251,35 +261,14 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
       'OUT_FOR_DELIVERY',
       'ORDER_DELIVERED',
     ];
+
     final completedStatuses = {
-      for (var e in item.statusTimeline) e['status']: e['time'] as Timestamp,
+      for (var e in order.statusTimeline) e['status']: e['time'] as Timestamp,
     };
-    return Column(
-      children: List.generate(orderSteps.length, (index) {
-        final status = orderSteps[index];
-        final isCompleted = completedStatuses.containsKey(status);
-        final isLast = index == orderSteps.length - 1;
 
-        return _timelineRow(
-          context: context,
-          status: status,
-          time: isCompleted ? completedStatuses[status] : null,
-          isCompleted: isCompleted,
-          showLine: !isLast,
-        );
-      }),
-    );
-  }
+    // 🔥 current step = number of completed statuses - 1
+    int currentStep = completedStatuses.length - 1;
 
-  Widget _timelineRow({
-    required BuildContext context,
-    required String status,
-    required Timestamp? time,
-    required bool isCompleted,
-    required bool showLine,
-  }) {
-    final activeColor = Theme.of(context).colorScheme.onSecondary;
-    final inactiveColor = Theme.of(context).colorScheme.onPrimary;
     String formatStatus(String status) {
       return status
           .replaceAll('_', ' ')
@@ -289,47 +278,58 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
           .join(' ');
     }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: isCompleted
-              ? Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Iconoir(IconoirIcons.square, size: 30, color: activeColor),
-                    Iconoir(IconoirIcons.check, size: 20, color: activeColor),
-                  ],
-                )
-              : Iconoir(IconoirIcons.square, size: 30, color: inactiveColor),
-        ),
+    return AnotherStepper(
+      stepperDirection: Axis.horizontal,
+      activeIndex: currentStep,
+      barThickness: 2,
+      verticalGap: 15,
+      activeBarColor: Theme.of(context).colorScheme.onSecondary,
+      inActiveBarColor: Theme.of(context).colorScheme.onInverseSurface,
+      iconWidth: 26,
+      iconHeight: 26,
 
-        const SizedBox(width: 12),
+      stepperList: List.generate(orderSteps.length, (index) {
+        final status = orderSteps[index];
+        final isCompleted = completedStatuses.containsKey(status);
+        final time = completedStatuses[status];
 
-        // MIDDLE: Status text
-        Expanded(
-          child: Text(
-            formatStatus(status),
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
+        return StepperData(
+          title: StepperText(
+            "${formatStatus(status)}${time != null ? "\n${AppHelpers.formatedDate(time)}" : ""}",
+            textStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: isCompleted ? FontWeight.w600 : FontWeight.w400,
               color: isCompleted
-                  ? Theme.of(context).colorScheme.onInverseSurface
-                  : Theme.of(context).colorScheme.onPrimary,
+                  ? Theme.of(context).colorScheme.onSecondary
+                  : Theme.of(context).colorScheme.onInverseSurface,
             ),
           ),
-        ),
 
-        Text(
-          time != null ? AppConstants.formatedDate(time) : 'pending',
-          style: TextStyle(
-            fontSize: 13,
-            color: isCompleted
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onPrimary,
+          iconWidget: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isCompleted
+                  ? Theme.of(context).colorScheme.onSecondary
+                  : Theme.of(context).colorScheme.onInverseSurface,
+            ),
+            child: Center(
+              child: isCompleted
+                  ? Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
+                  : Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 12,
+                      ),
+                    ),
+            ),
           ),
-        ),
-      ],
+        );
+      }),
     );
   }
 }

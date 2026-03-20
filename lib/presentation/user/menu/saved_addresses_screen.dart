@@ -81,7 +81,8 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => AddressForm(title: AppConstants.addNewAdrs),
+                builder: (_) =>
+                    AddressForm(title: AppConstants.addNewAdrs, address: null),
               ),
             );
           },
@@ -321,7 +322,8 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => AddressForm(title: AppConstants.addNewAdrs),
+                builder: (_) =>
+                    AddressForm(title: AppConstants.addNewAdrs, address: null),
               ),
             );
           },

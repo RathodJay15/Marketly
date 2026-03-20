@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constansts.dart';
-import 'package:marketly/data/models/order_model.dart';
+import 'package:marketly/core/constants/app_helpers.dart';
 import 'package:marketly/presentation/user/orders/order_details_screen.dart';
 import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/providers/order_provider.dart';
@@ -106,126 +105,95 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final order = orderProvider.orders[index];
-              return Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ExpansionTile(
-                  tilePadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  shape: RoundedRectangleBorder(
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          OrderDetailsScreen(orderId: order.id),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  collapsedShape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  iconColor: Theme.of(context).colorScheme.onInverseSurface,
-                  collapsedIconColor: Theme.of(context).colorScheme.onPrimary,
-                  title: _collapsedHeader(context, order),
-                  children: [
-                    _orderStatusTimeline(context, order),
-                    SizedBox(
-                      width: 160,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  OrderDetailsScreen(orderId: order.id),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _orderItemThumbnails(order.items),
+
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Order No. : ${order.orderNumber}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onInverseSurface,
+                              ),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.onInverseSurface,
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                        child: Text(
-                          AppConstants.viewOrderDetails,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Placed on : ${AppHelpers.formatedDate(order.statusTimeline[0]['time'])}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+
+                            Row(
+                              children: [
+                                Text(
+                                  "Items : ${order.items.length}",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Text(
+                                  "Totel : ${order.pricing['total'].toStringAsFixed(2)} ₹",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      Iconoir(
+                        IconoirIcons.navArrowRight,
+                        size: 25,
+                        color: Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           ),
         );
       },
-    );
-  }
-
-  Widget _collapsedHeader(BuildContext context, OrderModel order) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _orderItemThumbnails(order.items),
-
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Order No. : ${order.orderNumber}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onInverseSurface,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                "Placed on : ${AppConstants.formatedDate(order.statusTimeline[0]['time'])}",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-
-              Row(
-                children: [
-                  Text(
-                    "Items : ${order.items.length}",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Text(
-                    "Totel : ${order.pricing['total'].toStringAsFixed(2)} ₹",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
@@ -272,96 +240,6 @@ class _myOrdersScreenState extends State<MyOrdersScreen> {
           );
         },
       ),
-    );
-  }
-
-  Widget _orderStatusTimeline(BuildContext context, OrderModel item) {
-    const List<String> orderSteps = [
-      'ORDER_PLACED',
-      'ORDER_CONFIRMED',
-      'ORDER_SHIPPED',
-      'OUT_FOR_DELIVERY',
-      'ORDER_DELIVERED',
-    ];
-    final completedStatuses = {
-      for (var e in item.statusTimeline) e['status']: e['time'] as Timestamp,
-    };
-    return Column(
-      children: List.generate(orderSteps.length, (index) {
-        final status = orderSteps[index];
-        final isCompleted = completedStatuses.containsKey(status);
-        final isLast = index == orderSteps.length - 1;
-
-        return _timelineRow(
-          context: context,
-          status: status,
-          time: isCompleted ? completedStatuses[status] : null,
-          isCompleted: isCompleted,
-          showLine: !isLast,
-        );
-      }),
-    );
-  }
-
-  Widget _timelineRow({
-    required BuildContext context,
-    required String status,
-    required Timestamp? time,
-    required bool isCompleted,
-    required bool showLine,
-  }) {
-    final activeColor = Theme.of(context).colorScheme.onSecondary;
-    final inactiveColor = Theme.of(context).colorScheme.onPrimary;
-    String formatStatus(String status) {
-      return status
-          .replaceAll('_', ' ')
-          .toLowerCase()
-          .split(' ')
-          .map((w) => w[0].toUpperCase() + w.substring(1))
-          .join(' ');
-    }
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: isCompleted
-              ? Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Iconoir(IconoirIcons.square, size: 30, color: activeColor),
-                    Iconoir(IconoirIcons.check, size: 20, color: activeColor),
-                  ],
-                )
-              : Iconoir(IconoirIcons.square, size: 30, color: inactiveColor),
-        ),
-
-        const SizedBox(width: 12),
-
-        // MIDDLE: Status text
-        Expanded(
-          child: Text(
-            formatStatus(status),
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: isCompleted
-                  ? Theme.of(context).colorScheme.onInverseSurface
-                  : Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-        ),
-
-        Text(
-          time != null ? AppConstants.formatedDate(time) : 'pending',
-          style: TextStyle(
-            fontSize: 13,
-            color: isCompleted
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onPrimary,
-          ),
-        ),
-      ],
     );
   }
 }

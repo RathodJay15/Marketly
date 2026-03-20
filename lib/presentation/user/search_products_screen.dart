@@ -337,13 +337,20 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
       builder: (context, products, _) {
         if (products.isEmpty) {
           return SliverToBoxAdapter(
-            child: Center(
-              child: EmptystateScreen.emptyState(
-                icon: IconoirIcons.boxIso,
-                title: AppConstants.emptyProductsTitle,
-                subtitle: AppConstants.emptyProductsSubtitle,
-                context: context,
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 100),
+                Center(
+                  child: EmptystateScreen.emptyState(
+                    icon: IconoirIcons.boxIso,
+                    title: AppConstants.emptyProductsTitle,
+                    subtitle: AppConstants.emptyProductsSubtitle,
+                    context: context,
+                  ),
+                ),
+              ],
             ),
           );
         }
