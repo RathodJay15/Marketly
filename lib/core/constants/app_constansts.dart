@@ -108,6 +108,7 @@ class AppConstants {
   static const String no = "No";
   static const String myAccount = "My Account";
   static const String savedAdrs = "Saved Addresses";
+  static const String enterlbl = "Enter label";
   static const String myOrders = "My Orders";
   static const String review = "Review";
   static const String payment = "Payment";

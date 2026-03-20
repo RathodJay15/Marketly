@@ -288,4 +288,11 @@ class Validators {
 
     return null;
   }
+
+  static String? addressLabel(String? value) {
+    if ((value == null || value.trim().isEmpty)) {
+      return "Enter custom label";
+    }
+    return null;
+  }
 }

@@ -22,7 +22,8 @@ class _addressFormState extends State<AddressForm> {
   final _formKey = GlobalKey<FormState>();
   bool isDefault = false;
 
-  TextEditingController labelController = TextEditingController();
+  String labelController = "";
+  TextEditingController customLabelController = TextEditingController();
   TextEditingController adrsController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
@@ -35,12 +36,15 @@ class _addressFormState extends State<AddressForm> {
     if (!_formKey.currentState!.validate()) return;
 
     final userProvider = context.read<UserProvider>();
+    final finalLabel = userProvider.selectedLabel == "Other"
+        ? customLabelController.text.trim()
+        : userProvider.selectedLabel ?? "";
 
     final newAddress = AddressModel(
       id:
           widget.address?.id ??
           DateTime.now().millisecondsSinceEpoch.toString(),
-      label: labelController.text.trim(),
+      label: finalLabel,
       address: adrsController.text.trim(),
       city: cityController.text.trim(),
       state: stateController.text.trim(),
@@ -89,9 +93,9 @@ class _addressFormState extends State<AddressForm> {
   void initState() {
     final provider = context.read<UserProvider>();
     provider.clearLocation();
+    provider.clearLblSelection();
 
     if (widget.address != null) {
-      labelController = TextEditingController(text: widget.address!.label);
       adrsController = TextEditingController(text: widget.address!.address);
       nameController = TextEditingController(
         text: widget.address!.recipientName,
@@ -108,6 +112,15 @@ class _addressFormState extends State<AddressForm> {
         provider.selectCountry(widget.address!.country);
         provider.selectState(widget.address!.state);
         provider.selectCity(widget.address!.city);
+
+        final existingLabel = widget.address!.label;
+
+        if (provider.addressLabel.contains(existingLabel)) {
+          provider.selectLabel(existingLabel);
+        } else {
+          provider.selectLabel("Other");
+          customLabelController.text = existingLabel;
+        }
       });
     }
 
@@ -116,7 +129,7 @@ class _addressFormState extends State<AddressForm> {
 
   @override
   void dispose() {
-    labelController.dispose();
+    customLabelController.dispose();
     adrsController.dispose();
     nameController.dispose();
     phoneController.dispose();
@@ -185,11 +198,10 @@ class _addressFormState extends State<AddressForm> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _titlePart(AppConstants.adrsLabel),
-            _field(
-              labelController,
-              AppConstants.adrsLabel,
-              Validators.requiredField,
-            ),
+            _labelChip(),
+            SizedBox(height: 10),
+            _otherLblField(),
+
             _titlePart(AppConstants.adrs),
 
             _field(adrsController, AppConstants.adrs, Validators.address),
@@ -338,6 +350,96 @@ class _addressFormState extends State<AddressForm> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _labelChip() {
+    return Container(
+      padding: EdgeInsets.all(15),
+      height: 70,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.onSecondaryContainer,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Consumer<UserProvider>(
+        builder: (context, userProvider, _) {
+          if (userProvider.addressLabel.isEmpty) {
+            return const SizedBox();
+          }
+          return SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: userProvider.addressLabel.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final label = userProvider.addressLabel[index];
+                final isSelected = userProvider.isSelected(label);
+                return SizedBox(
+                  height: 40,
+                  child: ChoiceChip(
+                    label: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w400,
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onInverseSurface,
+                      ),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    selected: isSelected,
+                    selectedColor: Theme.of(
+                      context,
+                    ).colorScheme.onInverseSurface,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    surfaceTintColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(
+                        width: 1,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                    onSelected: (_) {
+                      userProvider.selectLabel(label);
+
+                      final lbl = userProvider.selectedLabel;
+
+                      setState(() {
+                        if (lbl != null && lbl != "Other") {
+                          labelController = lbl;
+                          customLabelController.clear();
+                        } else {
+                          labelController = "";
+                        }
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _otherLblField() {
+    return Consumer<UserProvider>(
+      builder: (context, provider, _) {
+        if (provider.selectedLabel == "Other") {
+          return _field(
+            customLabelController,
+            AppConstants.enterlbl,
+            Validators.addressLabel,
+          );
+        }
+        return const SizedBox();
+      },
     );
   }
 

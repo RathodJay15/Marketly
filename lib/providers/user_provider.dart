@@ -25,13 +25,19 @@ class UserProvider extends ChangeNotifier {
     return data[selectedCountry!]![selectedState!]!;
   }
 
-  //---------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
+
+  List<String> _addressLabel = ["Home", "Work", "Friends", "Family", "Other"];
+  String? _selectedLabel = "Home";
+
+  String? get selectedLabel => _selectedLabel;
 
   UserModel? _user;
   bool _isLoading = true;
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
+  List<String> get addressLabel => _addressLabel;
 
   ThemeMode get themeMode {
     switch (_user?.themeMode) {
@@ -117,6 +123,29 @@ class UserProvider extends ChangeNotifier {
     );
 
     notifyListeners();
+  }
+
+  //---------------------------------------------------------------------------
+  // label logic
+  //---------------------------------------------------------------------------
+  // Select label
+  void selectLabel(String? label) {
+    if (_selectedLabel == label) {
+      // deselect if same chip tapped again
+      _selectedLabel = null;
+    } else {
+      _selectedLabel = label;
+    }
+    notifyListeners();
+  }
+
+  void clearLblSelection() {
+    _selectedLabel = "Home";
+    // notifyListeners();
+  }
+
+  bool isSelected(String label) {
+    return _selectedLabel == label;
   }
 
   //---------------------------------------------------------------------------
