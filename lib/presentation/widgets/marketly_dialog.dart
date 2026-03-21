@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 
 class MarketlyDialog {
   static Future<bool?> showMyDialog({

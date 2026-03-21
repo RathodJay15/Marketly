@@ -118,6 +118,7 @@ class AppConstants {
   static const String defaultAdrs = "Default Address";
   static const somthingWentWrong = "Something went wrong";
   static const String apply = "Apply";
+  static const String openSettings = "Open Settings";
   static const String addNewAdrs = "Add New Address";
   static const String dialogEmptyCart = "Empty cart?";
   static const String yesEmptyCart = "Yes, empty cart";
@@ -139,6 +140,7 @@ class AppConstants {
   static const String adrs = "Address";
   static const String selectAdrs = "Select Address";
   static const String editAdrs = "Edit Address";
+  static const String selectLoction = "Select Location";
   static const String ct = "City";
   static const String state = "State";
   static const String cntry = "Country";
@@ -148,6 +150,11 @@ class AppConstants {
   static const String recipientsPhone = "Recipient's Phone no.";
   static const String errorInChangePass =
       "Somthing went wrong while changing password. Try again. ";
+  static const String fetchingCurrentLocation = "Fetching current location...";
+  static const String contiueFillAddress =
+      "Select Location & Continue Fill Address";
+  static const String selectedAddress = "Selected Address";
+  static const String faildToGetAddress = "Failed to get address";
 
   // Product Constants
   static const String description = "Description";
@@ -233,6 +240,12 @@ class AppConstants {
   static const String emptyProductsTitle = "No Products Found";
   static const String emptyProductsSubtitle =
       "We couldn’t find any products matching your search. Try something else.";
+
+  static const String permissionRequired = "Permission Required";
+  static const String turnOnLocationMsg =
+      "Location permission is permanently denied. Please enable it from settings.";
+  static const String locationPermissionDenied = "Location permission denied";
+  static const String failedToLoadLocation = "Failed to fetch location";
 
   // Logo path
   static const String marketlyLogo = "assets/images/marketly_logo.png";

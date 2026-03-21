@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/services/coupon_service.dart';
 import 'package:marketly/data/services/razorpay_services.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';

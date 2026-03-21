@@ -2,7 +2,7 @@ import 'package:another_stepper/another_stepper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/core/constants/app_helpers.dart';
 import 'package:marketly/data/models/order_model.dart';
 import 'package:marketly/providers/order_provider.dart';

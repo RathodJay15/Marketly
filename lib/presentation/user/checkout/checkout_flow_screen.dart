@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:another_stepper/another_stepper.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/presentation/user/checkout/address_screen.dart';
 import 'package:marketly/presentation/user/checkout/order_summary_screen.dart';
 import 'package:marketly/presentation/user/checkout/payment_screen.dart';

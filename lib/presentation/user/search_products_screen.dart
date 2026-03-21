@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/widgets/category_chip.dart';
 import 'package:marketly/presentation/widgets/emptyState_screen.dart';

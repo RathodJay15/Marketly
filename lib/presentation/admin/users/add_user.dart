@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/providers/admin/admin_user_provider.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/address_model.dart';
-import 'package:marketly/presentation/user/menu/address_form.dart';
+import 'package:marketly/presentation/user/menu/address/address_form.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/user_provider.dart';

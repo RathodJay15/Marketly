@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/category_model.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/presentation/user/menu/my_account_screen.dart';

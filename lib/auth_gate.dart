@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/presentation/admin/dash_board_screen.dart';
 import 'package:marketly/data/services/Notifications/notification_services.dart';

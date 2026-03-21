@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/product_model.dart';
 import 'package:marketly/data/services/image_service.dart';

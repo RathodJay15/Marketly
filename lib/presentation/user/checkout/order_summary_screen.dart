@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/cart_item_model.dart';
 import 'package:marketly/providers/cart_provider.dart';
 import 'package:marketly/providers/order_provider.dart';

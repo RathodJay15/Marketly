@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/services/auth_service.dart';
 import 'package:marketly/presentation/user/menu/favorites_screen.dart';
-import 'package:marketly/presentation/user/menu/saved_addresses_screen.dart';
+import 'package:marketly/presentation/user/menu/address/saved_addresses_screen.dart';
 import 'package:marketly/presentation/user/notification_screen.dart';
 import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';

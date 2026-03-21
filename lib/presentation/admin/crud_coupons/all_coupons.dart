@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/presentation/admin/crud_coupons/add_coupon.dart';
 import 'package:marketly/presentation/admin/crud_coupons/edit_coupon.dart';
 import 'package:marketly/providers/admin/admin_coupon_provider.dart';

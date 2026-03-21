@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/presentation/auth/forgotPass_screen.dart';
 import 'package:marketly/presentation/auth/register_screen.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';

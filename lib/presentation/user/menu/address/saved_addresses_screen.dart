@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/address_model.dart';
-import 'package:marketly/presentation/user/menu/address_form.dart';
+import 'package:marketly/presentation/user/menu/address/address_form.dart';
+import 'package:marketly/presentation/user/menu/address/map_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -61,11 +62,8 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Iconoir(
-            IconoirIcons.navArrowLeft,
-            color: Theme.of(context).colorScheme.onInverseSurface,
-            size: 35,
-          ),
+          color: Theme.of(context).colorScheme.onInverseSurface,
+          icon: Iconoir(IconoirIcons.navArrowLeft, size: 35),
         ),
         Text(
           AppConstants.savedAdrs,
@@ -78,12 +76,16 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
         Spacer(),
         IconButton(
           onPressed: () {
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) =>
+            //         AddressForm(title: AppConstants.addNewAdrs, address: null),
+            //   ),
+            // );
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    AddressForm(title: AppConstants.addNewAdrs, address: null),
-              ),
+              MaterialPageRoute(builder: (_) => MapScreen()),
             );
           },
           color: Theme.of(context).colorScheme.onInverseSurface,

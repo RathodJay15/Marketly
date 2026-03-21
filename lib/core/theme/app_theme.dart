@@ -30,6 +30,7 @@ class MarketTheme {
       onInverseSurface: const Color.fromARGB(255, 0, 0, 0), //
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
       onTertiaryContainer: const Color.fromARGB(255, 255, 255, 255),
+      inversePrimary: const Color.fromARGB(255, 0, 0, 0),
     ),
 
     splashColor: const Color.fromARGB(0, 0, 0, 0),
@@ -78,6 +79,7 @@ class MarketTheme {
       onInverseSurface: const Color.fromARGB(255, 255, 255, 255), //\
       onTertiary: const Color.fromARGB(255, 225, 225, 225),
       onTertiaryContainer: const Color.fromARGB(255, 255, 255, 255),
+      inversePrimary: const Color.fromARGB(255, 0, 0, 0),
     ),
 
     splashColor: const Color.fromARGB(0, 0, 0, 0),

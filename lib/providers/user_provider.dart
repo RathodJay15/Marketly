@@ -28,7 +28,7 @@ class UserProvider extends ChangeNotifier {
   //----------------------------------------------------------------------------
 
   List<String> _addressLabel = ["Home", "Work", "Friends", "Family", "Other"];
-  String? _selectedLabel = "Home";
+  String? _selectedLabel;
 
   String? get selectedLabel => _selectedLabel;
 
@@ -140,7 +140,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void clearLblSelection() {
-    _selectedLabel = "Home";
+    _selectedLabel = null;
     // notifyListeners();
   }
 

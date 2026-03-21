@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
-import 'package:marketly/core/constants/app_constansts.dart';
+import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/core/data_instance/validators.dart';
 import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -170,11 +170,8 @@ class _addressFormState extends State<AddressForm> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Iconoir(
-            IconoirIcons.navArrowLeft,
-            color: Theme.of(context).colorScheme.onInverseSurface,
-            size: 35,
-          ),
+          color: Theme.of(context).colorScheme.onInverseSurface,
+          icon: Iconoir(IconoirIcons.navArrowLeft, size: 35),
         ),
         Text(
           widget.title,
