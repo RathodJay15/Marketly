@@ -11,6 +11,7 @@ class AddressForm extends StatefulWidget {
   final double lat;
   final double long;
   final String addressString;
+  final bool isFromRegistration;
 
   AddressForm({
     super.key,
@@ -18,6 +19,7 @@ class AddressForm extends StatefulWidget {
     required this.lat,
     required this.long,
     required this.addressString,
+    this.isFromRegistration = false,
   });
 
   @override
@@ -75,6 +77,11 @@ class _addressFormState extends State<AddressForm> {
     );
 
     try {
+      if (widget.isFromRegistration) {
+        Navigator.pop(context); // close form
+        Navigator.pop(context, newAddress); // return to register
+        return;
+      }
       if (widget.address != null) {
         await userProvider.updateAddress(newAddress);
 

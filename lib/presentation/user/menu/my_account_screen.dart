@@ -191,10 +191,12 @@ class _myAccountScreenState extends State<MyAccountScreen> {
     nameCtrl.text = user.name;
     phoneCtrl.text = user.phone;
 
-    if (user.addresses.isNotEmpty) {
-      final defaultAddr = user.addresses.firstWhere(
+    final addresses = user.addresses ?? [];
+
+    if (addresses.isNotEmpty) {
+      final defaultAddr = addresses.firstWhere(
         (a) => a.isDefault == true,
-        orElse: () => user.addresses.first,
+        orElse: () => addresses.first,
       );
 
       selectedAddressId = defaultAddr.id;

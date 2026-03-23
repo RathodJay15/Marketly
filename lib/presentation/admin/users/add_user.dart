@@ -59,11 +59,7 @@ class _addUserState extends State<AddUser> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         phone: _phoneController.text.trim(),
-        address: _addressController.text.trim(),
-        city: _cityController.text.trim(),
-        state: _stateController.text.trim(),
-        country: _countyController.text.trim(),
-        pincode: _pincodeController.text.trim(),
+        addressModel: null,
         profilePic: '',
       );
 

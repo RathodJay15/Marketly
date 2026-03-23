@@ -4,9 +4,11 @@ import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/core/data_instance/auth_locator.dart';
 import 'package:marketly/core/data_instance/validators.dart';
+import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/data/services/image_service.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:marketly/presentation/user/menu/address/map_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -18,19 +20,19 @@ class RegisterScreen extends StatefulWidget {
 
 class _registerScreenState extends State<RegisterScreen> {
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  // final TextEditingController _addressController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _countyController = TextEditingController();
-  final TextEditingController _pincodeController = TextEditingController();
+  // final TextEditingController _cityController = TextEditingController();
+  // final TextEditingController _stateController = TextEditingController();
+  // final TextEditingController _countyController = TextEditingController();
+  // final TextEditingController _pincodeController = TextEditingController();
   final ImageService _profilePicService = ImageService();
 
   final _authService = authService;
-
+  AddressModel? _selectedAddress;
   final _formKey = GlobalKey<FormState>();
 
   File? _selectedImage;
@@ -145,11 +147,7 @@ class _registerScreenState extends State<RegisterScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         phone: _phoneController.text.trim(),
-        address: _addressController.text.trim(),
-        city: _cityController.text.trim(),
-        state: _stateController.text.trim(),
-        country: _countyController.text.trim(),
-        pincode: _pincodeController.text.trim(),
+        addressModel: _selectedAddress,
         profilePic: '',
       );
       if (user != null) {
@@ -189,12 +187,12 @@ class _registerScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
+    // _addressController.dispose();
     _confirmController.dispose();
-    _cityController.dispose();
-    _stateController.dispose();
-    _countyController.dispose();
-    _pincodeController.dispose();
+    // _cityController.dispose();
+    // _stateController.dispose();
+    // _countyController.dispose();
+    // _pincodeController.dispose();
     super.dispose();
   }
 
@@ -300,44 +298,44 @@ class _registerScreenState extends State<RegisterScreen> {
                     ),
 
                     const SizedBox(height: 20.0),
-                    _textFormField(
-                      icon: IconoirIcons.pinAlt,
-                      hint: AppConstants.adrs,
-                      controller: _addressController,
-                      validator: Validators.address,
-                      maxLine: 3,
-                    ),
-                    const SizedBox(height: 20.0),
-                    _textFormField(
-                      icon: IconoirIcons.city,
-                      hint: AppConstants.ct,
-                      controller: _cityController,
-                      validator: Validators.username,
-                    ),
-                    const SizedBox(height: 20.0),
-                    _textFormField(
-                      icon: IconoirIcons.map,
-                      hint: AppConstants.state,
-                      controller: _stateController,
-                      validator: Validators.username,
-                    ),
-                    const SizedBox(height: 20.0),
-                    _textFormField(
-                      icon: IconoirIcons.globe,
-                      hint: AppConstants.cntry,
-                      controller: _countyController,
-                      validator: Validators.username,
-                    ),
+                    _address(),
+                    // _textFormField(
+                    //   icon: IconoirIcons.pinAlt,
+                    //   hint: AppConstants.adrs,
+                    //   controller: _addressController,
+                    //   validator: Validators.address,
+                    //   maxLine: 3,
+                    // ),
+                    // const SizedBox(height: 20.0),
+                    // _textFormField(
+                    //   icon: IconoirIcons.city,
+                    //   hint: AppConstants.ct,
+                    //   controller: _cityController,
+                    //   validator: Validators.city,
+                    // ),
+                    // const SizedBox(height: 20.0),
+                    // _textFormField(
+                    //   icon: IconoirIcons.map,
+                    //   hint: AppConstants.state,
+                    //   controller: _stateController,
+                    //   validator: Validators.state,
+                    // ),
+                    // const SizedBox(height: 20.0),
+                    // _textFormField(
+                    //   icon: IconoirIcons.globe,
+                    //   hint: AppConstants.cntry,
+                    //   controller: _countyController,
+                    //   validator: Validators.country,
+                    // ),
 
-                    const SizedBox(height: 20.0),
-                    _textFormField(
-                      icon: IconoirIcons.pin,
-                      hint: AppConstants.pincode,
-                      controller: _pincodeController,
-                      validator: Validators.username,
-                      keyboardType: TextInputType.number,
-                    ),
-
+                    // const SizedBox(height: 20.0),
+                    // _textFormField(
+                    //   icon: IconoirIcons.pin,
+                    //   hint: AppConstants.pincode,
+                    //   controller: _pincodeController,
+                    //   validator: Validators.pincode,
+                    //   keyboardType: TextInputType.number,
+                    // ),
                     const SizedBox(height: 20.0),
                     _profileImageFormField(
                       imageFile: _selectedImage,
@@ -483,6 +481,66 @@ class _registerScreenState extends State<RegisterScreen> {
                 ),
               )
             : null,
+      ),
+    );
+  }
+
+  Widget _address() {
+    return GestureDetector(
+      onTap: () async {
+        final AddressModel result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MapScreen(address: null, isFromRegistration: true),
+          ),
+        );
+
+        setState(() {
+          _selectedAddress = result;
+        });
+      },
+      child: AbsorbPointer(
+        child: TextFormField(
+          readOnly: true,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+            fontWeight: FontWeight.bold,
+          ),
+          decoration: InputDecoration(
+            hintText: AppConstants.adrs,
+            filled: true,
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+            fillColor: Theme.of(context).colorScheme.onSecondaryContainer,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            prefixIcon: SizedBox(
+              height: 40,
+              width: 40,
+              child: Center(
+                child: Iconoir(
+                  IconoirIcons.pinAlt,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  size: 25,
+                ),
+              ),
+            ),
+            suffixIcon: SizedBox(
+              height: 40,
+              width: 40,
+              child: Center(
+                child: Iconoir(
+                  IconoirIcons.navArrowRight,
+                  size: 25,
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

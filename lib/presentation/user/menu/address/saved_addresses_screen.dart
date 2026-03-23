@@ -4,6 +4,7 @@ import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/presentation/user/menu/address/map_screen.dart';
+import 'package:marketly/presentation/widgets/emptyState_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -107,11 +108,22 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
+        final addresses = user.addresses ?? [];
+
+        if (addresses.isEmpty) {
+          return EmptystateScreen.emptyState(
+            icon: IconoirIcons.pinAlt,
+            title: AppConstants.emptyAddressTitle,
+            subtitle: AppConstants.emptyAddressSubtitle,
+            context: context,
+          );
+        }
+
         return ListView.builder(
           shrinkWrap: true,
-          itemCount: user.addresses.length,
+          itemCount: addresses.length,
           itemBuilder: (builder, index) {
-            final AddressModel address = user.addresses[index];
+            final AddressModel address = addresses[index];
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: Slidable(

@@ -71,22 +71,30 @@ class _userDetailsScreen extends State<UserDetails> {
         ),
         SizedBox(height: 8),
         _sectionTitle(AppConstants.adrs),
-        _greyCard(
-          children: user.addresses.map((address) {
-            final formattedAddress = address.address;
+        user.addresses != null
+            ? _greyCard(
+                children: user.addresses!.map((address) {
+                  final formattedAddress = address.address;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Text(
-                formattedAddress,
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      formattedAddress,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              )
+            : Text(
+                AppConstants.emptyAddressTitle,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-            );
-          }).toList(),
-        ),
       ],
     );
   }

@@ -69,7 +69,9 @@ class UserProvider extends ChangeNotifier {
 
     await authService.addAddressFull(uid: user.uid, address: newAddress);
 
-    _user = user.copyWith(addresses: [...user.addresses, newAddress]);
+    final addresses = user.addresses ?? [];
+
+    _user = user.copyWith(addresses: [...addresses, newAddress]);
     notifyListeners();
   }
 
@@ -81,8 +83,10 @@ class UserProvider extends ChangeNotifier {
 
     await authService.updateAddressFull(uid: user.uid, address: updatedAddress);
 
+    final addresses = user.addresses ?? [];
+
     _user = user.copyWith(
-      addresses: user.addresses.map((a) {
+      addresses: addresses.map((a) {
         return a.id == updatedAddress.id ? updatedAddress : a;
       }).toList(),
     );
@@ -98,8 +102,11 @@ class UserProvider extends ChangeNotifier {
 
     await authService.deleteAddress(uid: user.uid, addressId: id);
 
-    final updated = user.addresses.where((a) => a.id != id).toList();
+    final addresses = user.addresses ?? [];
 
+    final updated = addresses.where((a) => a.id != id).toList();
+
+    // Ensure one default
     if (updated.isNotEmpty && !updated.any((a) => a.isDefault)) {
       updated[0] = updated[0].copyWith(isDefault: true);
     }
@@ -116,8 +123,10 @@ class UserProvider extends ChangeNotifier {
 
     await authService.setDefaultAddress(uid: user.uid, addressId: id);
 
+    final addresses = user.addresses ?? [];
+
     _user = user.copyWith(
-      addresses: user.addresses.map((a) {
+      addresses: addresses.map((a) {
         return a.copyWith(isDefault: a.id == id);
       }).toList(),
     );

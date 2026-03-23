@@ -117,11 +117,7 @@ class AuthService {
     required String email,
     required String password,
     required String phone,
-    required String city,
-    required String state,
-    required String country,
-    required String pincode,
-    required String address,
+    required AddressModel? addressModel,
     required String profilePic,
   }) async {
     try {
@@ -133,22 +129,9 @@ class AuthService {
       final user = cred.user;
       if (user == null) return null;
 
-      List<AddressModel> defaultAddress = [
-        AddressModel(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          label: 'Home',
-          address: address,
-          city: city,
-          state: state,
-          country: country,
-          pincode: pincode,
-          recipientName: name,
-          recipientPhone: phone,
-          lat: 0.0,
-          long: 0.0,
-          isDefault: true,
-        ),
-      ];
+      List<AddressModel> defaultAddress = addressModel != null
+          ? [addressModel.copyWith(isDefault: true)]
+          : [];
 
       final userModel = UserModel(
         uid: user.uid,

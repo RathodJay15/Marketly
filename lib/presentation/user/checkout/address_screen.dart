@@ -26,8 +26,11 @@ class _addressScreenState extends State<AddressScreen> {
     final user = context.read<UserProvider>().user;
 
     if (selectedAddressId == null) return;
+    final addresses = user!.addresses;
 
-    final selectedAddress = user!.addresses.firstWhere(
+    if (addresses == null || addresses.isEmpty) return;
+
+    final selectedAddress = addresses.firstWhere(
       (a) => a.id == selectedAddressId,
     );
 
@@ -112,10 +115,22 @@ class _addressScreenState extends State<AddressScreen> {
         if (user == null) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (selectedAddressId == null && user.addresses.isNotEmpty) {
-          final defaultAddress = user.addresses.firstWhere(
+        final addresses = user.addresses ?? [];
+        if (addresses.isEmpty) {
+          return Center(
+            child: Text(
+              AppConstants.emptyAddressTitle,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+          );
+        }
+
+        if (selectedAddressId == null && addresses.isNotEmpty) {
+          final defaultAddress = addresses.firstWhere(
             (a) => a.isDefault,
-            orElse: () => user.addresses.first,
+            orElse: () => addresses.first,
           );
           selectedAddressId = defaultAddress.id;
         }
@@ -129,9 +144,9 @@ class _addressScreenState extends State<AddressScreen> {
           },
           child: ListView.builder(
             shrinkWrap: true,
-            itemCount: user.addresses.length,
+            itemCount: addresses.length,
             itemBuilder: (builder, index) {
-              final AddressModel address = user.addresses[index];
+              final AddressModel address = user.addresses![index];
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,

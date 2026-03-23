@@ -243,6 +243,10 @@ class AppConstants {
   static const String emptyProductsSubtitle =
       "We couldn’t find any products matching your search. Try something else.";
 
+  static const String emptyAddressTitle = "No Addresses Yet";
+  static const String emptyAddressSubtitle =
+      "Add a delivery address to get started with your orders.";
+
   static const String permissionRequired = "Permission Required";
   static const String turnOnLocationMsg =
       "Location permission is permanently denied. Please enable it from settings.";

@@ -10,7 +10,8 @@ import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 
 class MapScreen extends StatefulWidget {
   final AddressModel? address;
-  MapScreen({super.key, this.address});
+  final bool isFromRegistration;
+  MapScreen({super.key, this.address, this.isFromRegistration = false});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -426,20 +427,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         child: ElevatedButton(
           onPressed: () {
             if (_isLoadingCurLocation == true) return;
-            if (widget.address != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddressForm(
-                    lat: selectedLocation!.latitude,
-                    long: selectedLocation!.longitude,
-                    addressString: selectedAddress!,
-                    address: widget.address,
-                  ),
-                ),
-              );
-              return;
-            }
+
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -447,10 +435,12 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                   lat: selectedLocation!.latitude,
                   long: selectedLocation!.longitude,
                   addressString: selectedAddress!,
-                  address: null,
+                  address: widget.address,
+                  isFromRegistration: widget.isFromRegistration,
                 ),
               ),
             );
+            return;
           },
 
           style: ElevatedButton.styleFrom(

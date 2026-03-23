@@ -4,7 +4,7 @@ class UserModel {
   final String uid;
   final String name;
   final String email;
-  final List<AddressModel> addresses;
+  final List<AddressModel>? addresses;
   final String phone;
 
   final String? profilePic;
@@ -50,7 +50,9 @@ class UserModel {
     return {
       'name': name,
       'email': email,
-      'addresses': addresses.map((a) => a.toMap()).toList(),
+      'addresses': addresses != null
+          ? addresses!.map((a) => a.toMap()).toList()
+          : {},
       'phone': phone,
       'role': role,
       'profilePic': profilePic,
