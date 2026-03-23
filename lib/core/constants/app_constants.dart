@@ -107,7 +107,8 @@ class AppConstants {
   static const String yes = "Yes";
   static const String no = "No";
   static const String myAccount = "My Account";
-  static const String savedAdrs = "Saved Addresses";
+  static const String savedAdrses = "Saved Addresses";
+  static const String savedAdrs = "Saved Address";
   static const String enterlbl = "Enter label";
   static const String myOrders = "My Orders";
   static const String review = "Review";
@@ -125,6 +126,7 @@ class AppConstants {
   static const String notifications = "Notifications";
   static const String checkForMail =
       "Check your email inbox or spam for change / forgot password mail from marketly";
+  static const String moveToSelectLocation = "Move map to select location";
 
   static const String confirmCod = "Confirm Cash on Delivery";
   static const String codOrderMsg =

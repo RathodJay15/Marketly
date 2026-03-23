@@ -19,12 +19,13 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   LatLng? selectedLocation;
-  String? selectedAddress;
+  String? mapAddress;
   GoogleMapController? mapController;
   bool _isDialogOpen = false;
   bool _isLoadingCurLocation = true;
   MapType _mapType = MapType.normal;
   LatLng? _centerLatLng;
+  String _selectedSource = "map";
 
   CameraPosition get _initialCameraPosition {
     //  If editing address
@@ -54,10 +55,10 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
     if (widget.address != null) {
       final latLng = LatLng(widget.address!.lat, widget.address!.long);
-
+      _selectedSource = "old"; // default to old when editing
       selectedLocation = latLng;
       _centerLatLng = latLng;
-      selectedAddress = widget.address!.address;
+      mapAddress = widget.address!.address;
 
       // Move camera after build
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -184,7 +185,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           "${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}, ${place.postalCode}";
 
       setState(() {
-        selectedAddress = address;
+        mapAddress = address;
       });
     } catch (e) {
       _showError(AppConstants.faildToGetAddress);
@@ -200,6 +201,9 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -227,52 +231,30 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
           ],
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _map(),
-          if (selectedAddress != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppConstants.selectedAddress,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Divider(
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    thickness: 2,
-                    radius: BorderRadius.circular(2),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    selectedAddress!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          _addButton(),
-        ],
-      ),
+      body: isLandscape ? _landscapeLayout() : _protraiteLayout(),
+    );
+  }
+
+  Widget _landscapeLayout() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [_map(), _address()],
+    );
+  }
+
+  Widget _protraiteLayout() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [_map(), _address()],
     );
   }
 
   Widget _map() {
     if (_isLoadingCurLocation && selectedLocation == null) {
-      return Expanded(
+      return Flexible(
+        flex: 2,
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -302,7 +284,8 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         ),
       );
     }
-    return Expanded(
+    return Flexible(
+      flex: 2,
       child: Stack(
         children: [
           Container(
@@ -419,44 +402,147 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _addButton() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: SizedBox(
-        width: 200,
-        child: ElevatedButton(
-          onPressed: () {
-            if (_isLoadingCurLocation == true) return;
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AddressForm(
-                  lat: selectedLocation!.latitude,
-                  long: selectedLocation!.longitude,
-                  addressString: selectedAddress!,
-                  address: widget.address,
-                  isFromRegistration: widget.isFromRegistration,
-                ),
-              ),
-            );
-            return;
+  Widget _address() {
+    return Flexible(
+      flex: 1,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: RadioGroup<String>(
+          groupValue: _selectedSource,
+          onChanged: (val) {
+            setState(() {
+              _selectedSource = val!;
+            });
           },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _addressOption(
+                title: AppConstants.selectedAddress,
+                value: "map",
+                address: mapAddress ?? AppConstants.moveToSelectLocation,
+              ),
+              SizedBox(height: 5),
+              if (widget.address != null)
+                _addressOption(
+                  title: AppConstants.savedAdrs,
+                  value: "old",
+                  address: widget.address!.address,
+                ),
 
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
-            minimumSize: const Size(double.infinity, 50.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+              Spacer(),
+              _addButton(),
+            ],
           ),
-          child: Text(
-            AppConstants.contiueFillAddress,
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _addressOption({
+    required String title,
+    required String value,
+    required String address,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedSource = value;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _selectedSource == value
+                ? Theme.of(context).colorScheme.onInverseSurface
+                : Theme.of(context).colorScheme.onPrimary,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Radio<String>(
+              value: value,
+              fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Theme.of(
+                    context,
+                  ).colorScheme.onInverseSurface; // Selected color
+                }
+                return Theme.of(
+                  context,
+                ).colorScheme.onPrimary; // Unselected color
+              }),
             ),
+            SizedBox(width: 5),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    address,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _addButton() {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: () {
+          if (_isLoadingCurLocation == true) return;
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddressForm(
+                lat: selectedLocation!.latitude,
+                long: selectedLocation!.longitude,
+                addressString: (_selectedSource == "map")
+                    ? mapAddress!
+                    : widget.address!.address,
+                address: widget.address,
+                isFromRegistration: widget.isFromRegistration,
+              ),
+            ),
+          );
+          return;
+        },
+
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          AppConstants.contiueFillAddress,
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

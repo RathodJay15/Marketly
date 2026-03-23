@@ -495,7 +495,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
           // suffix icon
           suffixIcon: IconButton(
             icon: Iconoir(
-              isEditing ? IconoirIcons.navArrowRight : IconoirIcons.editPencil,
+              isEditing ? IconoirIcons.check : IconoirIcons.editPencil,
               size: 25,
             ),
             color: Theme.of(context).colorScheme.onInverseSurface,

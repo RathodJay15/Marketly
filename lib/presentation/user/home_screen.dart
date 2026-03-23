@@ -269,24 +269,40 @@ class _homeScreenState extends State<HomeScreen>
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                child: GestureDetector(
-                  onTap: () => goToMyAccount(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 80,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: hasValidUrl
-                            ? Image.network(
-                                user.profilePic!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: GestureDetector(
+                    onTap: () => goToMyAccount(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 80,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: hasValidUrl
+                              ? Image.network(
+                                  user.profilePic!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    height: 80,
+                                    width: 80,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSecondaryContainer,
+                                    child: Center(
+                                      child: const Iconoir(
+                                        IconoirIcons.user,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(
                                   height: 80,
                                   width: 80,
                                   color: Theme.of(
@@ -299,44 +315,33 @@ class _homeScreenState extends State<HomeScreen>
                                     ),
                                   ),
                                 ),
-                              )
-                            : Container(
-                                height: 80,
-                                width: 80,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSecondaryContainer,
-                                child: Center(
-                                  child: const Iconoir(
-                                    IconoirIcons.user,
-                                    size: 30,
-                                  ),
-                                ),
-                              ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        user.name.isEmpty ? AppConstants.username : user.name,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onInverseSurface,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      Text(
-                        user.email.isEmpty ? AppConstants.username : user.email,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                        SizedBox(height: 10),
+                        Text(
+                          user.name.isEmpty ? AppConstants.username : user.name,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                        Text(
+                          user.email.isEmpty
+                              ? AppConstants.username
+                              : user.email,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-
-              SizedBox(height: 10),
 
               Divider(color: Theme.of(context).colorScheme.onPrimary),
 
@@ -372,7 +377,7 @@ class _homeScreenState extends State<HomeScreen>
 
               _drawerListTile(
                 icon: IconoirIcons.pinAlt,
-                text: AppConstants.savedAdrs,
+                text: AppConstants.savedAdrses,
                 onTap: () => goToMyAddresses(),
               ),
 

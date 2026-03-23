@@ -99,7 +99,7 @@ class _menuScreenState extends State<MenuScreen> {
         _buildTile(
           goToMyAddresses,
           IconoirIcons.pinAlt,
-          AppConstants.savedAdrs,
+          AppConstants.savedAdrses,
         ),
 
         SizedBox(height: 10),
