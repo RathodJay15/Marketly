@@ -79,7 +79,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       await Future.delayed(const Duration(milliseconds: 500)); // wait
 
-      if (!_isDialogOpen) {
+      if (!_isDialogOpen && widget.address == null) {
         _getCurrentLocation();
       }
     }

@@ -4,7 +4,6 @@ import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/presentation/user/menu/address/map_screen.dart';
-import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/order_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -156,7 +155,7 @@ class _addressScreenState extends State<AddressScreen> {
                   key: ValueKey(address.id),
                   endActionPane: ActionPane(
                     motion: const DrawerMotion(),
-                    extentRatio: 0.60,
+                    extentRatio: 0.30,
                     children: [
                       SlidableAction(
                         onPressed: (context) async {
@@ -175,69 +174,6 @@ class _addressScreenState extends State<AddressScreen> {
                         ).colorScheme.onTertiaryContainer,
                         icon: Icons.edit,
                         label: AppConstants.editAdrs,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      SlidableAction(
-                        onPressed: (context) async {
-                          if (address.isDefault) {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                title: Text(
-                                  AppConstants.cantDeleteDefault,
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onInverseSurface,
-                                  ),
-                                ),
-                                content: Text(
-                                  AppConstants.setOtherAdrsDefaultFirst,
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimary,
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(ctx, false),
-                                    child: Text(
-                                      AppConstants.yes,
-                                      style: TextStyle(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onInverseSurface,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                            return;
-                          }
-                          final confirm = await MarketlyDialog.showMyDialog(
-                            context: context,
-                            title: AppConstants.deleteAdrs,
-                            content: AppConstants.areYouSureDeleteAdrs,
-                            actionN: AppConstants.cancel,
-                            actionY: AppConstants.delete,
-                          );
-                          if (confirm == true) {
-                            userProvider.deleteAddress(address.id);
-                          }
-                        },
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onSurface,
-                        foregroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onTertiaryContainer,
-                        icon: Icons.delete,
-                        label: AppConstants.deleteAdrs,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ],

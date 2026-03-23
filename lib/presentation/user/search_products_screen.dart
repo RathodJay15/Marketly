@@ -168,10 +168,11 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
                 elevation: 0,
                 floating: true,
                 snap: true,
-                toolbarHeight: 70,
+                toolbarHeight: 80,
                 titleSpacing: 20,
                 title: _buildSearchSection(),
               ),
+
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
