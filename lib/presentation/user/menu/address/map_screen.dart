@@ -4,11 +4,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constants.dart';
+import 'package:marketly/data/models/address_model.dart';
 import 'package:marketly/presentation/user/menu/address/address_form.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final AddressModel? address;
+  MapScreen({super.key, this.address});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -19,14 +21,55 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
   String? selectedAddress;
   GoogleMapController? mapController;
   bool _isDialogOpen = false;
-  bool _isLoadingCurLocation = false;
+  bool _isLoadingCurLocation = true;
   MapType _mapType = MapType.normal;
+  LatLng? _centerLatLng;
+
+  CameraPosition get _initialCameraPosition {
+    //  If editing address
+    if (widget.address != null) {
+      return CameraPosition(
+        target: LatLng(widget.address!.lat, widget.address!.long),
+        zoom: 20,
+      );
+    }
+
+    //  If current location already fetched
+    if (selectedLocation != null) {
+      return CameraPosition(target: selectedLocation!, zoom: 20);
+    }
+
+    return const CameraPosition(
+      target: LatLng(0, 0), // dummy (won’t be visible anyway)
+      zoom: 1,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addObserver(this);
-    _getCurrentLocation();
+
+    if (widget.address != null) {
+      final latLng = LatLng(widget.address!.lat, widget.address!.long);
+
+      selectedLocation = latLng;
+      _centerLatLng = latLng;
+      selectedAddress = widget.address!.address;
+
+      // Move camera after build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 20));
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _isLoadingCurLocation = true;
+        });
+        _getCurrentLocation();
+      });
+    }
   }
 
   @override
@@ -100,7 +143,11 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         _isLoadingCurLocation = false;
       });
 
-      mapController?.animateCamera(CameraUpdate.newLatLng(currentLatLng));
+      if (mapController != null) {
+        mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(currentLatLng, 16),
+        );
+      }
     } catch (e) {
       _showError(AppConstants.failedToLoadLocation);
     } finally {
@@ -183,117 +230,7 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Stack(
-              children: [
-                Container(
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: GoogleMap(
-                      mapType: _mapType,
-                      initialCameraPosition: const CameraPosition(
-                        target: LatLng(22.3039, 70.8022),
-                        zoom: 14,
-                      ),
-                      onMapCreated: (controller) {
-                        mapController = controller;
-                      },
-                      myLocationEnabled: true, //  blue dot
-                      myLocationButtonEnabled: true,
-                      onTap: (LatLng position) async {
-                        setState(() {
-                          selectedLocation = position;
-                          _isLoadingCurLocation = true;
-                        });
-
-                        await _getAddressFromLatLng(position);
-
-                        setState(() {
-                          _isLoadingCurLocation = false;
-                        });
-                        setState(() {
-                          selectedLocation = position;
-                        });
-                      },
-
-                      markers: selectedLocation == null
-                          ? {}
-                          : {
-                              Marker(
-                                markerId: const MarkerId("selected"),
-                                position: selectedLocation!,
-                              ),
-                            },
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 10,
-                  left: 10,
-                  child: FloatingActionButton(
-                    mini: true,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    onPressed: () {
-                      setState(() {
-                        _mapType = _mapType == MapType.normal
-                            ? MapType.satellite
-                            : MapType.normal;
-                      });
-                    },
-                    child: Icon(
-                      Icons.layers,
-                      color: Theme.of(context).colorScheme.onInverseSurface,
-                    ),
-                  ),
-                ),
-                if (_isLoadingCurLocation)
-                  Positioned.fill(
-                    child: Container(
-                      height: 70,
-                      width: 70,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onTertiary.withAlpha(95),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircularProgressIndicator(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.inversePrimary,
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              AppConstants.fetchingCurrentLocation,
-                              style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.inversePrimary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+          _map(),
           if (selectedAddress != null)
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
@@ -332,6 +269,155 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     );
   }
 
+  Widget _map() {
+    if (_isLoadingCurLocation && selectedLocation == null) {
+      return Expanded(
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                AppConstants.fetchingCurrentLocation,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onInverseSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Expanded(
+      child: Stack(
+        children: [
+          Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: GoogleMap(
+                mapType: _mapType,
+                initialCameraPosition: _initialCameraPosition,
+                onMapCreated: (controller) {
+                  mapController = controller;
+                  if (selectedLocation != null) {
+                    mapController!.animateCamera(
+                      CameraUpdate.newLatLngZoom(selectedLocation!, 16),
+                    );
+                  }
+                },
+                myLocationEnabled: true, //  blue dot
+                myLocationButtonEnabled: true,
+                onCameraMove: (position) {
+                  _centerLatLng = position.target;
+                },
+
+                onCameraIdle: () async {
+                  if (_centerLatLng != null) {
+                    setState(() {
+                      _isLoadingCurLocation = true;
+                      selectedLocation = _centerLatLng;
+                    });
+                    await Future.delayed(const Duration(milliseconds: 200));
+
+                    await _getAddressFromLatLng(_centerLatLng!);
+
+                    setState(() {
+                      _isLoadingCurLocation = false;
+                    });
+                  }
+                },
+              ),
+            ),
+          ),
+
+          Center(
+            child: Transform.translate(
+              offset: const Offset(0, -20),
+              child: IgnorePointer(
+                child: Icon(
+                  Icons.location_on,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  size: 40,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 10,
+            left: 10,
+            child: FloatingActionButton(
+              mini: true,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              onPressed: () {
+                setState(() {
+                  _mapType = _mapType == MapType.normal
+                      ? MapType.satellite
+                      : MapType.normal;
+                });
+              },
+              child: Icon(
+                Icons.layers,
+                color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
+            ),
+          ),
+          if (_isLoadingCurLocation && widget.address == null)
+            Positioned.fill(
+              child: Container(
+                height: 70,
+                width: 70,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).colorScheme.onTertiary.withAlpha(95),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        AppConstants.fetchingCurrentLocation,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _addButton() {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -339,14 +425,34 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
         width: 200,
         child: ElevatedButton(
           onPressed: () {
+            if (_isLoadingCurLocation == true) return;
+            if (widget.address != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AddressForm(
+                    lat: selectedLocation!.latitude,
+                    long: selectedLocation!.longitude,
+                    addressString: selectedAddress!,
+                    address: widget.address,
+                  ),
+                ),
+              );
+              return;
+            }
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) =>
-                    AddressForm(title: AppConstants.addNewAdrs, address: null),
+                builder: (_) => AddressForm(
+                  lat: selectedLocation!.latitude,
+                  long: selectedLocation!.longitude,
+                  addressString: selectedAddress!,
+                  address: null,
+                ),
               ),
             );
           },
+
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
             minimumSize: const Size(double.infinity, 50.0),

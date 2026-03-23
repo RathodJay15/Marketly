@@ -7,10 +7,18 @@ import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddressForm extends StatefulWidget {
-  final String title;
   final AddressModel? address;
+  final double lat;
+  final double long;
+  final String addressString;
 
-  AddressForm({super.key, required this.title, required this.address});
+  AddressForm({
+    super.key,
+    required this.address,
+    required this.lat,
+    required this.long,
+    required this.addressString,
+  });
 
   @override
   State<StatefulWidget> createState() => _addressFormState();
@@ -23,6 +31,7 @@ class _addressFormState extends State<AddressForm> {
   bool isDefault = false;
 
   String labelController = "";
+  String? labelError;
   TextEditingController customLabelController = TextEditingController();
   TextEditingController adrsController = TextEditingController();
   TextEditingController nameController = TextEditingController();
@@ -33,9 +42,17 @@ class _addressFormState extends State<AddressForm> {
   TextEditingController pincodeController = TextEditingController();
 
   void onSave() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final userProvider = context.read<UserProvider>();
+
+    if (labelController.isEmpty && userProvider.selectedLabel!.isEmpty) {
+      setState(() {
+        labelError = AppConstants.selectAddressLabel;
+      });
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
 
-    final userProvider = context.read<UserProvider>();
     final finalLabel = userProvider.selectedLabel == "Other"
         ? customLabelController.text.trim()
         : userProvider.selectedLabel ?? "";
@@ -52,6 +69,8 @@ class _addressFormState extends State<AddressForm> {
       pincode: pincodeController.text.trim(),
       recipientName: nameController.text.trim(),
       recipientPhone: phoneController.text.trim(),
+      lat: widget.lat,
+      long: widget.long,
       isDefault: isDefault,
     );
 
@@ -79,6 +98,7 @@ class _addressFormState extends State<AddressForm> {
         ),
       );
       Navigator.pop(context);
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -94,9 +114,9 @@ class _addressFormState extends State<AddressForm> {
     final provider = context.read<UserProvider>();
     provider.clearLocation();
     provider.clearLblSelection();
+    adrsController = TextEditingController(text: widget.addressString);
 
     if (widget.address != null) {
-      adrsController = TextEditingController(text: widget.address!.address);
       nameController = TextEditingController(
         text: widget.address!.recipientName,
       );
@@ -174,7 +194,7 @@ class _addressFormState extends State<AddressForm> {
           icon: Iconoir(IconoirIcons.navArrowLeft, size: 35),
         ),
         Text(
-          widget.title,
+          AppConstants.adrsDetails,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onInverseSurface,
             fontSize: 25,
@@ -196,6 +216,16 @@ class _addressFormState extends State<AddressForm> {
           children: [
             _titlePart(AppConstants.adrsLabel),
             _labelChip(),
+            if (labelError != null)
+              Padding(
+                padding: EdgeInsets.only(top: 5),
+                child: Text(
+                  labelError!,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
             SizedBox(height: 10),
             _otherLblField(),
 

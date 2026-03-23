@@ -9,6 +9,8 @@ class AddressModel {
   final String recipientName;
   final String recipientPhone;
   final bool isDefault;
+  final double lat;
+  final double long;
 
   AddressModel({
     required this.id,
@@ -21,6 +23,8 @@ class AddressModel {
     required this.recipientName,
     required this.recipientPhone,
     required this.isDefault,
+    required this.lat,
+    required this.long,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +38,8 @@ class AddressModel {
       'pincode': pincode,
       'recipientName': recipientName,
       'recipientPhone': recipientPhone,
+      'lat': lat,
+      'long': long,
       'isDefault': isDefault,
     };
   }
@@ -49,6 +55,8 @@ class AddressModel {
       state: map['state'],
       recipientName: map['recipientName'] ?? '',
       recipientPhone: map['recipientPhone'] ?? '',
+      lat: map['lat'],
+      long: map['long'],
       isDefault: map['isDefault'] ?? false,
     );
   }
@@ -62,6 +70,8 @@ class AddressModel {
     String? label,
     String? recipientName,
     String? recipientPhone,
+    double? lat,
+    double? long,
     bool? isDefault,
   }) {
     return AddressModel(
@@ -74,6 +84,8 @@ class AddressModel {
       pincode: pincode ?? this.pincode,
       recipientName: recipientName ?? this.recipientName,
       recipientPhone: recipientPhone ?? this.recipientPhone,
+      lat: lat ?? this.lat,
+      long: long ?? this.long,
       isDefault: isDefault ?? this.isDefault,
     );
   }

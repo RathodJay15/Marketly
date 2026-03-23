@@ -3,7 +3,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:iconoir_icons/iconoir_icons.dart';
 import 'package:marketly/core/constants/app_constants.dart';
 import 'package:marketly/data/models/address_model.dart';
-import 'package:marketly/presentation/user/menu/address/address_form.dart';
 import 'package:marketly/presentation/user/menu/address/map_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/user_provider.dart';
@@ -126,10 +125,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => AddressForm(
-                              title: AppConstants.editAdrs,
-                              address: address,
-                            ),
+                            builder: (_) => MapScreen(address: address),
                           ),
                         );
                       },
@@ -323,10 +319,7 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) =>
-                    AddressForm(title: AppConstants.addNewAdrs, address: null),
-              ),
+              MaterialPageRoute(builder: (_) => MapScreen()),
             );
           },
           style: ElevatedButton.styleFrom(

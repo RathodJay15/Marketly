@@ -144,6 +144,8 @@ class AuthService {
           pincode: pincode,
           recipientName: name,
           recipientPhone: phone,
+          lat: 0.0,
+          long: 0.0,
           isDefault: true,
         ),
       ];

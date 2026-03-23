@@ -140,6 +140,7 @@ class AppConstants {
   static const String adrs = "Address";
   static const String selectAdrs = "Select Address";
   static const String editAdrs = "Edit Address";
+  static const String adrsDetails = "Address Details";
   static const String selectLoction = "Select Location";
   static const String ct = "City";
   static const String state = "State";
@@ -155,6 +156,7 @@ class AppConstants {
       "Select Location & Continue Fill Address";
   static const String selectedAddress = "Selected Address";
   static const String faildToGetAddress = "Failed to get address";
+  static const String selectAddressLabel = "Please Select Address Label";
 
   // Product Constants
   static const String description = "Description";
