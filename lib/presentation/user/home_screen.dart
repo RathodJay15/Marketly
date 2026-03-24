@@ -13,6 +13,7 @@ import 'package:marketly/presentation/user/orders/my_orders_screen.dart';
 import 'package:marketly/presentation/user/search_products_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/favorites_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -98,6 +99,7 @@ class _homeScreenState extends State<HomeScreen>
         0,
       ); // set navbar to home
       context.read<CartProvider>().stopListening();
+      context.read<FavoritesProvider>().stopListening();
       context.read<UserProvider>().clearUser(); // App state
       await AuthService().logout(); // Firebase session
     }

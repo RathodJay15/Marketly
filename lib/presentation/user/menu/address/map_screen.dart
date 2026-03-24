@@ -153,23 +153,25 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
     } catch (e) {
       _showError(AppConstants.failedToLoadLocation);
     } finally {
-      setState(() {
-        _isLoadingCurLocation = false;
-      });
+      if (mounted)
+        setState(() {
+          _isLoadingCurLocation = false;
+        });
     }
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
+    if (mounted)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Future<void> _getAddressFromLatLng(LatLng position) async {

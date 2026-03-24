@@ -5,16 +5,16 @@ class CartService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const int _cartExpiryMinutes = 60;
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // CART DOCUMENT REFERENCE (metadata)
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   DocumentReference<Map<String, dynamic>> _cartDocRef(String uid) {
     return _firestore.collection('cart').doc(uid);
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // CART ITEMS SUBCOLLECTION
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   CollectionReference<Map<String, dynamic>> _cartItemsRef(String uid) {
     return _cartDocRef(uid).collection('cartItems');
   }
@@ -23,9 +23,9 @@ class CartService {
     return _cartDocRef(uid).snapshots();
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // REALTIME CART STREAM (Items Only For Now)
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   Stream<List<CartItemModel>> cartStream(String uid) {
     return _cartItemsRef(uid).snapshots().map(
       (snapshot) => snapshot.docs
@@ -34,9 +34,9 @@ class CartService {
     );
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // ADD TO CART
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   Future<void> addToCart({
     required String uid,
     required CartItemModel item,
@@ -58,9 +58,9 @@ class CartService {
     }
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // UPDATE QUANTITY
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   Future<void> updateQuantity({
     required String uid,
     required String cartItemId,
@@ -83,9 +83,9 @@ class CartService {
     await docRef.update(updated.toFirestore());
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // REMOVE ITEM
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   Future<void> removeItem(String uid, String cartItemId) async {
     await _cartItemsRef(uid).doc(cartItemId).delete();
 
@@ -97,9 +97,9 @@ class CartService {
     }
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // CLEAR CART
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   Future<void> clearCart(String uid) async {
     final itemsSnapshot = await _cartItemsRef(uid).get();
 
@@ -110,9 +110,9 @@ class CartService {
     await _cartDocRef(uid).delete();
   }
 
-  //─────────────────────────────────────────────
+  // ---------------------------------------------
   //
-  //─────────────────────────────────────────────
+  // ---------------------------------------------
   Future<void> _ensureCartDocument(String uid) async {
     final docRef = _cartDocRef(uid);
     final snapshot = await docRef.get();

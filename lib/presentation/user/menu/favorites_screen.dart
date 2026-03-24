@@ -101,6 +101,54 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
+  //------------------------------------------------------------------
+  // Listening directly to firestore stream (Example of SreamBuilder)
+  //------------------------------------------------------------------
+  // Widget _favoritesListSection() {
+  //   final uid = context.read<UserProvider>().user!.uid;
+  //   return Consumer<ProductProvider>(
+  //     builder: (context, productProvider, _) {
+  //       return StreamBuilder(
+  //         stream: FavoritesServices().getLikedProductIds(uid),
+  //         builder: (context, snapshot) {
+  //           if (snapshot.connectionState == ConnectionState.waiting) {
+  //             return const CircularProgressIndicator();
+  //           }
+  //           final allProducts = productProvider.allProducts;
+  //           final likedIds = snapshot.data ?? [];
+
+  //           // Filter only liked products
+  //           final favoriteProducts = allProducts
+  //               .where((product) => likedIds.contains(product.id))
+  //               .toList();
+
+  //           if (favoriteProducts.isEmpty) {
+  //             return Center(
+  //               child: EmptystateScreen.emptyState(
+  //                 icon: IconoirIcons.heart,
+  //                 title: AppConstants.emptyFavoritesTitle,
+  //                 subtitle: AppConstants.emptyFavoritesSubtitle,
+  //                 context: context,
+  //               ),
+  //             );
+  //           }
+
+  //           return ListView.separated(
+  //             padding: const EdgeInsets.symmetric(horizontal: 16),
+  //             itemCount: favoriteProducts.length,
+  //             separatorBuilder: (_, __) => const SizedBox(height: 10),
+  //             clipBehavior: Clip.antiAlias,
+  //             itemBuilder: (context, index) {
+  //               final product = favoriteProducts[index];
+  //               return _favoriteTile(context, product);
+  //             },
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _favoriteTile(BuildContext context, ProductModel product) {
     return OpenContainer(
       closedColor: Colors.transparent,

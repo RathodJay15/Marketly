@@ -16,9 +16,9 @@ class CartProvider extends ChangeNotifier {
   bool _isCartLocked = false;
   bool get isCartLocked => _isCartLocked;
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // Timer
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
 
   Timer? _timer;
   Duration _remainingTime = Duration.zero;
@@ -41,9 +41,9 @@ class CartProvider extends ChangeNotifier {
     });
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // START LISTENING (call after login)
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   void startListening() {
     if (_uid == null) return;
 
@@ -83,18 +83,18 @@ class CartProvider extends ChangeNotifier {
     });
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // STOP LISTENING (call on logout)
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   void stopListening() {
     _subscription?.cancel();
     _items = [];
     notifyListeners();
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // DERIVED TOTALS (SAFE)
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   int get totalProducts => _items.length;
 
   int get totalQuantity => _items.fold(0, (sum, item) => sum + item.quantity);
@@ -111,9 +111,9 @@ class CartProvider extends ChangeNotifier {
     return ((subTotal - finalTotal) / subTotal) * 100;
   }
 
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
   // ACTIONS
-  // ─────────────────────────────────────────────
+  // ---------------------------------------------
 
   CartItemModel? getItemByProductId(String productId) {
     try {

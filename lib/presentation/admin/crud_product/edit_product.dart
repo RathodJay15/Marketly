@@ -294,6 +294,8 @@ class _editProductState extends State<EditProduct> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _label(AppConstants.title),
               _field(

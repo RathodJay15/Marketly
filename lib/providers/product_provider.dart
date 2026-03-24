@@ -21,6 +21,10 @@ class ProductProvider extends ChangeNotifier {
   bool _isHomeLoading = true;
   bool _isSearchLoading = true;
 
+  bool _isCategorySelected = false;
+  bool get isCategorySelected => _isCategorySelected;
+  List<ProductModel> _categoryProducts = [];
+
   bool get isHomeLoading => _isHomeLoading;
   bool get isSearchLoading => _isSearchLoading;
 
@@ -69,9 +73,11 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _visibleProducts = _allProducts
+      _categoryProducts = _allProducts
           .where((p) => p.category == categorySlug)
           .toList();
+
+      _visibleProducts = _categoryProducts;
 
       _error = null;
     } catch (e) {
@@ -96,7 +102,9 @@ class ProductProvider extends ChangeNotifier {
       return;
     }
 
-    _visibleProducts = _allProducts.where((product) {
+    final sourceList = _isCategorySelected ? _categoryProducts : _allProducts;
+
+    _visibleProducts = sourceList.where((product) {
       final titleWords = product.title.toLowerCase().split(RegExp(r'\s+'));
 
       return words.every((word) => titleWords.contains(word));
@@ -106,7 +114,13 @@ class ProductProvider extends ChangeNotifier {
   }
 
   void clearSearchResult() {
-    _visibleProducts = _allProducts;
+    _visibleProducts = _isCategorySelected ? _categoryProducts : _allProducts;
+
+    notifyListeners();
+  }
+
+  void toggleCategorySelection(bool selection) {
+    _isCategorySelected = selection;
     notifyListeners();
   }
 

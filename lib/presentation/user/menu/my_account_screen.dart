@@ -11,6 +11,7 @@ import 'package:marketly/data/models/user_model.dart';
 import 'package:marketly/presentation/user/menu/address/saved_addresses_screen.dart';
 import 'package:marketly/presentation/widgets/marketly_dialog.dart';
 import 'package:marketly/providers/cart_provider.dart';
+import 'package:marketly/providers/favorites_provider.dart';
 import 'package:marketly/providers/navigation_provider.dart';
 import 'package:marketly/providers/user_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -634,6 +635,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
         0,
       ); // set navbar to home
       context.read<CartProvider>().stopListening();
+      context.read<FavoritesProvider>().stopListening();
 
       // Navigate to login
       Navigator.of(context).pushAndRemoveUntil(

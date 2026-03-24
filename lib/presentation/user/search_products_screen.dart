@@ -99,7 +99,7 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
         _isSearching = true;
       });
     }
-    Provider.of<CategoryProvider>(context, listen: false).clearSelection();
+    // Provider.of<CategoryProvider>(context, listen: false).clearSelection();
     _searchFocusNode.requestFocus();
   }
 
@@ -215,14 +215,14 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
             focusNode: _searchFocusNode,
             onTap: _startSearch,
             onSubmitted: (value) => _onSearchPressed(value),
-            onChanged: (value) {
-              if (!_isSearching) {
-                setState(() {
-                  _isSearching = true;
-                });
-              }
-              context.read<ProductProvider>().searchProducts(value);
-            },
+            // onChanged: (value) {
+            //   if (!_isSearching) {
+            //     setState(() {
+            //       _isSearching = true;
+            //     });
+            //   }
+            //   context.read<ProductProvider>().searchProducts(value);
+            // },
             textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               hintText: AppConstants.searchProducts,
@@ -273,19 +273,19 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
             ),
           ),
         ),
-        // Container(
-        //   padding: EdgeInsets.all(8),
-        //   margin: EdgeInsets.only(left: 10),
-        //   decoration: BoxDecoration(
-        //     color: Theme.of(context).colorScheme.onInverseSurface,
-        //     borderRadius: BorderRadius.circular(10),
-        //   ),
-        //   child: Icon(
-        //     Icons.filter_alt_outlined,
-        //     color: Theme.of(context).colorScheme.primary,
-        //     size: 40,
-        //   ),
-        // ),
+        Container(
+          padding: EdgeInsets.all(8),
+          margin: EdgeInsets.only(left: 10),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.onInverseSurface,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.filter_alt_outlined,
+            color: Theme.of(context).colorScheme.primary,
+            size: 40,
+          ),
+        ),
       ],
     );
   }
@@ -320,6 +320,11 @@ class _searchProductScreenState extends State<SearchProductsScreen> {
                   } else {
                     context.read<ProductProvider>().fetchAllProducts();
                   }
+
+                  //-----------------------
+                  context.read<ProductProvider>().toggleCategorySelection(
+                    slug != null,
+                  );
                 },
               );
             },
