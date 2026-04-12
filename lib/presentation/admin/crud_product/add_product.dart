@@ -163,6 +163,7 @@ class _addProductState extends State<AddProduct> {
           'depth': double.parse(depthCtrl.text.trim()),
         },
       );
+
       final thumbnailUrl = await _imageService.uploadProductThumbnail(
         productId: docRef.id,
         imageFile: _selectedThumbnail!,
@@ -171,6 +172,10 @@ class _addProductState extends State<AddProduct> {
         productId: docRef.id,
         imageFiles: _selectedImages!,
       );
+
+      if (thumbnailUrl.isEmpty || imageUrls.isEmpty) {
+        throw Exception("Image upload failed");
+      }
       await docRef.update({'thumbnail': thumbnailUrl, 'images': imageUrls});
 
       if (!mounted) return;
@@ -190,6 +195,17 @@ class _addProductState extends State<AddProduct> {
       await context.read<ProductProvider>().fetchAllProducts();
       Navigator.pop(context, true);
     } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onInverseSurface,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.onSurface,
+        ),
+      );
       if (!mounted) return;
       debugPrint("Error Uploading Product");
     } finally {

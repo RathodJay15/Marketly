@@ -83,7 +83,19 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
       thumbnail: product.thumbnail,
     );
 
-    cartProvider.addToCart(cartItem);
+    try {
+      await cartProvider.addToCart(cartItem);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+            style: TextStyle(color: Theme.of(context).colorScheme.onTertiary),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.onSurface,
+        ),
+      );
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -281,7 +293,7 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                   },
                 ),
               ),
-              cartItem == null
+              cartItem == null || product.stock! <= 0
                   ? Container(
                       height: 55,
                       width: 55,
@@ -292,13 +304,18 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                       child: IconButton(
                         icon: Iconoir(
                           IconoirIcons.addToCart,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: product.stock! <= 0
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.primary.withAlpha(50)
+                              : Theme.of(context).colorScheme.primary,
                           size: 28,
                         ),
                         color: Theme.of(
                           context,
                         ).colorScheme.onSecondaryContainer,
                         onPressed: () {
+                          if (product.stock! <= 0) return;
                           _addToCart(product);
                         },
                       ),
@@ -578,12 +595,10 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
               children: [
                 _sectionDetail(product.category),
                 _sectionDetail(product.brand),
-                _sectionDetail(product.stock.toString()),
-                _sectionDetail(product.weight.toString()),
-                _sectionDetail(product.formattedTags()),
-                SizedBox(
-                  width: 250,
-                  child: _sectionDetail(product.formattedDimensions()),
+                _sectionDetail(
+                  product.stock! <= 0
+                      ? "${product.stock.toString()} ${AppConstants.outOfStock}"
+                      : product.stock.toString(),
                 ),
               ],
             ),
@@ -775,7 +790,11 @@ class _productDetailsScreenState extends State<ProductDetailsScreen> {
                             children: [
                               _sectionDetail(product.category),
                               _sectionDetail(product.brand),
-                              _sectionDetail(product.stock.toString()),
+                              _sectionDetail(
+                                product.stock! <= 0
+                                    ? "${product.stock.toString()} ${AppConstants.outOfStock}"
+                                    : product.stock.toString(),
+                              ),
                               _sectionDetail(product.weight.toString()),
                               _sectionDetail(product.formattedTags()),
                               SizedBox(

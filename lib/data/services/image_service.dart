@@ -19,7 +19,7 @@ class ImageService {
     }
   }
 
-  Future<String?> uploadProductThumbnail({
+  Future<String> uploadProductThumbnail({
     required String productId,
     required File imageFile,
   }) async {
@@ -33,7 +33,7 @@ class ImageService {
       await ref.putFile(imageFile);
       return await ref.getDownloadURL();
     } catch (e) {
-      return null;
+      throw Exception("Thumbnail upload failed: $e");
     }
   }
 
@@ -61,7 +61,7 @@ class ImageService {
 
       return downloadUrls;
     } catch (e) {
-      return [];
+      throw Exception("Product images upload failed: $e");
     }
   }
 }

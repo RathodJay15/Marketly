@@ -46,14 +46,7 @@ class _myAccountScreenState extends State<MyAccountScreen> {
 
   final ImagePicker _imagePicker = ImagePicker();
 
-  final Map<String, bool> _editMode = {
-    'name': false,
-    'phone': false,
-    'city': false,
-    'state': false,
-    'country': false,
-    'pincode': false,
-  };
+  final Map<String, bool> _editMode = {'name': false, 'phone': false};
 
   Future<File?> _pickImage() async {
     if (_isPickingImage) return null;

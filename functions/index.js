@@ -16,7 +16,7 @@ exports.sendNewProductNotification = onDocumentUpdated(
       return;
     }
 
-    // 🔥 Trigger ONLY when thumbnail is added for the first time
+    //  Trigger ONLY when thumbnail is added for the first time
     if (!before.thumbnail && after.thumbnail) {
 
       const productId = event.params.productId;
@@ -203,26 +203,34 @@ exports.cleanExpiredCarts = onSchedule("every 10 minutes", async () => {
   const now = admin.firestore.Timestamp.now();
   const db = admin.firestore();
 
-  const snapshot = await admin.firestore()
+  const snapshot = await db
     .collection("cart")
     .where("expiresAt", "<=", now)
     .get();
 
-  const batch = admin.firestore().batch();
-
-   for (const doc of snapshot.docs) {
+  for (const doc of snapshot.docs) {
     const cartRef = doc.ref;
 
-    // Delete cartItems subcollection first
+    // Get cart items
     const itemsSnapshot = await cartRef.collection("cartItems").get();
 
     const batch = db.batch();
 
-    itemsSnapshot.docs.forEach((itemDoc) => {
-      batch.delete(itemDoc.ref);
-    });
+    for (const itemDoc of itemsSnapshot.docs) {
+      const item = itemDoc.data();
 
-    // Delete cart document itself
+      const productRef = db.collection("products").doc(item.productId);
+
+      // Restore stock
+      batch.update(productRef, {
+        stock: admin.firestore.FieldValue.increment(item.quantity),
+      });
+
+      // Delete cart item
+      batch.delete(itemDoc.ref);
+    }
+
+    // Delete cart document
     batch.delete(cartRef);
 
     await batch.commit();

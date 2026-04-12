@@ -496,6 +496,9 @@ class _MapScreenState extends State<MapScreen> with WidgetsBindingObserver {
                   const SizedBox(height: 5),
                   Text(
                     address,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),

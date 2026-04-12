@@ -92,6 +92,32 @@ class ProductService {
     }
   }
 
+  // UpdateStock
+  Future<void> updateStock({
+    required String productId,
+    required int quantity,
+  }) async {
+    final docRef = _firestore.collection('products').doc(productId);
+
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+
+      if (!snapshot.exists) {
+        throw Exception("Product not found");
+      }
+
+      final currentStock = snapshot['stock'];
+
+      if (currentStock < quantity) {
+        throw Exception("Out of stock");
+      }
+
+      transaction.update(docRef, {
+        'stock': currentStock - quantity,
+      }); // To avoid race condition
+    });
+  }
+
   // Update product
   Future<void> updateProduct(String productId, ProductModel product) async {
     await _firestore

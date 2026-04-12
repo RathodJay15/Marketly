@@ -2,10 +2,13 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:marketly/data/services/product_service.dart';
 import '../data/models/cart_item_model.dart';
 import '../data/services/cart_service.dart';
 
 class CartProvider extends ChangeNotifier {
+  final ProductService _productService = ProductService();
+
   final CartService _cartService = CartService();
   StreamSubscription? _subscription;
 
@@ -42,7 +45,7 @@ class CartProvider extends ChangeNotifier {
   }
 
   // ---------------------------------------------
-  // START LISTENING (call after login)
+  // START LISTENING (called after login)
   // ---------------------------------------------
   void startListening() {
     if (_uid == null) return;
@@ -126,7 +129,14 @@ class CartProvider extends ChangeNotifier {
   Future<void> addToCart(CartItemModel item) async {
     if (_isCartLocked) return;
     if (_uid == null) return;
-    await _cartService.addToCart(uid: _uid!, item: item);
+    try {
+      // add to cart
+      await _cartService.addToCart(uid: _uid!, item: item);
+
+      notifyListeners();
+    } catch (e) {
+      rethrow; // send error to UI
+    }
   }
 
   Future<void> updateQuantity(String cartItemId, int quantity) async {

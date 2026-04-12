@@ -209,6 +209,7 @@ class AppConstants {
   static const String systemDdValue = "system";
   static const String lightDdValue = "light";
   static const String darkDdValue = "dark";
+  static const String outOfStock = "(Out of stock)";
 
   // Coupon constants
   static const String couponAdded = "Coupon added successfully ✅";

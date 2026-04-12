@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:marketly/data/services/product_service.dart';
 import '../models/cart_item_model.dart';
 
 class CartService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ProductService _productService = ProductService();
   static const int _cartExpiryMinutes = 60;
 
   // ---------------------------------------------
@@ -43,19 +45,56 @@ class CartService {
   }) async {
     await _ensureCartDocument(uid);
 
-    final query = await _cartItemsRef(
-      uid,
-    ).where('productId', isEqualTo: item.productId).limit(1).get();
+    final productRef = _firestore.collection('products').doc(item.productId);
 
-    if (query.docs.isNotEmpty) {
-      final doc = query.docs.first;
-      final existing = CartItemModel.fromFirestore(doc.data(), doc.id);
-      final updated = existing.copyWithQuantity(existing.quantity + 1);
-      await doc.reference.update(updated.toFirestore());
-    } else {
-      final safeItem = item.copyWithQuantity(item.quantity);
-      await _cartItemsRef(uid).add(safeItem.toFirestore());
-    }
+    await _firestore.runTransaction((transaction) async {
+      // Get product
+      final productSnap = await transaction.get(productRef);
+
+      if (!productSnap.exists) {
+        throw Exception("Product not found");
+      }
+
+      final stock = productSnap['stock'];
+
+      // Check existing cart item
+      final query = await _cartItemsRef(
+        uid,
+      ).where('productId', isEqualTo: item.productId).limit(1).get();
+
+      if (query.docs.isNotEmpty) {
+        final doc = query.docs.first;
+
+        final existing = CartItemModel.fromFirestore(doc.data(), doc.id);
+
+        // Check stock for +1
+        if (stock < item.quantity) {
+          throw Exception("Out of stock");
+        }
+
+        // Reduce stock
+        transaction.update(productRef, {'stock': stock - item.quantity});
+
+        // Increase quantity
+        final updated = existing.copyWithQuantity(
+          existing.quantity + item.quantity,
+        );
+
+        transaction.update(doc.reference, updated.toFirestore());
+      } else {
+        // New item
+
+        if (stock < item.quantity) {
+          throw Exception("Out of stock");
+        }
+
+        // Reduce stock
+        transaction.update(productRef, {'stock': stock - item.quantity});
+
+        final newDoc = _cartItemsRef(uid).doc();
+        transaction.set(newDoc, item.toFirestore());
+      }
+    });
   }
 
   // ---------------------------------------------
@@ -68,46 +107,115 @@ class CartService {
   }) async {
     await _ensureCartDocument(uid);
 
-    if (quantity <= 0) {
-      await removeItem(uid, cartItemId);
-      return;
-    }
+    final cartRef = _cartItemsRef(uid).doc(cartItemId);
 
-    final docRef = _cartItemsRef(uid).doc(cartItemId);
-    final snapshot = await docRef.get();
-    if (!snapshot.exists) return;
+    await _firestore.runTransaction((transaction) async {
+      final cartSnap = await transaction.get(cartRef);
 
-    final existing = CartItemModel.fromFirestore(snapshot.data()!, snapshot.id);
+      if (!cartSnap.exists) return;
 
-    final updated = existing.copyWithQuantity(quantity);
-    await docRef.update(updated.toFirestore());
+      final existing = CartItemModel.fromFirestore(
+        cartSnap.data()!,
+        cartSnap.id,
+      );
+
+      final productRef = _firestore
+          .collection('products')
+          .doc(existing.productId);
+
+      final productSnap = await transaction.get(productRef);
+
+      if (!productSnap.exists) {
+        throw Exception("Product not found");
+      }
+
+      final stock = productSnap['stock'];
+      final currentQty = existing.quantity;
+
+      final diff = quantity - currentQty;
+
+      // INCREASE quantity
+      if (diff > 0) {
+        if (stock < diff) {
+          throw Exception("Out of stock");
+        }
+
+        // reduce stock
+        transaction.update(productRef, {'stock': stock - diff});
+      }
+      // DECREASE quantity
+      else if (diff < 0) {
+        final restoreQty = diff.abs();
+
+        // restore stock
+        transaction.update(productRef, {'stock': stock + restoreQty});
+      }
+
+      // update cart
+      if (quantity <= 0) {
+        transaction.delete(cartRef);
+      } else {
+        final updated = existing.copyWithQuantity(quantity);
+        transaction.update(cartRef, updated.toFirestore());
+      }
+    });
   }
 
   // ---------------------------------------------
   // REMOVE ITEM
   // ---------------------------------------------
   Future<void> removeItem(String uid, String cartItemId) async {
-    await _cartItemsRef(uid).doc(cartItemId).delete();
+    final cartRef = _cartItemsRef(uid).doc(cartItemId);
 
-    // Check if cart is now empty
-    final remainingItems = await _cartItemsRef(uid).limit(1).get();
+    await _firestore.runTransaction((transaction) async {
+      final cartSnap = await transaction.get(cartRef);
 
-    if (remainingItems.docs.isEmpty) {
-      await _cartDocRef(uid).delete();
-    }
+      if (!cartSnap.exists) return;
+
+      final item = CartItemModel.fromFirestore(cartSnap.data()!, cartSnap.id);
+
+      final productRef = _firestore.collection('products').doc(item.productId);
+
+      final productSnap = await transaction.get(productRef);
+
+      if (!productSnap.exists) {
+        throw Exception("Product not found");
+      }
+
+      final currentStock = productSnap['stock'];
+
+      // restore stock
+      transaction.update(productRef, {'stock': currentStock + item.quantity});
+
+      // delete cart item
+      transaction.delete(cartRef);
+    });
   }
 
   // ---------------------------------------------
   // CLEAR CART
   // ---------------------------------------------
   Future<void> clearCart(String uid) async {
-    final itemsSnapshot = await _cartItemsRef(uid).get();
+    final snapshot = await _cartItemsRef(uid).get();
 
-    for (final doc in itemsSnapshot.docs) {
-      await doc.reference.delete();
+    final batch = _firestore.batch();
+
+    for (final doc in snapshot.docs) {
+      final item = CartItemModel.fromFirestore(doc.data(), doc.id);
+
+      final productRef = _firestore.collection('products').doc(item.productId);
+
+      // Restore stock
+      batch.update(productRef, {'stock': FieldValue.increment(item.quantity)});
+
+      // Delete cart item
+      batch.delete(doc.reference);
     }
 
-    await _cartDocRef(uid).delete();
+    // Delete cart document (optional)
+    batch.delete(_cartDocRef(uid));
+
+    await batch.commit();
   }
 
   // ---------------------------------------------
