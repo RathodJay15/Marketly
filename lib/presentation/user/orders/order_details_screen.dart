@@ -125,7 +125,7 @@ class _orderDetailsScreen extends State<OrderDetailsScreen> {
             ...order.items.map(
               (item) => _row(
                 "${item['title']} x ${item['quantity']}",
-                "\$${item['finalPrice'].toStringAsFixed(2)}",
+                AppConstants.inrAmount(item['finalPrice']),
               ),
             ),
             Divider(color: Theme.of(context).colorScheme.onPrimary),

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class AppConstants {
   static const String welcomeMsg = "Hello, Welcome 👋";
   static const String searchProducts = "Search products..";
@@ -270,7 +272,8 @@ class AppConstants {
   }
 
   static String inrAmount(double amount) {
-    return "₹ ${amount.toStringAsFixed(2)}";
+    final formatter = NumberFormat("#,##,##0.00", "en_IN");
+    return "₹ ${formatter.format(amount)}";
   }
 
   static String priceXquantity(double price, int quantity) {
